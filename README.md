@@ -44,7 +44,7 @@ Créer une **application sécurisée, simple et intuitive** permettant d'organis
 
 ## 🧑‍🤝‍🧑 Équipe du Projet
 
-👩‍💻 **Clémence Josée JAZE N**  
+👩‍💻 **Josée Clémence JEAZE NGUEMEZI**  
 📚 *Etudiante en deuxième année en Analyse Statistique (AS)*
 
 👨‍💻 **Marc MARE**  
