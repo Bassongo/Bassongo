@@ -1,328 +1,58 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Le Choix des Élèves</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil - Vote ENSAE</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Montserrat', sans-serif;
-      background: url("assets/images/OIP.jpeg") no-repeat center center fixed;
-      background-size: cover;
-      color: #fff;
-      text-align: center;
-      position: relative;
-    }
-
-    /* Assombrir le fond pour plus de contraste */
-    body::before {
-      content: "";
-      position: absolute;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.6);
-      z-index: 0;
-    }
-
-    .container {
-      position: relative;
-      z-index: 1;
-      padding: 60px 20px;
-    }
-
-    .top-buttons {
-      position: absolute;
-      top: 15px;
-      right: 20px;
-      display: flex;
-      gap: 10px;
-      z-index: 2;
-    }
-
-    .top-buttons button {
-      background-color: #d0e7ff;
-      color: #003b6f;
-      border: none;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: bold;
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-    }
-
-    .top-buttons button:hover {
-      background-color: #a9d4ff;
-    }
-
-    h1 {
-      font-size: 2.5em;
-      margin-bottom: 30px;
-      text-shadow: 2px 2px 4px #000;
-    }
-
-    .image-container img {
-      max-width: 400px;
-      width: 100%;
-      height: auto;
-      border-radius: 8px;
-      box-shadow: 0 0 10px #000;
-    }
-
-    .slogan {
-      margin-top: 30px;
-      font-size: 1.6em;
-      font-weight: 700;
-      text-shadow: 2px 2px 4px #000;
-    }
-
-    .slogan2 {
-      font-size: 1.3em;
-      margin-top: 10px;
-      font-weight: 600;
-      color: #dbefff;
-      text-shadow: 1px 1px 3px #000;
-    }
-
-    /* Styles pour les formulaires modaux */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      z-index: 100;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal-content {
-      background-color: #fff;
-      padding: 30px;
-      border-radius: 10px;
-      width: 90%;
-      max-width: 400px;
-      color: #003b6f;
-      position: relative;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 10px;
-      right: 15px;
-      font-size: 24px;
-      cursor: pointer;
-      color: #003b6f;
-    }
-
-    .form-group {
-      margin-bottom: 15px;
-      text-align: left;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 5px;
-      font-weight: bold;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
-      box-sizing: border-box;
-    }
-
-    .form-actions {
-      margin-top: 20px;
-      display: flex;
-      justify-content: space-between;
-    }
-
-    .form-actions button {
-      padding: 10px 20px;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .primary-btn {
-      background-color: #003b6f;
-      color: white;
-    }
-
-    .secondary-btn {
-      background-color: #ccc;
-      color: #333;
-    }
-
-    @media (max-width: 768px) {
-      .top-buttons {
-        position: static;
-        justify-content: center;
-        margin-bottom: 20px;
-      }
-
-      h1 {
-        font-size: 1.8em;
-      }
-
-      .slogan {
-        font-size: 1.3em;
-      }
-
-      .slogan2 {
-        font-size: 1.1em;
-      }
-    }
-  </style>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-  <div class="top-buttons">
-    <button id="registerBtn">S'inscrire</button>
-    <button id="loginBtn">Se connecter</button>
-    <button>À propos</button>
-  </div>
-
   <div class="container">
-    <h1>Le Choix des Élèves</h1>
+    <nav>
+      <a href="pages/index.html" class="nav-link active">Accueil</a>
+      <a href="pages/candidat.html" class="nav-link">Inscription candidat</a>
+      <a href="pages/mes-candidatures.html" class="nav-link">Mes candidatures</a>
+      <a href="#campagne" class="nav-link">Campagne</a>
+      <a href="#voter" class="nav-link">Voter</a>
+      <a href="#stats" class="nav-link">Statistiques</a>
+      <a href="#profil" class="nav-link">Profil</a>
+      <button id="loginBtn" class="nav-link">Se connecter</button>
+    </nav>
 
-    <div class="image-container">
-      <img src="assets/images/ensae.jpeg" alt="Bâtiment ENSAE">
+    <div id="intro">
+      <h1>Le Choix des Élèves</h1>
+      <img src="assets/images/OIP.jpeg" alt="ENSAE Building" class="intro-img">
+      <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
+      <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
     </div>
 
-    <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
-    <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
-  </div>
+    <div id="accueil">
+      <h1>Bienvenue sur la plateforme de vote de l'ENSAE !!</h1>
+      <h2>Un outil moderne sécurisé et transparent</h2>
 
-  <!-- Formulaire d'inscription -->
-  <div id="registerModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="closeRegister">&times;</span>
-      <h2>S'inscrire</h2>
-      <form id="registerForm">
-        <div class="form-group">
-          <label for="username">Nom d'utilisateur:</label>
-          <input type="text" id="username" required>
+      <div class="content">
+        <div class="section">
+          <h3>🎯 Objectifs</h3>
+          <ul>
+            <li>Inscription en ligne des candidats</li>
+            <li>Gestion des électeurs</li>
+            <li>Votes anonymes et sécurisés</li>
+            <li>Résultats en temps réel</li>
+          </ul>
         </div>
-        <div class="form-group">
-          <label for="lastname">Nom:</label>
-          <input type="text" id="lastname" required>
+
+        <div class="section">
+          <h3>🗳️ Processus électoral</h3>
+          <ul>
+            <li>Phase d'inscription</li>
+            <li>Campagne électorale</li>
+            <li>Vote en ligne</li>
+            <li>Publication des résultats</li>
+          </ul>
         </div>
-        <div class="form-group">
-          <label for="firstname">Prénom:</label>
-          <input type="text" id="firstname" required>
-        </div>
-        <div class="form-group">
-          <label for="class">Classe:</label>
-          <input type="text" id="class" required>
-        </div>
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" required>
-        </div>
-        <div class="form-group">
-          <label for="password">Mot de passe:</label>
-          <input type="password" id="password" required>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="secondary-btn" id="cancelRegister">Retour</button>
-          <button type="submit" class="primary-btn">Créer un compte</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
-
-  <!-- Formulaire de connexion -->
-  <div id="loginModal" class="modal">
-    <div class="modal-content">
-      <span class="close-btn" id="closeLogin">&times;</span>
-      <h2>Se connecter</h2>
-      <form id="loginForm">
-        <div class="form-group">
-          <label for="loginUsername">Nom d'utilisateur:</label>
-          <input type="text" id="loginUsername" required>
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">Mot de passe:</label>
-          <input type="password" id="loginPassword" required>
-        </div>
-        <div class="form-actions">
-          <button type="button" class="secondary-btn" id="cancelLogin">Retour</button>
-          <button type="submit" class="primary-btn">Valider</button>
-        </div>
-      </form>
-    </div>
-  </div>
-
-  <script>
-    // Gestion des modaux
-    const registerBtn = document.getElementById('registerBtn');
-    const loginBtn = document.getElementById('loginBtn');
-    const registerModal = document.getElementById('registerModal');
-    const loginModal = document.getElementById('loginModal');
-    const closeRegister = document.getElementById('closeRegister');
-    const closeLogin = document.getElementById('closeLogin');
-    const cancelRegister = document.getElementById('cancelRegister');
-    const cancelLogin = document.getElementById('cancelLogin');
-
-    // Ouvrir le modal d'inscription
-    registerBtn.addEventListener('click', () => {
-      registerModal.style.display = 'flex';
-    });
-
-    // Ouvrir le modal de connexion
-    loginBtn.addEventListener('click', () => {
-      loginModal.style.display = 'flex';
-    });
-
-    // Fermer les modaux
-    closeRegister.addEventListener('click', () => {
-      registerModal.style.display = 'none';
-    });
-
-    closeLogin.addEventListener('click', () => {
-      loginModal.style.display = 'none';
-    });
-
-    cancelRegister.addEventListener('click', () => {
-      registerModal.style.display = 'none';
-    });
-
-    cancelLogin.addEventListener('click', () => {
-      loginModal.style.display = 'none';
-    });
-
-    // Fermer quand on clique en dehors du modal
-    window.addEventListener('click', (event) => {
-      if (event.target === registerModal) {
-        registerModal.style.display = 'none';
-      }
-      if (event.target === loginModal) {
-        loginModal.style.display = 'none';
-      }
-    });
-
-    // Gestion de la soumission des formulaires
-    document.getElementById('registerForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Ici vous ajouteriez le code pour traiter l'inscription
-      alert('Compte créé avec succès!');
-      registerModal.style.display = 'none';
-    });
-
-    document.getElementById('loginForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      // Ici vous ajouteriez le code pour traiter la connexion
-      alert('Connexion réussie!');
-      loginModal.style.display = 'none';
-    });
-  </script>
 </body>
 </html>
