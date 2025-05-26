@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil - Vote ENSAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="../assets/css/acceuils.css">
+  
+</head>
+<body>
+
+  <!-- Header dynamique -->
+  <div id="header_home"></div>
+
+
+  <div class="container">
+    
+
+    <div id="intro">
+      <h1>Le Choix des Élèves</h1>
+      <img src="assets/img/OIP.jpeg" alt="ENSAE Building" class="intro-img">
+      <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
+      <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
+    </div>
+
+  </div>
+
+
+  
+    <!-- Footer dynamique -->
+    <div id="footer_home"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header_home', '../components/header_home.html');
+        includeComponent('#footer_home', '../components/footer_home.html');
+    </script>
+
+</body>
+</html>

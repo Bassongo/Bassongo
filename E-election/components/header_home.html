@@ -1,0 +1,48 @@
+<header>
+  <div class="header-container">
+    <!-- Logo ENSAE et Titre -->
+    <div class="logo">
+      <img src="../assets/img/logo_ensae.png" alt="Logo ENSAE" class="logo-img" style="height:48px;width:auto;margin-right:1rem;">
+      <div class="logo-text">
+        <h1>E-election</h1>
+        <h2>ENSAE Dakar</h2>
+      </div>
+    </div>
+
+    <!-- Menu burger pour mobile (à compléter si tu veux un menu mobile) -->
+    <button class="menu-toggle" aria-label="Menu" style="display:none;">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
+    <!-- Navigation principale -->
+    <nav class="main-nav">
+      <ul>
+
+        <li id="accueilBtn"><a href="../Acceuil.html" class="nav-link"><span>Se connecter</span></a></li>
+        <li id="candidaterBtn"><a href="../inscription.html" class="nav-link"><span>S'inscrire</span></a></li>
+        <li><a href="#"><span>Avant-Propos</span></a></li>
+      </ul>
+
+    </nav>
+  </div>
+
+
+
+
+
+  <script>
+    // Met à jour la classe highlight sur le lien courant
+    document.addEventListener('DOMContentLoaded', function() {
+      const current = location.pathname.split('/').pop();
+      document.querySelectorAll('.main-nav .nav-link').forEach(link => {
+        if (link.getAttribute('href').includes(current)) {
+          link.classList.add('highlight');
+        } else {
+          link.classList.remove('highlight');
+        }
+      });
+    });
+  </script>
+</header>

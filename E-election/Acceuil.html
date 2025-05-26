@@ -5,24 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accueil - Vote ENSAE</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css">
+  
+  <link rel="stylesheet" href="../assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/acceuils.css">
 </head>
 <body>
+
+  <!-- Header dynamique -->
+  <div id="header"></div>
+
+
   <div class="container">
-    <nav>
-      <a href="pages/index.html" class="nav-link active">Accueil</a>
-      <a href="pages/candidat.html" class="nav-link">Inscription candidat</a>
-      <a href="pages/mes-candidatures.html" class="nav-link">Mes candidatures</a>
-      <a href="#campagne" class="nav-link">Campagne</a>
-      <a href="#voter" class="nav-link">Voter</a>
-      <a href="#stats" class="nav-link">Statistiques</a>
-      <a href="#profil" class="nav-link">Profil</a>
-      <button id="loginBtn" class="nav-link">Se connecter</button>
-    </nav>
+    
 
     <div id="intro">
       <h1>Le Choix des Élèves</h1>
-      <img src="assets/images/OIP.jpeg" alt="ENSAE Building" class="intro-img">
+      <img src="assets/img/OIP.jpeg" alt="ENSAE Building" class="intro-img">
       <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
       <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
     </div>
@@ -54,5 +52,18 @@
       </div>
     </div>
   </div>
+
+
+  
+    <!-- Footer dynamique -->
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+
 </body>
 </html>

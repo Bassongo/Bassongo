@@ -2,36 +2,29 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Page Campagne</title>
+    <title>Résultats des votes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <!-- CSS principal pour la campagne (bleu, clair, élégant) -->
-    <link rel="stylesheet" href="../assets/css/campagne.css">
-    <!-- CSS global du site -->
+    <!-- Confetti pour l'effet vainqueur -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link rel="stylesheet" href="../assets/css/resultat.css">
     <link rel="stylesheet" href="../assets/css/styles.css">
 </head>
 <body>
-    <!-- Header dynamique -->
     <div id="header"></div>
-
-    <!-- Contenu principal -->
-    <main class="main-campagne">
+    <main class="main-result">
+        <h1>🎉 Résultats des votes 🎉</h1>
         <!-- Sélecteur du type d'élection -->
         <section class="selection">
-            <label for="type-election">Choisissez le type d'élection :</label>
-            <select id="type-election">
+            <label for="type-result">Type d'élection :</label>
+            <select id="type-result">
                 <option value="aes">AES</option>
                 <option value="club">Club</option>
                 <option value="classe">Classe</option>
             </select>
         </section>
-
-        <!-- Zone d'affichage dynamique des candidats/clubs -->
-        <section id="contenu-election">
-            <p>Sélectionnez un type d'élection pour voir les détails.</p>
-        </section>
+        <!-- Résultats dynamiques -->
+        <section id="resultats"></section>
     </main>
-
-    <!-- Footer dynamique -->
     <div id="footer"></div>
 
     <!-- Inclusion dynamique du header/footer -->
@@ -40,7 +33,6 @@
         includeComponent('#header', '../components/header.html');
         includeComponent('#footer', '../components/footer.html');
     </script>
-    <!-- JS principal pour la gestion des campagnes -->
-    <script src="../assets/js/campagne.js"></script>
+    <script src="../assets/js/resultat.js"></script>
 </body>
 </html>

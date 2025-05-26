@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Tableau de bord des votes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Chart.js pour les graphiques -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- CSS du tableau de bord -->
+    <link rel="stylesheet" href="../assets/css/statistique.css">
+    <link rel="stylesheet" href="../assets/css/styles.css">
+</head>
+<body>
+    <div id="header"></div>
+    <main class="main-stats">
+        <h1>Tableau de bord des votes</h1>
+        <!-- Sélecteur du type d'élection -->
+        <section class="selection">
+            <label for="type-stats">Type d'élection :</label>
+            <select id="type-stats">
+                <option value="aes">AES</option>
+                <option value="club">Club</option>
+                <option value="classe">Classe</option>
+            </select>
+        </section>
+
+        <!-- Chiffres clés -->
+        <section id="stats-global" class="stats-cards"></section>
+
+        <!-- Graphiques -->
+        <section id="stats-graph" class="stats-graph">
+            <canvas id="statsChart"></canvas>
+        </section>
+
+        <!-- Détail par poste/club/classe -->
+        <section id="stats-detail" class="stats-detail"></section>
+    </main>
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+    <!-- JS du tableau de bord -->
+    <script src="../assets/js/statistique.js"></script>
+</body>
+</html>
