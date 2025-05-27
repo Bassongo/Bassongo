@@ -9,14 +9,8 @@
   <link rel="stylesheet" href="assets/css/login.css">
 </head>
   <body class="login-bg">
-  <div class="top-bar">
-    <div class="main-title">Le Choix des Élèves</div>
-    <div class="top-buttons">
-      <a href="inscription.html" class="btn btn-header">S'inscrire</a>
-      <a href="login.html" class="btn btn-header">se connecter</a>
-      <a href="about.html" class="btn btn-header">A propos</a>
-    </div>
-  </div>
+  
+  <div id="header"></div>
 
   <div class="login-container">
     <div class="login-box">
@@ -28,11 +22,20 @@
         <input type="password" id="login-password" required>
         <div class="login-actions">
           <button type="submit" class="btn btn-primary">valider</button>
-          <a href="acceuil.html" class="btn btn-link">retour</a>
+          <a href="Home.html" class="btn btn-link">retour</a>
         </div>
       </form>
     </div>
   </div>
-<script src="assets/js/login.js"></script>
+
+  <script src="assets/js/login.js"></script>
+  <div id="footer"></div>
+
+  <!-- Inclusion dynamique du header/footer -->
+  <script src="assets/js/include.js"></script>
+  <script>
+    includeComponent('#header', 'components/header_home.html');
+    includeComponent('#footer', 'components/footer_home.html');
+  </script>
 </body>
 </html>

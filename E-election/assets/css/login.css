@@ -36,7 +36,7 @@
 }
 /* ...existing code... */
 body.login-bg {
-  background: url('assets/img/OIP.jpeg') no-repeat center center fixed;
+  background: url('../img/OIP.jpeg') no-repeat center center fixed;
   background-size: cover;
   margin: 0;
   font-family: 'Montserrat', sans-serif;
