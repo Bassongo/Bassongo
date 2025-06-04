@@ -176,6 +176,17 @@ body {
   background: #b71c1c;
 }
 
+/* Bouton secondaire pour les actions moins importantes */
+.admin-btn.secondary {
+  background: var(--white);
+  color: var(--primary);
+  border: 2px solid var(--primary);
+}
+
+.admin-btn.secondary:hover {
+  background: var(--primary-light);
+}
+
 .welcome-message {
   color: var(--white);
   text-align: center;

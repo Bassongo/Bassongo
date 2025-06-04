@@ -70,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
               </div>
               <div style="margin:18px 0;">
                 <button class="admin-btn danger" id="resetBtn">supprimer</button>
-                <button class="admin-btn" id="cancelBtn">Annuler</button>
+                <button class="admin-btn secondary" id="cancelBtn">Annuler</button>
                 <button class="admin-btn" id="validateBtn">valider</button>
               </div>
             </div>
@@ -142,8 +142,8 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <div class="admin-actions">
               <button class="admin-btn danger" id="deleteBtn">supprimer</button>
-              <button class="admin-btn" id="cancelBtn">Annuler</button>
-              <button class="admin-btn" id="backBtn">retour</button>
+              <button class="admin-btn secondary" id="cancelBtn">Annuler</button>
+              <button class="admin-btn secondary" id="backBtn">retour</button>
             </div>
           </div>
         `;
@@ -166,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button class="admin-btn" id="consulterComiteBtn">consulter les comités</button>
             </div>
             <div class="admin-actions" style="margin-top:40px;">
-              <button class="admin-btn" id="backBtn">retour</button>
+              <button class="admin-btn secondary" id="backBtn">retour</button>
             </div>
           </div>
         `;
@@ -185,7 +185,7 @@ document.addEventListener('DOMContentLoaded', () => {
               <button class="admin-btn" id="addAdminBtn">ajouter un administrateur</button>
             </div>
             <div class="admin-actions" style="margin-top:40px;">
-              <button class="admin-btn" id="backBtn">retour</button>
+              <button class="admin-btn secondary" id="backBtn">retour</button>
             </div>
           </div>
         `;
