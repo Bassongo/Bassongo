@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Page Campagne</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- CSS global du site -->
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/campagne.css">
+    
+</head>
+<body>
+    <!-- Header dynamique -->
+    <div id="header"></div>
+
+    <!-- Contenu principal -->
+    <main class="main-campagne">
+        <!-- Sélecteur du type d'élection -->
+        <section class="selection">
+            <label for="type-election">Choisissez le type d'élection :</label>
+            <select id="type-election">
+                <option value="aes">AES</option>
+                <option value="club">Club</option>
+                <option value="classe">Classe</option>
+            </select>
+        </section>
+
+        <!-- Zone d'affichage dynamique des candidats/clubs -->
+        <section id="contenu-election">
+            <p>Sélectionnez un type d'élection pour voir les détails.</p>
+        </section>
+    </main>
+
+    <!-- Footer dynamique -->
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+    <!-- JS principal pour la gestion des campagnes -->
+    <script src="../assets/js/campagne.js"></script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Vote en ligne</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- CSS -->
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/vote.css">
+</head>
+<body>
+    <!-- Header dynamique -->
+    <div id="header"></div>
+
+    <main class="main-vote">
+        <!-- Sélecteur du type d'élection -->
+        <section class="selection">
+            <label for="type-election">Type d'élection :</label>
+            <select id="type-election">
+                <option value="aes">AES</option>
+                <option value="club">Club</option>
+                <option value="classe">Classe</option>
+            </select>
+        </section>
+
+        <!-- Zone d'affichage dynamique des votes -->
+        <section id="contenu-vote">
+            <p>Sélectionnez un type d'élection pour voter.</p>
+        </section>
+    </main>
+
+    <!-- Footer dynamique -->
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+    <!-- JS principal pour la gestion des votes -->
+    <script src="../assets/js/vote.js"></script>
+</body>
+</html>

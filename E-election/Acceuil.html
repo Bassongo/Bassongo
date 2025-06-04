@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil - Vote ENSAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="./assets/css/styles.css">
+  <link rel="stylesheet" href="./assets/css/acceuils.css">
+  
+</head>
+<body>
+
+  <!-- Header dynamique -->
+  <div id="header"></div>
+
+
+  <div class="container">
+    
+
+    <div id="intro">
+      <h1>Le Choix des Élèves</h1>
+      <img src="assets/img/OIP.jpeg" alt="ENSAE Building" class="intro-img">
+      <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
+      <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
+    </div>
+
+    <div id="accueil">
+      <h1>Bienvenue sur la plateforme de vote de l'ENSAE !!</h1>
+      <h2>Un outil moderne sécurisé et transparent</h2>
+
+      <div class="content">
+        <div class="section">
+          <h3>🎯 Objectifs</h3>
+          <ul>
+            <li>Inscription en ligne des candidats</li>
+            <li>Gestion des électeurs</li>
+            <li>Votes anonymes et sécurisés</li>
+            <li>Résultats en temps réel</li>
+          </ul>
+        </div>
+
+        <div class="section">
+          <h3>🗳️ Processus électoral</h3>
+          <ul>
+            <li>Phase d'inscription</li>
+            <li>Campagne électorale</li>
+            <li>Vote en ligne</li>
+            <li>Publication des résultats</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  
+    <!-- Footer dynamique -->
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+
+</body>
+</html>

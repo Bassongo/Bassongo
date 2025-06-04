@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Accueil Administrateur - Vote ENSAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/admin_accueil.css">
+</head>
+<body>
+  <div class="top-bar">
+    <div class="nav-buttons">
+      <a href="#" class="btn-nav active">Accueil</a>
+      <a href="#" class="btn-nav">Inscription candidat</a>
+      <a href="#" class="btn-nav">Campagne</a>
+      <a href="#" class="btn-nav">voter</a>
+      <a href="#" class="btn-nav">Statistiques</a>
+      <a href="#" class="btn-nav">moi</a>
+    </div>
+  </div>
+  <div class="main-content">
+    <aside class="sidebar">
+      <button class="sidebar-btn" id="btn-gestion-elections">GESTION DES ELECTIONS</button>
+      <button class="sidebar-btn" id="btn-gestion-candidats">GESTION DES CANDIDATS</button>
+      <button class="sidebar-btn" id="btn-gestion-comites">GESTION DES COMITES D'ELECTION</button>
+      <button class="sidebar-btn" id="btn-param-admin">PARAMETRE DE L’ADMINISTRATEUR</button>
+      <button class="sidebar-btn logout" id="logoutBtn">Déconnexion</button>
+    </aside>
+    <section class="content" id="admin-content">
+      <div class="welcome-message" id="welcome-message">
+        <h1>Bienvenue sur l'espace administrateur</h1>
+        <p>Sélectionnez une option dans le menu à gauche pour commencer.</p>
+      </div>
+      <!-- Le contenu dynamique s'affichera ici -->
+    </section>
+  </div>
+  <script src="assets/js/admin_accueil.js"></script>
+</body>
+</html>

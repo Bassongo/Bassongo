@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Résultats des votes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- Confetti pour l'effet vainqueur -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <link rel="stylesheet" href="../assets/css/styles.css">
+    <link rel="stylesheet" href="../assets/css/resultat.css">
+</head>
+<body>
+    <div id="header"></div>
+    <main class="main-result">
+        <h1>🎉 Résultats des votes 🎉</h1>
+        <!-- Sélecteur du type d'élection -->
+        <section class="selection">
+            <label for="type-result">Type d'élection :</label>
+            <select id="type-result">
+                <option value="aes">AES</option>
+                <option value="club">Club</option>
+                <option value="classe">Classe</option>
+            </select>
+        </section>
+        <!-- Résultats dynamiques -->
+        <section id="resultats"></section>
+    </main>
+    <div id="footer"></div>
+
+    <!-- Inclusion dynamique du header/footer -->
+    <script src="../assets/js/include.js"></script>
+    <script>
+        includeComponent('#header', '../components/header.html');
+        includeComponent('#footer', '../components/footer.html');
+    </script>
+    <script src="../assets/js/resultat.js"></script>
+</body>
+</html>

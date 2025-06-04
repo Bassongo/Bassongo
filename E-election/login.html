@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Connexion - Vote ENSAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/login.css">
+</head>
+  <body class="login-bg">
+  
+  <div id="header"></div>
+
+  <div class="login-container">
+    <div class="login-box">
+      <h2>se connecter</h2>
+      <form id="loginForm" class="auth-form">
+        <label for="login-identifiant">e-Mail :</label>
+        <input type="text" id="login-identifiant" required>
+        <label for="login-password">Mot de passe :</label>
+        <input type="password" id="login-password" required>
+        <div class="login-actions">
+          <button type="submit" class="btn btn-primary">valider</button>
+          <a href="Home.html" class="btn btn-link">retour</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="assets/js/login.js"></script>
+  <div id="footer"></div>
+
+  <!-- Inclusion dynamique du header/footer -->
+  <script src="assets/js/include.js"></script>
+  <script>
+    includeComponent('#header', 'components/header_home.html');
+    includeComponent('#footer', 'components/footer_home.html');
+  </script>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Inscription - Vote ENSAE</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/inscription.css">
+</head>
+<body>
+
+  <div id="header"></div>
+
+  <div class="container">
+    <main class="page-content">
+      <div class="auth-container">
+        <h1>Créer un compte</h1>
+        
+        <form id="registrationForm" class="auth-form">
+          <div class="form-group">
+            <label for="reg-email">Adresse email</label>
+            <input type="email" id="reg-email" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-username">Nom d'utilisateur</label>
+            <input type="text" id="reg-username" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-password">Mot de passe</label>
+            <input type="password" id="reg-password" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-confirm-password">Confirmer le mot de passe</label>
+            <input type="password" id="reg-confirm-password" required>
+          </div>
+
+          <div class="form-group">
+            <label for="reg-classe">Classe</label>
+            <select id="reg-classe" required>
+              <option value="">-- Sélectionnez votre classe --</option>
+              <option value="AS1">AS1</option>
+              <option value="AS2">AS2</option>
+              <option value="AS3">AS3</option>
+            </select>
+          </div>
+
+          <div class="form-actions">
+            <button type="submit" class="btn btn-primary">S'inscrire</button>
+            <a href="login.html" class="btn btn-secondary">Déjà un compte ? Se connecter</a>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <div id="footer"></div>
+
+  <script src="assets/js/include.js"></script>
+  <script>
+    includeComponent('#header', './components/header_home.html');
+    includeComponent('#footer', './components/footer_home.html');
+  </script>
+
+  <script src="assets/js/inscription.js"></script>
+</body>
+</html>
