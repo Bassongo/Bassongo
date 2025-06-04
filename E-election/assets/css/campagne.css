@@ -53,3 +53,5 @@
     .candidats, .membres { flex-direction: column; align-items: center; }
     .candidat, .membre { min-width: 160px; max-width: 100%; }
 }
+
+

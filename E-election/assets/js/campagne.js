@@ -219,7 +219,6 @@ let pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
 // Affichage d'une photo en grand (modale)
 // ===============================
 function afficherPhotoGrand(url, nom, infos = "") {
-    // Crée la structure HTML de la modale
     const modal = document.createElement('div');
     modal.className = "modal-overlay";
     modal.innerHTML = `
@@ -230,10 +229,13 @@ function afficherPhotoGrand(url, nom, infos = "") {
             ${infos ? `<div>${infos}</div>` : ""}
         </div>
     `;
-    // Ajoute la modale au body
-    document.body.appendChild(modal);
-
-    // Ferme la modale au clic sur la croix ou l'overlay
+    // Ajoute la modale juste avant le footer dynamique
+    const footer = document.getElementById('footer');
+    if (footer) {
+        footer.parentNode.insertBefore(modal, footer);
+    } else {
+        document.body.appendChild(modal);
+    }
     modal.querySelector('.close-modal').onclick = () => modal.remove();
     modal.onclick = e => { if (e.target === modal) modal.remove(); };
 }
