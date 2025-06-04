@@ -252,7 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
       if (user) {
         // Connexion réussie, redirection
-        window.location.href = 'acceuil.html';
+        window.location.href = 'accueil.html';
       } else {
         alert('Identifiants invalides');
       }
