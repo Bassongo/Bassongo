@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (validateForm(userData)) {
             if (registerUser(userData)) {
-                window.location.href = 'hachaton_club_informatique_ENSAE/E-election/connexion.html';
+                window.location.href = 'login.html';
             }
         }
     });
