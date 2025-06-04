@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # 🗳️ E-Vote ENSAE | Application de Gestion Numérique des Élections
 
 Bienvenue dans le dépôt GitHub de notre projet réalisé dans le cadre du **Hackathon 2025** organisé par le **Club Informatique de l’ENSAE**.
@@ -64,3 +65,15 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 
 ## 📂 Structure du projet
 
+=======
+- 👋 Hi, I’m @Bassongo
+- 👀 I’m interested in ...
+- 🌱 I’m currently learning ...
+- 💞️ I’m looking to collaborate on ...
+- 📫 How to reach me ...
+
+<!---
+Bassongo/Bassongo is a ✨ special ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+You can click the Preview link to take a look at your changes.
+--->
+>>>>>>> 3c070bb936aa8ff55a82995db6e32b1341352307
