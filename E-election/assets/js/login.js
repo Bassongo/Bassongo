@@ -251,7 +251,8 @@ document.addEventListener('DOMContentLoaded', function() {
       const user = users.find(u => u.email === email && atob(u.password) === password);
 
       if (user) {
-        // Connexion réussie, redirection
+        // Connexion réussie, sauvegarde de l'utilisateur actif et redirection
+        localStorage.setItem('currentUser', JSON.stringify(user));
         window.location.href = 'accueil.html';
       } else {
         alert('Identifiants invalides');
