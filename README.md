@@ -1,3 +1,4 @@
+
 # 🗳️ E-Vote ENSAE | Application de Gestion Numérique des Élections
 
 Bienvenue dans le dépôt GitHub de notre projet réalisé dans le cadre du **Hackathon 2025** organisé par le **Club Informatique de l’ENSAE**.
@@ -63,4 +64,5 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 ---
 
 ## 📂 Structure du projet
+
 

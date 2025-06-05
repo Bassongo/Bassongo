@@ -1,0 +1,13 @@
+# Ignore Mac system files
+.DS_Store
+
+# Ignore Windows system files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Ignore compressed archives
+*.zip
+
+# Ignore Word documents
+*.docx

@@ -19,8 +19,8 @@ body {
 }
 
 .btn-nav {
-  background: #5a8ecb;
-  color: #fff;
+  background: var(--primary);
+  color: var(--white);
   border: none;
   padding: 8px 22px;
   border-radius: 6px;
@@ -32,9 +32,9 @@ body {
 }
 
 .btn-nav.active, .btn-nav:hover {
-  background: #fff;
-  color: #222;
-  border: 2px solid #5a8ecb;
+  background: var(--white);
+  color: var(--text);
+  border: 2px solid var(--primary);
 }
 
 .main-content {
@@ -60,11 +60,11 @@ body {
   display: block;
   width: 100%;
   background: transparent;
-  color: #b6e0f7;
+  color: var(--primary-light);
   border: none;
   font-weight: 700;
   margin-bottom: 18px;
-  border-bottom: 2px solid #fff;
+  border-bottom: 2px solid var(--white);
   padding: 12px 0 8px 0;
   font-size: 1.1em;
   text-align: left;
@@ -74,8 +74,8 @@ body {
 
 .sidebar-btn:hover,
 .sidebar-btn.active {
-  background: #5a8ecb;
-  color: #fff;
+  background: var(--primary);
+  color: var(--white);
 }
 
 .sidebar-btn.logout {
@@ -90,7 +90,7 @@ body {
 
 .sidebar-btn.logout:hover {
   background: #e53935;
-  color: #fff;
+  color: var(--white);
 }
 
 .content {
@@ -101,7 +101,7 @@ body {
 }
 
 .filter-bar {
-  color: #fff;
+  color: var(--white);
   margin-bottom: 10px;
   margin-top: 10px;
   font-size: 1.1em;
@@ -111,7 +111,7 @@ body {
 }
 
 .filter-link {
-  color: #5a8ecb;
+  color: var(--primary);
   font-weight: bold;
   margin-left: 8px;
   text-decoration: underline;
@@ -119,7 +119,7 @@ body {
 }
 
 .page-title {
-  color: #fff;
+  color: var(--white);
   font-size: 2.2em;
   font-weight: 700;
   text-align: center;
@@ -132,14 +132,14 @@ body {
   padding: 36px 40px;
   border-radius: 12px;
   box-shadow: 0 8px 32px rgba(0,0,0,0.25);
-  color: #fff;
+  color: var(--white);
   min-width: 340px;
   text-align: center;
   margin-top: 30px;
 }
 
 .admin-box h2 {
-  color: #2fa7e8;
+  color: var(--secondary);
   font-size: 1.5em;
   margin-bottom: 30px;
   font-weight: 700;
@@ -153,8 +153,8 @@ body {
 }
 
 .admin-btn {
-  background: #5a8ecb;
-  color: #fff;
+  background: var(--primary);
+  color: var(--white);
   border: none;
   padding: 10px 18px;
   border-radius: 6px;
@@ -165,7 +165,7 @@ body {
 }
 
 .admin-btn:hover {
-  background: #4172a5;
+  background: var(--secondary);
 }
 
 .admin-btn.danger {
@@ -177,7 +177,7 @@ body {
 }
 
 .welcome-message {
-  color: #fff;
+  color: var(--white);
   text-align: center;
   margin-top: 60px;
 }
@@ -199,4 +199,29 @@ body {
     min-width: unset;
     width: 90vw;
   }
+}
+#btn-gestion-elections,
+#btn-gestion-candidats,
+#btn-gestion-comites {
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: var(--white);
+  border: none;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 1.1em;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+#btn-gestion-elections:hover,
+#btn-gestion-candidats:hover,
+#btn-gestion-comites:hover,
+#btn-gestion-elections.active,
+#btn-gestion-candidats.active,
+#btn-gestion-comites.active {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
 }

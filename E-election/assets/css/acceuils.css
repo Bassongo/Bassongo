@@ -3,7 +3,7 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: url("../img/OIP.jpeg") no-repeat center center fixed;
     background-size: cover;
-    color: #ffffff;
+    color: var(--white);
     text-align: center;
     position: relative;
 }
@@ -34,7 +34,7 @@ body {
 .slogan2 {
     font-size: 1.3em;
     margin-top: 10px;
-    color: #dbefff;
+    color: var(--primary-light);
     text-shadow: 1px 1px 3px #000;
 }
 
@@ -53,12 +53,12 @@ body {
 }
 
 .modal-content {
-    background-color: #fff;
+    background-color: var(--white);
     padding: 30px;
     border-radius: 10px;
     width: 90%;
     max-width: 500px;
-    color: #003b6f;
+    color: var(--primary);
     position: relative;
 }
 
@@ -68,7 +68,7 @@ body {
     right: 15px;
     font-size: 24px;
     cursor: pointer;
-    color: #003b6f;
+    color: var(--primary);
 }
 
 .form-group {
@@ -87,7 +87,7 @@ body {
 .form-group textarea {
     width: 100%;
     padding: 10px;
-    border: 1px solid #ccc;
+    border: 1px solid var(--border);
     border-radius: 5px;
     box-sizing: border-box;
 }
@@ -107,13 +107,13 @@ body {
 }
 
 .primary-btn {
-    background-color: #003b6f;
+    background-color: var(--primary);
     color: white;
 }
 
 .secondary-btn {
-    background-color: #ccc;
-    color: #333;
+    background-color: var(--border);
+    color: var(--text);
 }
 
 #accueil {
@@ -163,8 +163,8 @@ body {
 }
 
 .election-filters button {
-    background-color: #dbefff;
-    color: #003b6f;
+    background-color: var(--primary-light);
+    color: var(--primary);
     border: none;
     padding: 10px 15px;
     border-radius: 8px;
@@ -205,7 +205,7 @@ body {
     padding: 20px;
     width: 300px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    color: #003b6f;
+    color: var(--primary);
     text-align: left;
     cursor: pointer;
     transition: transform 0.3s ease;
@@ -227,12 +227,12 @@ body {
     font-size: 1.2em;
     font-weight: bold;
     margin-bottom: 10px;
-    color: #003b6f;
+    color: var(--primary);
 }
 
 .candidature-type {
     display: inline-block;
-    background-color: #003b6f;
+    background-color: var(--primary);
     color: white;
     padding: 3px 8px;
     border-radius: 4px;
@@ -276,11 +276,11 @@ body {
 .detail-info h3 {
     margin: 0;
     font-size: 1.5em;
-    color: #003b6f;
+    color: var(--primary);
 }
 
 .detail-type {
-    background-color: #003b6f;
+    background-color: var(--primary);
     color: white;
     padding: 3px 8px;
     border-radius: 4px;
@@ -298,7 +298,7 @@ body {
 
 .detail-programme h4 {
     margin-top: 0;
-    color: #003b6f;
+    color: var(--primary);
 }
 
 @media (max-width: 768px) {
