@@ -6,6 +6,16 @@
     });
   });
 
+  const menuToggle = document.querySelector('.menu-toggle');
+  const navMenu = document.querySelector('.nav-menu');
+
+  if (menuToggle && navMenu) {
+    menuToggle.addEventListener('click', function () {
+      menuToggle.classList.toggle('active');
+      navMenu.classList.toggle('active');
+    });
+  }
+
   // Pour que le clic sur .dropdown-toggle ouvre/ferme le menu
   document.querySelectorAll('.dropdown-toggle').forEach(toggle => {
     toggle.addEventListener('click', function (e) {
