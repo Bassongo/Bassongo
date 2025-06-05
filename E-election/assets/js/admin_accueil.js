@@ -61,6 +61,12 @@ document.addEventListener('DOMContentLoaded', () => {
               <div class="admin-link">
                 <a href="#" id="deletePoste" style="color:#fff;text-decoration:underline;">supprimer un poste</a>
               </div>
+              <div class="admin-link" style="margin:18px 0;">
+                <a href="#" id="addClub" style="color:#fff;text-decoration:underline;">Ajouter un club</a>
+              </div>
+              <div class="admin-link">
+                <a href="#" id="deleteClub" style="color:#fff;text-decoration:underline;">supprimer un club</a>
+              </div>
               <div class="admin-link">
                 <a href="pages/vote.html" id="etatVotes" style="color:#fff;text-decoration:underline;">Etat des votes</a>
               </div>
@@ -85,7 +91,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('validateBtn').onclick = () => {
             alert('Modifications validées !');
           };
-          // Ajouter un poste PAR TYPE
+          // Ajouter un poste PAR TYPE OU CLUB
           const addPoste = document.getElementById('addPoste');
           if (addPoste) {
             addPoste.onclick = (e) => {
@@ -95,38 +101,115 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Type d\'élection invalide.');
                 return;
               }
+              let club = '';
+              if (type === 'club') {
+                const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
+                const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
+                const i = parseInt(idx,10);
+                if (!i || i < 1 || i > clubs.length) return;
+                club = clubs[i-1];
+              }
               const nom = prompt('Nom du nouveau poste :');
               if (nom) {
-                let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
-                postesByType[type] = postesByType[type] || [];
-                if (!postesByType[type].includes(nom)) {
-                  postesByType[type].push(nom);
-                  localStorage.setItem('postesByType', JSON.stringify(postesByType));
-                  alert('Poste ajouté pour ' + type + ' !');
+                if (type === 'club') {
+                  let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                  postesByClub[club] = postesByClub[club] || [];
+                  if (!postesByClub[club].includes(nom)) {
+                    postesByClub[club].push(nom);
+                    localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                    alert('Poste ajouté pour ' + club + ' !');
+                  } else {
+                    alert('Ce poste existe déjà pour ce club.');
+                  }
                 } else {
-                  alert('Ce poste existe déjà pour ce type.');
+                  let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+                  postesByType[type] = postesByType[type] || [];
+                  if (!postesByType[type].includes(nom)) {
+                    postesByType[type].push(nom);
+                    localStorage.setItem('postesByType', JSON.stringify(postesByType));
+                    alert('Poste ajouté pour ' + type + ' !');
+                  } else {
+                    alert('Ce poste existe déjà pour ce type.');
+                  }
                 }
               }
             };
           }
-          // Supprimer un poste PAR TYPE
+          // Supprimer un poste PAR TYPE OU CLUB
           const deletePoste = document.getElementById('deletePoste');
           if (deletePoste) {
             deletePoste.onclick = (e) => {
               e.preventDefault();
               const type = prompt('Type d\'élection (club, aes, classe) :').toLowerCase();
-              let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
-              if (!postesByType[type] || postesByType[type].length === 0) {
-                alert('Aucun poste à supprimer pour ce type.');
-                return;
+              if (!['club', 'aes', 'classe'].includes(type)) return;
+              if (type === 'club') {
+                const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
+                const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
+                const i = parseInt(idx,10);
+                if (!i || i < 1 || i > clubs.length) return;
+                const club = clubs[i-1];
+                let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                const arr = postesByClub[club] || [];
+                if (arr.length === 0) { alert('Aucun poste à supprimer pour ce club.'); return; }
+                const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
+                const j = parseInt(posIdx,10);
+                if (j >=1 && j <= arr.length) {
+                  arr.splice(j-1,1);
+                  postesByClub[club] = arr;
+                  localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                  alert('Poste supprimé pour ' + club + ' !');
+                }
+              } else {
+                let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+                const arr = postesByType[type] || [];
+                if (arr.length === 0) { alert('Aucun poste à supprimer pour ce type.'); return; }
+                const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
+                const j = parseInt(posIdx,10);
+                if (j >=1 && j <= arr.length) {
+                  arr.splice(j-1,1);
+                  postesByType[type] = arr;
+                  localStorage.setItem('postesByType', JSON.stringify(postesByType));
+                  alert('Poste supprimé pour ' + type + ' !');
+                }
               }
-              const nom = prompt('Nom du poste à supprimer :\n' + postesByType[type].join(', '));
-              if (nom && postesByType[type].includes(nom)) {
-                postesByType[type] = postesByType[type].filter(p => p !== nom);
-                localStorage.setItem('postesByType', JSON.stringify(postesByType));
-                alert('Poste supprimé pour ' + type + ' !');
-              } else if (nom) {
-                alert('Ce poste n\'existe pas pour ce type.');
+            };
+          }
+          // Ajouter un club
+          const addClub = document.getElementById('addClub');
+          if (addClub) {
+            addClub.onclick = (e) => {
+              e.preventDefault();
+              const nom = prompt('Nom du nouveau club :');
+              if (nom) {
+                let clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                if (!clubs.includes(nom)) {
+                  clubs.push(nom);
+                  localStorage.setItem('clubs', JSON.stringify(clubs));
+                  alert('Club ajouté !');
+                } else {
+                  alert('Ce club existe déjà.');
+                }
+              }
+            };
+          }
+          // Supprimer un club
+          const deleteClub = document.getElementById('deleteClub');
+          if (deleteClub) {
+            deleteClub.onclick = (e) => {
+              e.preventDefault();
+              let clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+              if (clubs.length === 0) { alert('Aucun club à supprimer.'); return; }
+              const idx = prompt('Quel club supprimer ?\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
+              const i = parseInt(idx,10);
+              if (i >=1 && i <= clubs.length) {
+                const club = clubs.splice(i-1,1)[0];
+                localStorage.setItem('clubs', JSON.stringify(clubs));
+                let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                delete postesByClub[club];
+                localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                alert('Club supprimé !');
               }
             };
           }
