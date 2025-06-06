@@ -24,24 +24,32 @@ document.addEventListener("DOMContentLoaded", function () {
   const retourDepuisMesCandidaturesBtn = document.getElementById("retourDepuisMesCandidaturesBtn");
 
   // Gestion de la navigation
-  accueilBtn.addEventListener("click", function() {
-    showPage("accueil");
-  });
+  if (accueilBtn) {
+    accueilBtn.addEventListener("click", function() {
+      showPage("accueil");
+    });
+  }
 
-  candidatBtn.addEventListener("click", function() {
-    showPage("candidat");
-  });
+  if (candidatBtn) {
+    candidatBtn.addEventListener("click", function() {
+      showPage("candidat");
+    });
+  }
 
   // Gestion du bouton "Mes candidatures" dans le formulaire
-  mesCandidaturesBtn.addEventListener("click", function() {
-    showPage("mesCandidatures");
-    displayCandidatures();
-  });
+  if (mesCandidaturesBtn) {
+    mesCandidaturesBtn.addEventListener("click", function() {
+      showPage("mesCandidatures");
+      displayCandidatures();
+    });
+  }
 
   // Bouton de retour depuis la page "Mes candidatures"
-  retourDepuisMesCandidaturesBtn.addEventListener("click", function() {
-    showPage("candidat");
-  });
+  if (retourDepuisMesCandidaturesBtn) {
+    retourDepuisMesCandidaturesBtn.addEventListener("click", function() {
+      showPage("candidat");
+    });
+  }
 
   // Fonction pour afficher une page spécifique
   function showPage(page) {
@@ -65,37 +73,49 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Gestion des boutons de filtrage
-  aesBtn.addEventListener("click", function() {
-    showCandidatureForm("AES");
-  });
+  if (aesBtn) {
+    aesBtn.addEventListener("click", function() {
+      showCandidatureForm("AES");
+    });
+  }
 
-  clubBtn.addEventListener("click", function() {
-    showCandidatureForm("CLUB");
-  });
+  if (clubBtn) {
+    clubBtn.addEventListener("click", function() {
+      showCandidatureForm("CLUB");
+    });
+  }
 
-  classeBtn.addEventListener("click", function() {
-    showCandidatureForm("CLASSE");
-  });
+  if (classeBtn) {
+    classeBtn.addEventListener("click", function() {
+      showCandidatureForm("CLASSE");
+    });
+  }
 
-  candidaterBtn.addEventListener("click", function() {
-    alert("Veuillez d'abord sélectionner un type d'élection (AES, CLUB ou CLASSE)");
-  });
+  if (candidaterBtn) {
+    candidaterBtn.addEventListener("click", function() {
+      alert("Veuillez d'abord sélectionner un type d'élection (AES, CLUB ou CLASSE)");
+    });
+  }
 
   // Boutons d'actions
-  validerCandidatureBtn.addEventListener("click", function() {
-    if (validateCandidatureForm()) {
-      saveCandidature();
-      alert("Candidature soumise avec succès!");
-      resetCandidatureForm();
-      // Rediriger vers "Mes candidatures" après soumission
-      showPage("mesCandidatures");
-      displayCandidatures();
-    }
-  });
+  if (validerCandidatureBtn) {
+    validerCandidatureBtn.addEventListener("click", function() {
+      if (validateCandidatureForm()) {
+        saveCandidature();
+        alert("Candidature soumise avec succès!");
+        resetCandidatureForm();
+        // Rediriger vers "Mes candidatures" après soumission
+        showPage("mesCandidatures");
+        displayCandidatures();
+      }
+    });
+  }
 
-  retourCandidatureBtn.addEventListener("click", function() {
-    resetCandidatureForm();
-  });
+  if (retourCandidatureBtn) {
+    retourCandidatureBtn.addEventListener("click", function() {
+      resetCandidatureForm();
+    });
+  }
 
   // Fonction pour afficher le formulaire de candidature
   function showCandidatureForm(type) {
@@ -195,9 +215,13 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   // Fermer le modal de détails
-  document.getElementById("closeDetailModal").addEventListener("click", function() {
-    document.getElementById("candidatureDetailModal").style.display = "none";
-  });
+  const closeDetailModal = document.getElementById("closeDetailModal");
+  if (closeDetailModal) {
+    closeDetailModal.addEventListener("click", function() {
+      const detailModal = document.getElementById("candidatureDetailModal");
+      if (detailModal) detailModal.style.display = "none";
+    });
+  }
 
   // Gestion du modal de connexion
   const loginBtn = document.getElementById("loginBtn");
@@ -205,24 +229,31 @@ document.addEventListener("DOMContentLoaded", function () {
   const closeLogin = document.getElementById("closeLogin");
   const cancelLogin = document.getElementById("cancelLogin");
 
-  loginBtn.addEventListener("click", function() {
-    loginModal.style.display = "flex";
-  });
+  if (loginBtn && loginModal) {
+    loginBtn.addEventListener("click", function() {
+      loginModal.style.display = "flex";
+    });
+  }
 
-  closeLogin.addEventListener("click", function() {
-    loginModal.style.display = "none";
-  });
+  if (closeLogin && loginModal) {
+    closeLogin.addEventListener("click", function() {
+      loginModal.style.display = "none";
+    });
+  }
 
-  cancelLogin.addEventListener("click", function() {
-    loginModal.style.display = "none";
-  });
+  if (cancelLogin && loginModal) {
+    cancelLogin.addEventListener("click", function() {
+      loginModal.style.display = "none";
+    });
+  }
 
   window.addEventListener("click", function(event) {
-    if (event.target === loginModal) {
+    if (loginModal && event.target === loginModal) {
       loginModal.style.display = "none";
     }
-    if (event.target === document.getElementById("candidatureDetailModal")) {
-      document.getElementById("candidatureDetailModal").style.display = "none";
+    const detailModal = document.getElementById("candidatureDetailModal");
+    if (detailModal && event.target === detailModal) {
+      detailModal.style.display = "none";
     }
   });
 
