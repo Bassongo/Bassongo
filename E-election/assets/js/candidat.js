@@ -49,9 +49,9 @@ function isCandidatureActive(categorie) {
 document.addEventListener('DOMContentLoaded', () => {
     const electionButtons = document.querySelectorAll('.election-btn');
     const info = document.getElementById('candidature-info');
-    const form = document.getElementById('form-candidat');
-    const clubGroup = document.getElementById('club-group');
-    const clubSelect = document.getElementById('club-select');
+    const form = document.getElementById('newCandidature');
+    const clubGroup = document.getElementById('clubGroup');
+    const clubSelect = document.getElementById('clubSelect');
 
     electionButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
