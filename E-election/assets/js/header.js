@@ -1,6 +1,11 @@
 
   document.querySelectorAll('.nav-link').forEach(link => {
-    link.addEventListener('click', function () {
+    link.addEventListener('click', function (e) {
+      if (this.classList.contains('disabled-link')) {
+        e.preventDefault();
+        alert("Cette page est désactivée pour le moment.");
+        return;
+      }
       document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
       this.classList.add('active');
     });
