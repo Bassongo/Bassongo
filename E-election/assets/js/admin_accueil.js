@@ -91,6 +91,56 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('validateBtn').onclick = () => {
             alert('Modifications validées !');
           };
+          const startVotesBtn = document.getElementById('startVotesBtn');
+          if (startVotesBtn) {
+            startVotesBtn.onclick = () => {
+              const modal = document.createElement('div');
+              modal.className = 'modal';
+              modal.innerHTML = `
+                <div class="modal-content">
+                  <span class="close-btn">&times;</span>
+                  <h3>Démarrer les votes</h3>
+                  <div class="form-group">
+                    <label for="voteType">Type d'élection</label>
+                    <select id="voteType">
+                      <option value="aes">AES</option>
+                      <option value="club">Club</option>
+                      <option value="classe">Classe</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="voteStart">Date et heure de début</label>
+                    <input type="datetime-local" id="voteStart">
+                  </div>
+                  <div class="form-group">
+                    <label for="voteEnd">Date et heure de fin</label>
+                    <input type="datetime-local" id="voteEnd">
+                  </div>
+                  <div class="form-actions">
+                    <button id="confirmStartVote" class="admin-btn">valider</button>
+                    <button id="cancelStartVote" class="admin-btn danger">Annuler</button>
+                  </div>
+                </div>`;
+              document.body.appendChild(modal);
+              modal.style.display = 'flex';
+              const closeModal = () => modal.remove();
+              modal.querySelector('.close-btn').onclick = closeModal;
+              modal.querySelector('#cancelStartVote').onclick = closeModal;
+              modal.onclick = e => { if (e.target === modal) closeModal(); };
+              modal.querySelector('#confirmStartVote').onclick = () => {
+                const type = modal.querySelector('#voteType').value;
+                const debut = modal.querySelector('#voteStart').value;
+                const fin = modal.querySelector('#voteEnd').value;
+                if (!type || !debut || !fin) {
+                  alert('Tous les champs sont requis');
+                  return;
+                }
+                localStorage.setItem('voteConfig', JSON.stringify({type, debut, fin}));
+                alert('Votes démarrés !');
+                closeModal();
+              };
+            };
+          }
           // Ajouter un poste PAR TYPE OU CLUB
           const addPoste = document.getElementById('addPoste');
           if (addPoste) {
