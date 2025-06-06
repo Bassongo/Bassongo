@@ -174,8 +174,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // Récupère les autres champs du formulaire (exemple)
-            const nom = form.querySelector('[name="nom"]')?.value || '';
-            const prenom = form.querySelector('[name="prenom"]')?.value || '';
+            const nom = document.getElementById('nom')?.value || '';
+            const prenom = document.getElementById('prenom')?.value || '';
             // Ajoute ici d'autres champs si besoin
 
             if (!nom || !prenom) {
@@ -199,7 +199,7 @@ document.addEventListener('DOMContentLoaded', () => {
             localStorage.setItem('candidatures', JSON.stringify(candidatures));
 
             // Redirection vers la page de mes candidatures
-            window.location.href = "mes_candidatures.html";
+            window.location.href = "mes-candidatures.html";
         };
     }
 
