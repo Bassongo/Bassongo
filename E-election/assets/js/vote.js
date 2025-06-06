@@ -51,9 +51,7 @@ function hasVoted(type, index) {
 function setVote(type, index, candidat) {
     localStorage.setItem(getVoteKey(type, index), JSON.stringify(candidat));
 }
-function setUserVoted(type) {
-    // Optionnel : pour marquer qu'un utilisateur a voté pour ce type
-}
+function setUserVoted(type) {}
 
 // ===============================
 // Vérifie si une session de vote est active pour une catégorie
@@ -118,22 +116,32 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // Affichage AES (par poste)
 // ===============================
 function afficherAES(index = pageAES) {
-    loadCandidates(); // Recharge les données à chaque affichage
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
-    if (!isVoteActive('aes')) {
-        // Affiche la période si existante
-        const state = getState();
-        const v = state.vote['aes'];
-        let periode = '';
-        if (v) {
-            const deb = new Date(v.start);
-            const end = new Date(v.end);
-            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-            if (Date.now() < v.start) {
-                contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
-                return;
-            }
+    const state = getState();
+    const v = state.vote['aes'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
+            return;
         }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            // Fermer la session côté localStorage
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['aes'] && votes['aes'].active) {
+                votes['aes'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('aes')) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
         return;
     }
@@ -198,7 +206,6 @@ function afficherAES(index = pageAES) {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('aes', index, poste.candidats[idx]);
                 setUserVoted('aes');
-                // Vérifie si tous les votes sont faits pour AES
                 if (hasVotedAll('aes')) {
                     localStorage.setItem('canSeeStats', 'aes');
                 }
@@ -221,19 +228,29 @@ function afficherAES(index = pageAES) {
 function afficherClub(index = pageClub) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
-    if (!isVoteActive('club')) {
-        const state = getState();
-        const v = state.vote['club'];
-        let periode = '';
-        if (v) {
-            const deb = new Date(v.start);
-            const end = new Date(v.end);
-            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-            if (Date.now() < v.start) {
-                contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
-                return;
-            }
+    const state = getState();
+    const v = state.vote['club'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
+            return;
         }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['club'] && votes['club'].active) {
+                votes['club'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('club')) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
         return;
     }
@@ -331,19 +348,29 @@ function afficherClub(index = pageClub) {
 function afficherClasse(index = pageClasse) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
-    if (!isVoteActive('classe')) {
-        const state = getState();
-        const v = state.vote['classe'];
-        let periode = '';
-        if (v) {
-            const deb = new Date(v.start);
-            const end = new Date(v.end);
-            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-            if (Date.now() < v.start) {
-                contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
-                return;
-            }
+    const state = getState();
+    const v = state.vote['classe'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
+            return;
         }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['classe'] && votes['classe'].active) {
+                votes['classe'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('classe')) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
         return;
     }
@@ -427,27 +454,11 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-// Gestion du selecteur de type d'élection
-document.getElementById('type-election').addEventListener('change', () => {
-    const select = document.getElementById('type-election');
-    const selection = select.value;
-    localStorage.setItem('lastVoteType', selection);
-    // Réinitialise la pagination
+document.getElementById('type-election').addEventListener('change', function () {
+    const selection = this.value;
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
-    if (!isVoteActive(selection)) {
-        document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
-        document.getElementById('contenu-vote').innerHTML = '';
-        return;
-    }
-    const state = getState();
-    const v = state.vote[selection];
-    if (v) {
-        const deb = new Date(v.start);
-        const end = new Date(v.end);
-        document.getElementById('vote-info').textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
-    }
     if (selection === 'aes') {
         afficherAES(pageAES);
     } else if (selection === 'club') {
@@ -457,39 +468,15 @@ document.getElementById('type-election').addEventListener('change', () => {
     }
 });
 
-function initVotePage() {
+// ===============================
+// Affichage initial à l'ouverture de la page
+// ===============================
+window.addEventListener('DOMContentLoaded', function() {
     loadCandidates();
     const select = document.getElementById('type-election');
-    const stored = localStorage.getItem('lastVoteType');
-    if (stored) {
-        select.value = stored;
-    } else {
-        select.value = 'aes';
-    }
+    select.value = 'aes';
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
-    const selection = select.value;
-    if (!isVoteActive(selection)) {
-        document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
-        document.getElementById('contenu-vote').innerHTML = '';
-        return;
-    }
-    const state = getState();
-    const v = state.vote[selection];
-    if (v) {
-        const deb = new Date(v.start);
-        const end = new Date(v.end);
-        document.getElementById('vote-info').textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
-    }
-    if (selection === 'aes') {
-        afficherAES(pageAES);
-    } else if (selection === 'club') {
-        afficherClub(pageClub);
-    } else if (selection === 'classe') {
-        afficherClasse(pageClasse);
-    }
-}
-
-document.addEventListener('DOMContentLoaded', initVotePage);
-document.addEventListener('stateChanged', initVotePage);
+    afficherAES(pageAES);
+});
