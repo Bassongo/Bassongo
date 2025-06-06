@@ -88,7 +88,7 @@ function hasVotedAll(type) {
 }
 
 // Récupère l'état des sessions
-function getState() {
+function getVoteState() {
     return {
         vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
     };
@@ -100,7 +100,7 @@ function getState() {
 function updateVoteInfo(type) {
     const info = document.getElementById('vote-info');
     if (!info) return;
-    const state = getState();
+    const state = getVoteState();
     const session = state.vote[type];
     if (!session || !session.active) {
         info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
@@ -147,7 +147,7 @@ function afficherAES(index = 0) {
     localStorage.setItem('votePageAES', pageAES);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('aes');
-    const state = getState();
+    const state = getVoteState();
     const v = state.vote['aes'];
     let periode = '';
     if (v) {
@@ -256,7 +256,7 @@ function afficherClub(index = 0) {
     localStorage.setItem('votePageClub', pageClub);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('club');
-    const state = getState();
+    const state = getVoteState();
     const v = state.vote['club'];
     let periode = '';
     if (v) {
@@ -376,7 +376,7 @@ function afficherClasse(index = 0) {
     localStorage.setItem('votePageClasse', pageClasse);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('classe');
-    const state = getState();
+    const state = getVoteState();
     const v = state.vote['classe'];
     let periode = '';
     if (v) {
