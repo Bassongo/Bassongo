@@ -94,6 +94,31 @@ function getState() {
 }
 
 // ===============================
+// Mise à jour de l'info de session
+// ===============================
+function updateVoteInfo(type) {
+    const info = document.getElementById('vote-info');
+    if (!info) return;
+    const state = getState();
+    const session = state.vote[type];
+    if (!session || !session.active) {
+        info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
+        return;
+    }
+    const start = new Date(session.start);
+    const end = new Date(session.end);
+    if (Date.now() < session.start) {
+        info.textContent = `La session de vote ${type.toUpperCase()} commencera le ${start.toLocaleString()}.`;
+        return;
+    }
+    if (Date.now() > session.end) {
+        info.textContent = `La session de vote ${type.toUpperCase()} est terminée.`;
+        return;
+    }
+    info.textContent = `Vote ${type.toUpperCase()} : du ${start.toLocaleString()} au ${end.toLocaleString()}`;
+}
+
+// ===============================
 // Affichage d'une photo en grand (modale)
 // ===============================
 function afficherPhotoGrand(url, nom, infos = "") {
@@ -118,6 +143,7 @@ function afficherPhotoGrand(url, nom, infos = "") {
 function afficherAES(index = pageAES) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('aes');
     const state = getState();
     const v = state.vote['aes'];
     let periode = '';
@@ -184,6 +210,8 @@ function afficherAES(index = pageAES) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
@@ -228,6 +256,7 @@ function afficherAES(index = pageAES) {
 function afficherClub(index = pageClub) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('club');
     const state = getState();
     const v = state.vote['club'];
     let periode = '';
@@ -296,6 +325,8 @@ function afficherClub(index = pageClub) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce club.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination clubs
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
@@ -348,6 +379,7 @@ function afficherClub(index = pageClub) {
 function afficherClasse(index = pageClasse) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('classe');
     const state = getState();
     const v = state.vote['classe'];
     let periode = '';
@@ -413,6 +445,8 @@ function afficherClasse(index = pageClasse) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
@@ -456,6 +490,7 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
     const selection = this.value;
+    updateVoteInfo(selection);
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
@@ -475,6 +510,7 @@ window.addEventListener('DOMContentLoaded', function() {
     loadCandidates();
     const select = document.getElementById('type-election');
     select.value = 'aes';
+    updateVoteInfo('aes');
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
