@@ -427,10 +427,12 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-document.getElementById('type-election').addEventListener('change', function () {
-    localStorage.setItem('lastVoteType', this.value);
-    const selection = this.value;
-    // Réinitialise la pagination à chaque changement de type
+// Gestion du selecteur de type d'élection
+document.getElementById('type-election').addEventListener('change', () => {
+    const select = document.getElementById('type-election');
+    const selection = select.value;
+    localStorage.setItem('lastVoteType', selection);
+    // Réinitialise la pagination
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
@@ -455,26 +457,21 @@ document.getElementById('type-election').addEventListener('change', function () 
     }
 });
 
-// ===============================
-// Affichage initial à l'ouverture de la page
-// ===============================
-window.addEventListener('DOMContentLoaded', function() {
+function initVotePage() {
     loadCandidates();
     const select = document.getElementById('type-election');
-    select.value = 'aes'; // Par défaut, AES
+    const stored = localStorage.getItem('lastVoteType');
+    if (stored) {
+        select.value = stored;
+    } else {
+        select.value = 'aes';
+    }
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
     const selection = select.value;
     if (!isVoteActive(selection)) {
         document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
-function initVotePage() {
-    const info = document.getElementById('vote-info');
-    const select = document.getElementById('type-election');
-    const stored = localStorage.getItem('lastVoteType');
-    if (stored) select.value = stored;
-    if (!isVoteActive()) {
-        if (info) info.textContent = 'Aucun vote en cours.';
         document.getElementById('contenu-vote').innerHTML = '';
         return;
     }
@@ -485,9 +482,13 @@ function initVotePage() {
         const end = new Date(v.end);
         document.getElementById('vote-info').textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
     }
-    afficherAES(pageAES);
-});
-    select.dispatchEvent(new Event('change'));
+    if (selection === 'aes') {
+        afficherAES(pageAES);
+    } else if (selection === 'club') {
+        afficherClub(pageClub);
+    } else if (selection === 'classe') {
+        afficherClasse(pageClasse);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', initVotePage);
