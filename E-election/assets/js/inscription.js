@@ -15,7 +15,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (validateForm(userData)) {
             if (registerUser(userData)) {
-                window.location.href = 'login.html';
+                showSuccess('Inscription réussie ! Redirection...');
+                setTimeout(() => {
+                    window.location.href = 'login.html';
+                }, 2000);
             }
         }
     });
@@ -66,10 +69,24 @@ document.addEventListener('DOMContentLoaded', () => {
         errorDiv.className = 'error-message';
         errorDiv.textContent = message;
         
-        const existingError = document.querySelector('.error-message');
+        const formActions = form.querySelector('.form-actions');
+        const existingError = form.querySelector('.error-message');
         if (existingError) existingError.remove();
         
-        form.prepend(errorDiv);
+        formActions.after(errorDiv);
         setTimeout(() => errorDiv.remove(), 5000);
+    }
+
+    function showSuccess(message) {
+        const successDiv = document.createElement('div');
+        successDiv.className = 'success-message';
+        successDiv.textContent = message;
+
+        const formActions = form.querySelector('.form-actions');
+        const existingSuccess = form.querySelector('.success-message');
+        if (existingSuccess) existingSuccess.remove();
+
+        formActions.after(successDiv);
+        setTimeout(() => successDiv.remove(), 5000);
     }
 });

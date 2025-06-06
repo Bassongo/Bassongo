@@ -2,213 +2,35 @@
 // Données des élections 
 // ===============================
 
+let donneesAES = [];
+let donneesClubs = [];
+let donneesClasse = [];
 
-// Données AES (exemple)
-const donneesAES = [
-    {
-        poste: "Président",
-        candidats: [
-            { nom: "Kaboré", prenom: "Ali", classe: "3ème ISE", nationalite: "Burkinabè", mots: "Unir pour construire", photo: "../assets/img/ali.jpg" },
-            { nom: "Sawadogo", prenom: "Fatou", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Innovation pour tous", photo: "../assets/img/fatou.jpg" },
-            { nom: "Diallo", prenom: "Mamadou", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Pour une AES forte", photo: "../assets/img/mamadou.jpg" }
-        ]
-    },
-    {
-        poste: "Vice-Président",
-        candidats: [
-            { nom: "Traoré", prenom: "Aminata", classe: "1ère ECO", nationalite: "Mali", mots: "Ensemble vers l'excellence", photo: "../assets/img/aminata.jpg" },
-            { nom: "Sow", prenom: "Ibrahima", classe: "3ème ISE", nationalite: "Sénégalais", mots: "Agir pour tous", photo: "../assets/img/ibrahima.jpg" }
-        ]
-    },
-    {
-        poste: "Secrétaire Général",
-        candidats: [
-            { nom: "Ouédraogo", prenom: "Moussa", classe: "1ère ISE", nationalite: "Burkinabè", mots: "Transparence et rigueur", photo: "../assets/img/moussa.jpg" }
-        ]
-    },
-    {
-        poste: "Trésorier",
-        candidats: [
-            { nom: "Zongo", prenom: "Rachid", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Gérer avec équité", photo: "../assets/img/rachid.jpg" },
-            { nom: "Barry", prenom: "Awa", classe: "2ème ISE", nationalite: "Guinéenne", mots: "Pour une gestion claire", photo: "../assets/img/awa.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Communication",
-        candidats: [
-            { nom: "Diop", prenom: "Seynabou", classe: "1ère ECO", nationalite: "Sénégalaise", mots: "Communiquer pour avancer", photo: "../assets/img/seynabou.jpg" },
-            { nom: "Kane", prenom: "Moussa", classe: "3ème ISE", nationalite: "Sénégalais", mots: "La voix de l'AES", photo: "../assets/img/kane.jpg" },
-            { nom: "Cissé", prenom: "Fatima", classe: "2ème ECO", nationalite: "Mali", mots: "Informer, rassembler", photo: "../assets/img/fatima.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Culturel",
-        candidats: [
-            { nom: "Ndiaye", prenom: "Cheikh", classe: "1ère ISE", nationalite: "Sénégalais", mots: "Culture pour tous", photo: "../assets/img/cheikh.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Sportif",
-        candidats: [
-            { nom: "Camara", prenom: "Moussa", classe: "2ème ECO", nationalite: "Guinéen", mots: "Le sport, notre force", photo: "../assets/img/moussa_camara.jpg" },
-            { nom: "Sagna", prenom: "Marie", classe: "1ère ECO", nationalite: "Sénégalaise", mots: "Bouger ensemble", photo: "../assets/img/marie.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Logistique",
-        candidats: [
-            { nom: "Fofana", prenom: "Abdoulaye", classe: "3ème ISE", nationalite: "Guinéen", mots: "L'organisation avant tout", photo: "../assets/img/abdoulaye.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Informatique",
-        candidats: [
-            { nom: "Sy", prenom: "Ousmane", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Numériser l'AES", photo: "../assets/img/ousmane.jpg" },
-            { nom: "Kouyaté", prenom: "Binta", classe: "1ère ECO", nationalite: "Guinéenne", mots: "Pour une AES connectée", photo: "../assets/img/binta.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Santé",
-        candidats: [
-            { nom: "Ba", prenom: "Aissatou", classe: "2ème ECO", nationalite: "Sénégalaise", mots: "La santé avant tout", photo: "../assets/img/aissatou.jpg" }
-        ]
-    }
-];
-
-// Données Clubs
-const donneesClubs = [
-    {
-        nomClub: "Leadership",
-        candidats: [
-            {
-                nom: "Kaboré",
-                prenom: "Fatoumata",
-                nationalite: "Burkinabè",
-                classe: "L2 Statistique",
-                photo: "../assets/img/fatoumata.jpg",
-                programme: "../assets/docs/programme_leadership.pdf",
-                membres: [
-                    { nom: "Ouédraogo", prenom: "Issa", nationalite: "Burkinabè", classe: "L1 Informatique", photo: "../assets/img/issa.jpg" },
-                    { nom: "Zongo", prenom: "Mariam", nationalite: "Burkinabè", classe: "L2 Économie", photo: "../assets/img/mariam.jpg" }
-                ]
-            },
-            {
-                nom: "Traoré",
-                prenom: "Aminata",
-                nationalite: "Mali",
-                classe: "L3 Statistique",
-                photo: "../assets/img/aminata.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Kone", prenom: "Salif", nationalite: "Mali", classe: "L2 Statistique", photo: "../assets/img/salif.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Presse",
-        candidats: [
-            {
-                nom: "Sanou",
-                prenom: "Yacouba",
-                nationalite: "Burkinabè",
-                classe: "L3 Journalisme",
-                photo: "../assets/img/yacouba.jpg",
-                programme: "../assets/docs/programme_presse.pdf",
-                membres: [
-                    { nom: "Compaoré", prenom: "Aïcha", nationalite: "Burkinabè", classe: "L2 Info", photo: "../assets/img/aicha.jpg" },
-                    { nom: "Kinda", prenom: "Roland", nationalite: "Burkinabè", classe: "L2 Journalisme", photo: "../assets/img/roland.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Anglais",
-        candidats: [
-            {
-                nom: "Ouedraogo",
-                prenom: "Judicaël",
-                nationalite: "Burkinabè",
-                classe: "L3 Lettres Modernes",
-                photo: "../assets/img/judicael.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Tapsoba", prenom: "Linda", nationalite: "Burkinabè", classe: "L1 Anglais", photo: "../assets/img/linda.jpg" }
-                ]
-            },
-            {
-                nom: "Smith",
-                prenom: "John",
-                nationalite: "Nigérian",
-                classe: "L2 Anglais",
-                photo: "../assets/img/john.jpg",
-                programme: "../assets/docs/programme_anglais.pdf",
-                membres: [
-                    { nom: "Koulibaly", prenom: "Mohamed", nationalite: "Malien", classe: "L2 Traduction", photo: "../assets/img/mohamed.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Informatique",
-        candidats: [
-            {
-                nom: "Zida",
-                prenom: "Nicolas",
-                nationalite: "Burkinabè",
-                classe: "L2 Informatique",
-                photo: "../assets/img/nicolas.jpg",
-                programme: "../assets/docs/programme_informatique.pdf",
-                membres: [
-                    { nom: "Nana", prenom: "Sophie", nationalite: "Burkinabè", classe: "L1 Info", photo: "../assets/img/sophie.jpg" },
-                    { nom: "Sawadogo", prenom: "Ali", nationalite: "Burkinabè", classe: "L2 Info", photo: "../assets/img/ali.jpg" },
-                    { nom: "Barry", prenom: "Salif", nationalite: "Guinéen", classe: "L3 Info", photo: "../assets/img/salif.jpg" }
-                ]
-            },
-            {
-                nom: "Diallo",
-                prenom: "Aminata",
-                nationalite: "Guinéenne",
-                classe: "L3 Informatique",
-                photo: "../assets/img/aminata.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Kone", prenom: "Fatou", nationalite: "Mali", classe: "L2 Info", photo: "../assets/img/fatou.jpg" }
-                ]
-            },
-            {
-                nom: "Sow",
-                prenom: "Ibrahima",
-                nationalite: "Sénégalais",
-                classe: "L2 Informatique",
-                photo: "../assets/img/ibrahima.jpg",
-                programme: "",
-                membres: []
-            }
-        ]
-    }
-];
-
-// Données Classe
-const donneesClasse = [
-    {
-        poste: "Responsable",
-        candidats: [
-            { nom: "Kaboré", prenom: "Ali", classe: "3ème ISE", nationalite: "Burkinabè", mots: "Unir pour construire", photo: "../assets/img/ali.jpg" },
-            { nom: "Sawadogo", prenom: "Fatou", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Innovation pour tous", photo: "../assets/img/fatou.jpg" },
-            { nom: "Diallo", prenom: "Mamadou", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Pour une AES forte", photo: "../assets/img/mamadou.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable adjoint",
-        candidats: [
-            { nom: "Traoré", prenom: "Aminata", classe: "1ère ECO", nationalite: "Mali", mots: "Ensemble vers l'excellence", photo: "../assets/img/aminata.jpg" },
-            { nom: "Sow", prenom: "Ibrahima", classe: "3ème ISE", nationalite: "Sénégalais", mots: "Agir pour tous", photo: "../assets/img/ibrahima.jpg" }
-        ]
-    }
-];
-
-
+// Groupement des candidats
+function groupByPoste(candidats) {
+    const map = {};
+    candidats.forEach(c => {
+        const p = c.poste || 'Autre';
+        if (!map[p]) map[p] = { poste: p, candidats: [] };
+        map[p].candidats.push(c);
+    });
+    return Object.values(map);
+}
+function groupByClub(candidats) {
+    const map = {};
+    candidats.forEach(c => {
+        const cl = c.club || 'Autre';
+        if (!map[cl]) map[cl] = { nomClub: cl, candidats: [] };
+        map[cl].candidats.push(c);
+    });
+    return Object.values(map);
+}
+function loadCandidates() {
+    const all = JSON.parse(localStorage.getItem('candidatures')) || [];
+    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
+    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
+    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+}
 
 // ===============================
 // Variables de pagination
@@ -220,7 +42,6 @@ let pageClasse = 0;
 // ===============================
 // Gestion du vote (localStorage)
 // ===============================
-// Structure : vote_aes_0 = "Ali" (clé = type_posteIndex, valeur = nom/prenom)
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
@@ -229,6 +50,72 @@ function hasVoted(type, index) {
 }
 function setVote(type, index, candidat) {
     localStorage.setItem(getVoteKey(type, index), JSON.stringify(candidat));
+}
+function setUserVoted(type) {}
+
+// ===============================
+// Vérifie si une session de vote est active pour une catégorie
+function isVoteActive(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[categorie]) return false;
+    const now = Date.now();
+    // Fermeture automatique si la date de fin est dépassée
+    if (votes[categorie].active && now > votes[categorie].end) {
+        votes[categorie].active = false;
+        localStorage.setItem('votesSessions', JSON.stringify(votes));
+        return false;
+    }
+    // N'est actif que si la date de début est atteinte
+    if (votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end) {
+        return true;
+    }
+    return false;
+}
+
+// Vérifie si l'utilisateur a voté pour tous les postes/clubs d'une catégorie
+function hasVotedAll(type) {
+    if (type === 'aes') {
+        return donneesAES.length > 0 && donneesAES.every((_, idx) => hasVoted('aes', idx));
+    }
+    if (type === 'classe') {
+        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => hasVoted('classe', idx));
+    }
+    if (type === 'club') {
+        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => hasVoted('club', idx));
+    }
+    return false;
+}
+
+// Récupère l'état des sessions
+function getState() {
+    return {
+        vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
+    };
+}
+
+// ===============================
+// Mise à jour de l'info de session
+// ===============================
+function updateVoteInfo(type) {
+    const info = document.getElementById('vote-info');
+    if (!info) return;
+    const state = getState();
+    const session = state.vote[type];
+    if (!session || !session.active) {
+        info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
+        return;
+    }
+    const start = new Date(session.start);
+    const end = new Date(session.end);
+    if (Date.now() < session.start) {
+        info.textContent = `La session de vote ${type.toUpperCase()} commencera le ${start.toLocaleString()}.`;
+        return;
+    }
+    if (Date.now() > session.end) {
+        info.textContent = `La session de vote ${type.toUpperCase()} est terminée.`;
+        return;
+    }
+    info.textContent = `Vote ${type.toUpperCase()} : du ${start.toLocaleString()} au ${end.toLocaleString()}`;
 }
 
 // ===============================
@@ -254,8 +141,41 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // Affichage AES (par poste)
 // ===============================
 function afficherAES(index = pageAES) {
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('aes');
+    const state = getState();
+    const v = state.vote['aes'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
+            return;
+        }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            // Fermer la session côté localStorage
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['aes'] && votes['aes'].active) {
+                votes['aes'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('aes')) {
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
+        return;
+    }
     const poste = donneesAES[index];
+    if (!poste) {
+        contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('aes', index);
     const dejaVote = hasVoted('aes', index);
 
@@ -290,13 +210,21 @@ function afficherAES(index = pageAES) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageAES = index - 1; afficherAES(pageAES); }
+        if (index > 0) {
+            pageAES = index - 1;
+            afficherAES(pageAES);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesAES.length - 1) { pageAES = index + 1; afficherAES(pageAES); }
+        if (index < donneesAES.length - 1) {
+            pageAES = index + 1;
+            afficherAES(pageAES);
+        }
     });
 
     // Vote
@@ -305,6 +233,10 @@ function afficherAES(index = pageAES) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('aes', index, poste.candidats[idx]);
+                setUserVoted('aes');
+                if (hasVotedAll('aes')) {
+                    localStorage.setItem('canSeeStats', 'aes');
+                }
                 afficherAES(index);
             });
         });
@@ -322,8 +254,40 @@ function afficherAES(index = pageAES) {
 // Affichage Clubs (par club)
 // ===============================
 function afficherClub(index = pageClub) {
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('club');
+    const state = getState();
+    const v = state.vote['club'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
+            return;
+        }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['club'] && votes['club'].active) {
+                votes['club'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('club')) {
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
+        return;
+    }
     const club = donneesClubs[index];
+    if (!club) {
+        contenu.innerHTML = `<div class="alert">Aucun club disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('club', index);
     const dejaVote = hasVoted('club', index);
 
@@ -361,13 +325,21 @@ function afficherClub(index = pageClub) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce club.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination clubs
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageClub = index - 1; afficherClub(pageClub); }
+        if (index > 0) {
+            pageClub = index - 1;
+            afficherClub(pageClub);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClubs.length - 1) { pageClub = index + 1; afficherClub(pageClub); }
+        if (index < donneesClubs.length - 1) {
+            pageClub = index + 1;
+            afficherClub(pageClub);
+        }
     });
 
     // Vote
@@ -376,6 +348,10 @@ function afficherClub(index = pageClub) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('club', index, club.candidats[idx]);
+                setUserVoted('club');
+                if (hasVotedAll('club')) {
+                    localStorage.setItem('canSeeStats', 'club');
+                }
                 afficherClub(index);
             });
         });
@@ -398,49 +374,43 @@ function afficherClub(index = pageClub) {
 }
 
 // ===============================
-// Affichage des membres d'un club
-// ===============================
-function afficherMembresClub(indexClub, indexCandidat) {
-    const club = donneesClubs[indexClub];
-    const candidat = club.candidats[indexCandidat];
-    const contenu = document.getElementById('contenu-vote');
-
-    const membresHTML = (candidat.membres || []).map(m => `
-        <div class="membre">
-            <img src="${m.photo}" alt="${m.prenom} ${m.nom}" class="photo-candidat"
-                data-nom="${m.prenom} ${m.nom}"
-                data-infos="<strong>Classe :</strong> ${m.classe}<br><strong>Nationalité :</strong> ${m.nationalite}">
-            <h4>${m.prenom} ${m.nom}</h4>
-            <p><strong>Classe :</strong> ${m.classe}</p>
-            <p><strong>Nationalité :</strong> ${m.nationalite}</p>
-        </div>
-    `).join('');
-
-    contenu.innerHTML = `
-        <h2>Club : ${club.nomClub}</h2>
-        <h3>Candidat : ${candidat.prenom} ${candidat.nom}</h3>
-        <h4>Membres de l’équipe</h4>
-        <div class="membres">${membresHTML}</div>
-        <button class="btn btn-retour">Retour</button>
-    `;
-
-    contenu.querySelector('.btn-retour')?.addEventListener('click', () => {
-        afficherClub(indexClub);
-    });
-
-    contenu.querySelectorAll('.photo-candidat').forEach(img => {
-        img.addEventListener('click', function() {
-            afficherPhotoGrand(this.src, this.dataset.nom, this.dataset.infos);
-        });
-    });
-}
-
-// ===============================
 // Affichage Classe (par poste)
 // ===============================
 function afficherClasse(index = pageClasse) {
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    updateVoteInfo('classe');
+    const state = getState();
+    const v = state.vote['classe'];
+    let periode = '';
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+        if (Date.now() < v.start) {
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
+            return;
+        }
+        // Si la date de fin est atteinte, fermer la session et afficher un message
+        if (Date.now() > v.end) {
+            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+            if (votes['classe'] && votes['classe'].active) {
+                votes['classe'].active = false;
+                localStorage.setItem('votesSessions', JSON.stringify(votes));
+            }
+            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe est terminée.</div>`;
+            return;
+        }
+    }
+    if (!isVoteActive('classe')) {
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
+        return;
+    }
     const poste = donneesClasse[index];
+    if (!poste) {
+        contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('classe', index);
     const dejaVote = hasVoted('classe', index);
 
@@ -475,13 +445,21 @@ function afficherClasse(index = pageClasse) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageClasse = index - 1; afficherClasse(pageClasse); }
+        if (index > 0) {
+            pageClasse = index - 1;
+            afficherClasse(pageClasse);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClasse.length - 1) { pageClasse = index + 1; afficherClasse(pageClasse); }
+        if (index < donneesClasse.length - 1) {
+            pageClasse = index + 1;
+            afficherClasse(pageClasse);
+        }
     });
 
     // Vote
@@ -490,6 +468,10 @@ function afficherClasse(index = pageClasse) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('classe', index, poste.candidats[idx]);
+                setUserVoted('classe');
+                if (hasVotedAll('classe')) {
+                    localStorage.setItem('canSeeStats', 'classe');
+                }
                 afficherClasse(index);
             });
         });
@@ -508,20 +490,16 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
     const selection = this.value;
+    updateVoteInfo(selection);
+    pageAES = 0;
+    pageClub = 0;
+    pageClasse = 0;
     if (selection === 'aes') {
-        pageAES = 0;
         afficherAES(pageAES);
     } else if (selection === 'club') {
-        pageClub = 0;
         afficherClub(pageClub);
     } else if (selection === 'classe') {
-        pageClasse = 0;
         afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-vote').innerHTML = `
-            <h2>Élections ${selection.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${selection} seront bientôt disponibles.</p>
-        `;
     }
 });
 
@@ -529,17 +507,12 @@ document.getElementById('type-election').addEventListener('change', function () 
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
+    loadCandidates();
     const select = document.getElementById('type-election');
-    if (select.value === 'aes') {
-        afficherAES(pageAES);
-    } else if (select.value === 'club') {
-        afficherClub(pageClub);
-    } else if (select.value === 'classe') {
-        afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-vote').innerHTML = `
-            <h2>Élections ${select.value.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${select.value} seront bientôt disponibles.</p>
-        `;
-    }
+    select.value = 'aes';
+    updateVoteInfo('aes');
+    pageAES = 0;
+    pageClub = 0;
+    pageClasse = 0;
+    afficherAES(pageAES);
 });

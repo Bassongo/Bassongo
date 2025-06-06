@@ -1,224 +1,41 @@
+let donneesAES = [];
+let donneesClubs = [];
+let donneesClasse = [];
+
 // ===============================
-// Données des élections 
+// Chargement des données
 // ===============================
-
-
-// Données AES (exemple)
-const donneesAES = [
-    {
-        poste: "Président",
-        candidats: [
-            { nom: "Kaboré", prenom: "Ali", classe: "3ème ISE", nationalite: "Burkinabè", mots: "Unir pour construire", photo: "../assets/img/ali.jpg" },
-            { nom: "Sawadogo", prenom: "Fatou", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Innovation pour tous", photo: "../assets/img/fatou.jpg" },
-            { nom: "Diallo", prenom: "Mamadou", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Pour une AES forte", photo: "../assets/img/mamadou.jpg" }
-        ]
-    },
-    {
-        poste: "Vice-Président",
-        candidats: [
-            { nom: "Traoré", prenom: "Aminata", classe: "1ère ECO", nationalite: "Mali", mots: "Ensemble vers l'excellence", photo: "../assets/img/aminata.jpg" },
-            { nom: "Sow", prenom: "Ibrahima", classe: "3ème ISE", nationalite: "Sénégalais", mots: "Agir pour tous", photo: "../assets/img/ibrahima.jpg" }
-        ]
-    },
-    {
-        poste: "Secrétaire Général",
-        candidats: [
-            { nom: "Ouédraogo", prenom: "Moussa", classe: "1ère ISE", nationalite: "Burkinabè", mots: "Transparence et rigueur", photo: "../assets/img/moussa.jpg" }
-        ]
-    },
-    {
-        poste: "Trésorier",
-        candidats: [
-            { nom: "Zongo", prenom: "Rachid", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Gérer avec équité", photo: "../assets/img/rachid.jpg" },
-            { nom: "Barry", prenom: "Awa", classe: "2ème ISE", nationalite: "Guinéenne", mots: "Pour une gestion claire", photo: "../assets/img/awa.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Communication",
-        candidats: [
-            { nom: "Diop", prenom: "Seynabou", classe: "1ère ECO", nationalite: "Sénégalaise", mots: "Communiquer pour avancer", photo: "../assets/img/seynabou.jpg" },
-            { nom: "Kane", prenom: "Moussa", classe: "3ème ISE", nationalite: "Sénégalais", mots: "La voix de l'AES", photo: "../assets/img/kane.jpg" },
-            { nom: "Cissé", prenom: "Fatima", classe: "2ème ECO", nationalite: "Mali", mots: "Informer, rassembler", photo: "../assets/img/fatima.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Culturel",
-        candidats: [
-            { nom: "Ndiaye", prenom: "Cheikh", classe: "1ère ISE", nationalite: "Sénégalais", mots: "Culture pour tous", photo: "../assets/img/cheikh.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Sportif",
-        candidats: [
-            { nom: "Camara", prenom: "Moussa", classe: "2ème ECO", nationalite: "Guinéen", mots: "Le sport, notre force", photo: "../assets/img/moussa_camara.jpg" },
-            { nom: "Sagna", prenom: "Marie", classe: "1ère ECO", nationalite: "Sénégalaise", mots: "Bouger ensemble", photo: "../assets/img/marie.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Logistique",
-        candidats: [
-            { nom: "Fofana", prenom: "Abdoulaye", classe: "3ème ISE", nationalite: "Guinéen", mots: "L'organisation avant tout", photo: "../assets/img/abdoulaye.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Informatique",
-        candidats: [
-            { nom: "Sy", prenom: "Ousmane", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Numériser l'AES", photo: "../assets/img/ousmane.jpg" },
-            { nom: "Kouyaté", prenom: "Binta", classe: "1ère ECO", nationalite: "Guinéenne", mots: "Pour une AES connectée", photo: "../assets/img/binta.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable Santé",
-        candidats: [
-            { nom: "Ba", prenom: "Aissatou", classe: "2ème ECO", nationalite: "Sénégalaise", mots: "La santé avant tout", photo: "../assets/img/aissatou.jpg" }
-        ]
-    }
-];
-
-// Données Clubs
-const donneesClubs = [
-    {
-        nomClub: "Leadership",
-        candidats: [
-            {
-                nom: "Kaboré",
-                prenom: "Fatoumata",
-                nationalite: "Burkinabè",
-                classe: "L2 Statistique",
-                photo: "../assets/img/fatoumata.jpg",
-                programme: "../assets/docs/programme_leadership.pdf",
-                membres: [
-                    { nom: "Ouédraogo", prenom: "Issa", nationalite: "Burkinabè", classe: "L1 Informatique", photo: "../assets/img/issa.jpg" },
-                    { nom: "Zongo", prenom: "Mariam", nationalite: "Burkinabè", classe: "L2 Économie", photo: "../assets/img/mariam.jpg" }
-                ]
-            },
-            {
-                nom: "Traoré",
-                prenom: "Aminata",
-                nationalite: "Mali",
-                classe: "L3 Statistique",
-                photo: "../assets/img/aminata.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Kone", prenom: "Salif", nationalite: "Mali", classe: "L2 Statistique", photo: "../assets/img/salif.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Presse",
-        candidats: [
-            {
-                nom: "Sanou",
-                prenom: "Yacouba",
-                nationalite: "Burkinabè",
-                classe: "L3 Journalisme",
-                photo: "../assets/img/yacouba.jpg",
-                programme: "../assets/docs/programme_presse.pdf",
-                membres: [
-                    { nom: "Compaoré", prenom: "Aïcha", nationalite: "Burkinabè", classe: "L2 Info", photo: "../assets/img/aicha.jpg" },
-                    { nom: "Kinda", prenom: "Roland", nationalite: "Burkinabè", classe: "L2 Journalisme", photo: "../assets/img/roland.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Anglais",
-        candidats: [
-            {
-                nom: "Ouedraogo",
-                prenom: "Judicaël",
-                nationalite: "Burkinabè",
-                classe: "L3 Lettres Modernes",
-                photo: "../assets/img/judicael.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Tapsoba", prenom: "Linda", nationalite: "Burkinabè", classe: "L1 Anglais", photo: "../assets/img/linda.jpg" }
-                ]
-            },
-            {
-                nom: "Smith",
-                prenom: "John",
-                nationalite: "Nigérian",
-                classe: "L2 Anglais",
-                photo: "../assets/img/john.jpg",
-                programme: "../assets/docs/programme_anglais.pdf",
-                membres: [
-                    { nom: "Koulibaly", prenom: "Mohamed", nationalite: "Malien", classe: "L2 Traduction", photo: "../assets/img/mohamed.jpg" }
-                ]
-            }
-        ]
-    },
-    {
-        nomClub: "Informatique",
-        candidats: [
-            {
-                nom: "Zida",
-                prenom: "Nicolas",
-                nationalite: "Burkinabè",
-                classe: "L2 Informatique",
-                photo: "../assets/img/nicolas.jpg",
-                programme: "../assets/docs/programme_informatique.pdf",
-                membres: [
-                    { nom: "Nana", prenom: "Sophie", nationalite: "Burkinabè", classe: "L1 Info", photo: "../assets/img/sophie.jpg" },
-                    { nom: "Sawadogo", prenom: "Ali", nationalite: "Burkinabè", classe: "L2 Info", photo: "../assets/img/ali.jpg" },
-                    { nom: "Barry", prenom: "Salif", nationalite: "Guinéen", classe: "L3 Info", photo: "../assets/img/salif.jpg" }
-                ]
-            },
-            {
-                nom: "Diallo",
-                prenom: "Aminata",
-                nationalite: "Guinéenne",
-                classe: "L3 Informatique",
-                photo: "../assets/img/aminata.jpg",
-                programme: "",
-                membres: [
-                    { nom: "Kone", prenom: "Fatou", nationalite: "Mali", classe: "L2 Info", photo: "../assets/img/fatou.jpg" }
-                ]
-            },
-            {
-                nom: "Sow",
-                prenom: "Ibrahima",
-                nationalite: "Sénégalais",
-                classe: "L2 Informatique",
-                photo: "../assets/img/ibrahima.jpg",
-                programme: "",
-                membres: []
-            }
-        ]
-    }
-];
-
-// Données Classe
-const donneesClasse = [
-    {
-        poste: "Responsable",
-        candidats: [
-            { nom: "Kaboré", prenom: "Ali", classe: "3ème ISE", nationalite: "Burkinabè", mots: "Unir pour construire", photo: "../assets/img/ali.jpg" },
-            { nom: "Sawadogo", prenom: "Fatou", classe: "2ème ECO", nationalite: "Burkinabè", mots: "Innovation pour tous", photo: "../assets/img/fatou.jpg" },
-            { nom: "Diallo", prenom: "Mamadou", classe: "2ème ISE", nationalite: "Sénégalais", mots: "Pour une AES forte", photo: "../assets/img/mamadou.jpg" }
-        ]
-    },
-    {
-        poste: "Responsable adjoint",
-        candidats: [
-            { nom: "Traoré", prenom: "Aminata", classe: "1ère ECO", nationalite: "Mali", mots: "Ensemble vers l'excellence", photo: "../assets/img/aminata.jpg" },
-            { nom: "Sow", prenom: "Ibrahima", classe: "3ème ISE", nationalite: "Sénégalais", mots: "Agir pour tous", photo: "../assets/img/ibrahima.jpg" }
-        ]
-    }
-];
-
+function groupByPoste(candidats) {
+    const map = {};
+    candidats.forEach(c => {
+        const p = c.poste || 'Autre';
+        if (!map[p]) map[p] = { poste: p, candidats: [] };
+        map[p].candidats.push(c);
+    });
+    return Object.values(map);
+}
+function groupByClub(candidats) {
+    const map = {};
+    candidats.forEach(c => {
+        const cl = c.club || 'Autre';
+        if (!map[cl]) map[cl] = { nomClub: cl, candidats: [] };
+        map[cl].candidats.push(c);
+    });
+    return Object.values(map);
+}
+function loadCandidates() {
+    const all = JSON.parse(localStorage.getItem('candidatures')) || [];
+    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
+    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
+    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+}
 
 // ===============================
 // Fonctions utilitaires pour les votes
 // ===============================
-
-// Génère la clé de vote pour chaque type et index
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
-
-// Récupère tous les votes pour un type d'élection
 function getVotes(type, data) {
     let votes = [];
     for (let i = 0; i < data.length; i++) {
@@ -227,13 +44,11 @@ function getVotes(type, data) {
     }
     return votes;
 }
-
-// Compte les votes pour chaque candidat d'un poste/club/classe
 function countVotes(type, data) {
     let result = [];
     for (let i = 0; i < data.length; i++) {
         const poste = data[i];
-        let candidats = poste.candidats || poste.candidats; // pour AES/Classe ou Club
+        let candidats = poste.candidats;
         let counts = candidats.map(c => ({ ...c, votes: 0 }));
         const vote = localStorage.getItem(getVoteKey(type, i));
         if (vote) {
@@ -245,10 +60,30 @@ function countVotes(type, data) {
     }
     return result;
 }
-
-// Nombre total de votes exprimés pour ce type
 function totalVotes(type, data) {
     return getVotes(type, data).length;
+}
+
+// ===============================
+// Vérifie si une session de vote est active et commencée pour une catégorie
+// ===============================
+function isVoteActive(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[categorie]) return false;
+    const now = Date.now();
+    return votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end;
+}
+function hasVotedAll(type) {
+    if (type === 'aes') {
+        return donneesAES.length > 0 && donneesAES.every((_, idx) => !!localStorage.getItem(getVoteKey('aes', idx)));
+    }
+    if (type === 'classe') {
+        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => !!localStorage.getItem(getVoteKey('classe', idx)));
+    }
+    if (type === 'club') {
+        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => !!localStorage.getItem(getVoteKey('club', idx)));
+    }
+    return false;
 }
 
 // ===============================
@@ -258,7 +93,6 @@ function afficherStatsGlobal(type, data) {
     const stats = countVotes(type, data);
     const nbPostes = data.length;
     const nbVotes = totalVotes(type, data);
-    // Pourcentage de participation (sur nbPostes)
     const taux = nbPostes === 0 ? 0 : Math.round((nbVotes / nbPostes) * 100);
 
     document.getElementById('stats-global').innerHTML = `
@@ -278,13 +112,11 @@ function afficherStatsGlobal(type, data) {
 }
 
 // ===============================
-// Affichage du graphique principal (barres ou camembert)
+// Affichage du graphique principal (barres)
 // ===============================
 let statsChart = null;
 function afficherStatsGraph(type, data) {
     const stats = countVotes(type, data);
-
-    // Pour le graphique, on prend le poste/club/classe le plus voté (ou le premier)
     const poste = stats.find(p => p.candidats.some(c => c.votes > 0)) || stats[0];
     if (!poste) {
         document.getElementById('stats-graph').style.display = "none";
@@ -295,10 +127,8 @@ function afficherStatsGraph(type, data) {
     const labels = poste.candidats.map(c => `${c.prenom} ${c.nom}`);
     const votes = poste.candidats.map(c => c.votes);
 
-    // Détruit l'ancien graphique si besoin
     if (statsChart) statsChart.destroy();
 
-    // Crée un graphique à barres
     const ctx = document.getElementById('statsChart').getContext('2d');
     statsChart = new Chart(ctx, {
         type: 'bar',
@@ -350,27 +180,42 @@ function afficherStatsDetail(type, data) {
 }
 
 // ===============================
-// Gestion du selecteur de type d'élection
+// Gestion du selecteur de type d'élection et affichage principal
 // ===============================
 function afficherStats(type) {
+    loadCandidates();
     let data;
     if (type === 'aes') data = donneesAES;
     else if (type === 'club') data = donneesClubs;
     else if (type === 'classe') data = donneesClasse;
     else return;
 
+    // Gestion des cas d'accès
+    if (!isVoteActive(type)) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:red;">Pas de vote démarré pour cette catégorie, donc pas de statistiques.</p>`;
+        document.getElementById('stats-graph').style.display = "none";
+        document.getElementById('stats-detail').innerHTML = "";
+        return;
+    }
+    if (!hasVotedAll(type)) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:orange;">Vote non fini pour cette catégorie.<br>Finissez tous les votes pour voir les statistiques.</p>`;
+        document.getElementById('stats-graph').style.display = "none";
+        document.getElementById('stats-detail').innerHTML = "";
+        return;
+    }
+
     afficherStatsGlobal(type, data);
     afficherStatsGraph(type, data);
     afficherStatsDetail(type, data);
 }
 
-document.getElementById('type-stats').addEventListener('change', function () {
-    afficherStats(this.value);
-});
-
-// ===============================
-// Affichage initial à l'ouverture de la page
-// ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    afficherStats(document.getElementById('type-stats').value);
+    loadCandidates();
+    const select = document.getElementById('type-stats');
+    if (!select) return;
+    select.value = 'aes';
+    afficherStats('aes');
+    select.addEventListener('change', function() {
+        afficherStats(this.value);
+    });
 });

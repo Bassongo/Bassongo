@@ -12,6 +12,17 @@
     flex-direction: column;
     align-items: center;
 }
+
+#vote-info {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--primary);
+}
 #contenu-vote {
     background-color: var(--white);
     padding: 2rem 1.2rem;
@@ -117,4 +128,13 @@
 @media (max-width: 600px) {
     .main-vote { margin: 10px 0 0 0; border-radius: 0; }
     #contenu-vote { padding: 1rem 0.2rem; }
+}
+
+.fade-in {
+    animation: fadeInVote 0.4s ease;
+}
+
+@keyframes fadeInVote {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }

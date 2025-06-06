@@ -15,12 +15,20 @@
       </div>
     </div>
 
+    <!-- Menu Toggle for Mobile -->
+    <button class="menu-toggle" aria-label="Ouvrir le menu">
+      <span></span>
+      <span></span>
+      <span></span>
+    </button>
+
     <!-- Navigation -->
     <nav class="main-nav">
       <ul class="nav-menu">
-        <li><a href="../pages/admin_accueil.html" class="nav-link"><span>Admin</span></a></li>
+        <li><a href="../admin_accueil.html" class="nav-link"><span>Admin</span></a></li>
         
-        <li><a href="../pages/Acceuil.html" class="nav-link"><span>Accueil</span></a></li>
+        <li><a href="../accueil.html" class="nav-link"><span>Accueil</span></a></li>
+        
         <li><a href="../pages/campagnes.html" class="nav-link"><span>Voir Campagne</span></a></li>
 
         <li class="dropdown">
@@ -52,18 +60,5 @@
     </nav>
   </div>
 
-  <!-- Barre latérale profil (hidden par défaut) -->
-  <div class="side-panel-bg" id="sidePanelBg"></div>
-  <div class="side-panel" id="sidePanel">
-    <button class="close-panel" id="closePanelBtn">&times;</button>
-    <img src="../assets/img/ali.jpg" alt="Photo de profil" class="profile-photo" id="profilePhoto">
-    <div class="profile-info">
-      <h3 id="profileUsername">Utilisateur</h3>
-      <p id="profileStatut">Statut</p>
-      <p id="profileNomPrenom">Nom Prénom</p>
-      <p id="profileClasse">Classe</p>
-    </div>
-    <button class="logout-btn" id="logoutBtn">Déconnexion</button>
-  </div>
-  
-</header>
+<script src="../assets/js/state.js"></script>
+<script src="../assets/js/header.js"></script>
