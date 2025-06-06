@@ -14,6 +14,8 @@ function loadState() {
 
 function saveState(state) {
   localStorage.setItem('electionState', JSON.stringify(state));
+  // Notifie les autres scripts qu'un changement a été effectué
+  document.dispatchEvent(new Event('stateChanged'));
 }
 
 function getState() {
