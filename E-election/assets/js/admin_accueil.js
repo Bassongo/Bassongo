@@ -91,6 +91,35 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('validateBtn').onclick = () => {
             alert('Modifications validées !');
           };
+          const startVotesBtn = document.getElementById('startVotesBtn');
+          if (startVotesBtn) {
+            startVotesBtn.onclick = () => {
+
+              const cat = prompt('Catégorie pour démarrer les votes (aes, club ou classe) ?');
+              const categorie = cat ? cat.toLowerCase() : '';
+              if (!['aes','club','classe'].includes(categorie)) { alert('Catégorie invalide'); return; }
+              const candidats = JSON.parse(localStorage.getItem('candidatures')) || [];
+              const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie);
+              if (!existe) { alert('Pas possible car pas de candidats'); return; }
+              const voteStatut = JSON.parse(localStorage.getItem('voteStatus')) || {};
+              voteStatut[categorie] = true;
+              localStorage.setItem('voteStatus', JSON.stringify(voteStatut));
+              alert('Votes démarrés pour ' + categorie.toUpperCase());
+            };
+          }
+          const stopVotesBtn = document.getElementById('stopVotesBtn');
+          if (stopVotesBtn) {
+            stopVotesBtn.onclick = () => {
+              const cat = prompt('Catégorie à arrêter (aes, club ou classe) ?');
+              const categorie = cat ? cat.toLowerCase() : '';
+              if (!['aes','club','classe'].includes(categorie)) return alert('Catégorie invalide');
+              const voteStatut = JSON.parse(localStorage.getItem('voteStatus')) || {};
+              voteStatut[categorie] = false;
+              localStorage.setItem('voteStatus', JSON.stringify(voteStatut));
+              alert('Votes arrêtés pour ' + categorie.toUpperCase());
+
+            };
+          }
           // Ajouter un poste PAR TYPE OU CLUB
           const addPoste = document.getElementById('addPoste');
           if (addPoste) {
@@ -248,6 +277,7 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
         setTimeout(() => {
+
           document.getElementById('startBtn').onclick = () => {
             const cat = prompt("Catégorie (aes, club, classe) :").toLowerCase();
             if (!['aes','club','classe'].includes(cat)) return;
