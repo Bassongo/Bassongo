@@ -119,6 +119,11 @@ header {
   color: var(--white);
 }
 
+.nav-link.disabled-link {
+  opacity: 0.5;
+  pointer-events: none;
+}
+
 /* Dropdown (sous-onglets) */
 .dropdown-menu {
   display: none;

@@ -79,6 +79,17 @@ function chargerPostesClub(club) {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  const info = document.getElementById('candidature-info');
+  if (!isCandidatureActive()) {
+    if (info) info.textContent = 'Les candidatures ne sont pas ouvertes.';
+    return;
+  } else {
+    const state = getState();
+    if (info) {
+      const end = new Date(state.candidature.endTime);
+      info.textContent = 'Fin des candidatures : ' + end.toLocaleString();
+    }
+  }
   const electionButtons = document.querySelectorAll('.election-btn');
   const form = document.getElementById('newCandidature');
   const clubGroup = document.getElementById('clubGroup');

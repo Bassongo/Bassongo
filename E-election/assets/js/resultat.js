@@ -141,6 +141,15 @@ document.getElementById('type-result').addEventListener('change', function () {
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    loadCandidates();
+    const state = getState();
+    const info = document.getElementById('resultats');
+    if (isVoteActive()) {
+        if (info) info.innerHTML = '<p>Les résultats seront disponibles à la fin des votes.</p>';
+        return;
+    }
+    if (!state.vote.endTime || Date.now() < state.vote.endTime) {
+        if (info) info.innerHTML = '<p>Aucun résultat disponible.</p>';
+        return;
+    }
     afficherResultats(document.getElementById('type-result').value);
 });
