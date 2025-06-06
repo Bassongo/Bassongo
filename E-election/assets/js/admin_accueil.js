@@ -242,6 +242,23 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             };
           }
+          const startVotesBtn = document.getElementById('startVotesBtn');
+          if (startVotesBtn) {
+            startVotesBtn.onclick = () => {
+              const cat = prompt('Catégorie (aes, club, classe) :').toLowerCase();
+              if (!['aes','club','classe'].includes(cat)) return;
+              const duree = parseFloat(prompt('Durée en heures :', '1'));
+              if (isNaN(duree)) return;
+              const start = Date.now();
+              const end = start + duree * 3600000;
+              startVote(cat, start, end);
+              alert('Votes démarrés');
+            };
+          }
+          const stopVotesBtn = document.getElementById('stopVotesBtn');
+          if (stopVotesBtn) {
+            stopVotesBtn.onclick = () => { endVote(); alert('Votes arrêtés'); };
+          }
         }, 10);
       } else if (this.id === 'btn-gestion-candidats') {
         content.innerHTML = `
@@ -260,40 +277,18 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
         setTimeout(() => {
-          const startBtn = document.getElementById('startBtn');
-          if (startBtn) {
-            startBtn.onclick = () => {
-              const cat = prompt("Catégorie (aes, club ou classe) ?");
-              const categorie = cat ? cat.toLowerCase() : "";
-              if (!['aes','club','classe'].includes(categorie)) {
-                alert('Catégorie invalide');
-                return;
-              }
-              const date = prompt('Date de fin (AAAA-MM-JJ) :');
-              const heure = prompt('Heure de fin (HH:MM) :');
-              if (!date || !heure) { alert('Date ou heure invalide'); return; }
-              const fin = new Date(date + 'T' + heure);
-              if (isNaN(fin)) { alert('Date ou heure invalide'); return; }
-              const statut = JSON.parse(localStorage.getItem('candidatureStatus')) || {};
-              statut[categorie] = { ouvert: true, fin: fin.toISOString() };
-              localStorage.setItem('candidatureStatus', JSON.stringify(statut));
-              alert('Candidatures ouvertes pour ' + categorie.toUpperCase() + ' jusqu\'au ' + fin.toLocaleString());
-            };
-          }
-          const closeBtn = document.getElementById('closeBtn');
-          if (closeBtn) {
-            closeBtn.onclick = () => {
-              const cat = prompt("Catégorie à fermer (aes, club ou classe) ?");
-              const categorie = cat ? cat.toLowerCase() : "";
-              if (!['aes','club','classe'].includes(categorie)) return alert('Catégorie invalide');
-              const statut = JSON.parse(localStorage.getItem('candidatureStatus')) || {};
-              if (statut[categorie]) statut[categorie].ouvert = false;
-              localStorage.setItem('candidatureStatus', JSON.stringify(statut));
-              alert('Candidatures fermées pour ' + categorie.toUpperCase());
-            };
-          }
-          const statsBtn = document.getElementById('statsBtn');
-          if (statsBtn) statsBtn.onclick = () => alert('Statistiques des candidats');
+
+          document.getElementById('startBtn').onclick = () => {
+            const cat = prompt("Catégorie (aes, club, classe) :").toLowerCase();
+            if (!['aes','club','classe'].includes(cat)) return;
+            const fin = prompt('Date/heure fin (YYYY-MM-DD HH:MM) :');
+            const end = Date.parse(fin.replace(' ', 'T'));
+            if (isNaN(end)) { alert('Date invalide'); return; }
+            startCandidature(cat, end);
+            alert('Candidatures ouvertes');
+          };
+          document.getElementById('closeBtn').onclick = () => { endCandidature(); alert('Candidatures fermées'); };
+          document.getElementById('statsBtn').onclick = () => alert('Statistiques des candidats');
           document.getElementById('deleteBtn').onclick = () => {
             if(confirm('Voulez-vous vraiment supprimer ?')) alert('Suppression effectuée');
           };

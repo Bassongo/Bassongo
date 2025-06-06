@@ -33,3 +33,30 @@
       }
     });
   });
+
+  function toggleLink(selector, disabled) {
+    const link = document.querySelector(selector);
+    if (!link) return;
+    if (disabled) {
+      link.classList.add('disabled-link');
+    } else {
+      link.classList.remove('disabled-link');
+    }
+  }
+
+  function updateNavVisibility() {
+    const state = getState();
+    const candidatureOn = isCandidatureActive();
+    const voteOn = isVoteActive();
+
+    toggleLink('a[href$="candidat.html"]', !candidatureOn);
+    toggleLink('a[href$="campagnes.html"]', !candidatureOn);
+    toggleLink('a[href$="vote.html"]', !voteOn);
+
+    const canSeeStats = state.vote.category && userHasVoted(state.vote.category);
+    toggleLink('a[href$="statistique.html"]', !canSeeStats);
+    const showResults = state.vote.category && !voteOn && state.vote.endTime && Date.now() >= state.vote.endTime;
+    toggleLink('a[href$="resultat.html"]', !showResults);
+  }
+
+  document.addEventListener('DOMContentLoaded', updateNavVisibility);
