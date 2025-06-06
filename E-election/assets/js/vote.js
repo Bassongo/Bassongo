@@ -428,6 +428,7 @@ function afficherClasse(index = pageClasse) {
 // Gestion du selecteur de type d'élection
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
+    localStorage.setItem('lastVoteType', this.value);
     const selection = this.value;
     // Réinitialise la pagination à chaque changement de type
     pageAES = 0;
@@ -467,6 +468,13 @@ window.addEventListener('DOMContentLoaded', function() {
     const selection = select.value;
     if (!isVoteActive(selection)) {
         document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
+function initVotePage() {
+    const info = document.getElementById('vote-info');
+    const select = document.getElementById('type-election');
+    const stored = localStorage.getItem('lastVoteType');
+    if (stored) select.value = stored;
+    if (!isVoteActive()) {
+        if (info) info.textContent = 'Aucun vote en cours.';
         document.getElementById('contenu-vote').innerHTML = '';
         return;
     }
@@ -479,3 +487,8 @@ window.addEventListener('DOMContentLoaded', function() {
     }
     afficherAES(pageAES);
 });
+    select.dispatchEvent(new Event('change'));
+}
+
+document.addEventListener('DOMContentLoaded', initVotePage);
+document.addEventListener('stateChanged', initVotePage);
