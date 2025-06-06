@@ -242,23 +242,10 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             };
           }
-          const startVotesBtn = document.getElementById('startVotesBtn');
-          if (startVotesBtn) {
-            startVotesBtn.onclick = () => {
-              const cat = prompt('Catégorie (aes, club, classe) :').toLowerCase();
-              if (!['aes','club','classe'].includes(cat)) return;
-              const duree = parseFloat(prompt('Durée en heures :', '1'));
-              if (isNaN(duree)) return;
-              const start = Date.now();
-              const end = start + duree * 3600000;
-              startVote(cat, start, end);
-              alert('Votes démarrés');
-            };
-          }
-          const stopVotesBtn = document.getElementById('stopVotesBtn');
-          if (stopVotesBtn) {
-            stopVotesBtn.onclick = () => { endVote(); alert('Votes arrêtés'); };
-          }
+          // Les gestionnaires pour démarrer/arrêter les votes sont déjà
+          // définis plus haut dans ce même bloc. La duplication suivante
+          // empêchait le script de s'exécuter correctement car les constantes
+          // étaient redéclarées. Elles sont donc supprimées.
         }, 10);
       } else if (this.id === 'btn-gestion-candidats') {
         content.innerHTML = `
