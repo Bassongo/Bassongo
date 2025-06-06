@@ -2,12 +2,11 @@
 // Données des élections 
 // ===============================
 
-
-// Données dynamiques depuis les candidatures enregistrées
 let donneesAES = [];
 let donneesClubs = [];
 let donneesClasse = [];
 
+// Groupement des candidats
 function groupByPoste(candidats) {
     const map = {};
     candidats.forEach(c => {
@@ -17,7 +16,6 @@ function groupByPoste(candidats) {
     });
     return Object.values(map);
 }
-
 function groupByClub(candidats) {
     const map = {};
     candidats.forEach(c => {
@@ -27,15 +25,12 @@ function groupByClub(candidats) {
     });
     return Object.values(map);
 }
-
 function loadCandidates() {
     const all = JSON.parse(localStorage.getItem('candidatures')) || [];
     donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
     donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
 }
-
-
 
 // ===============================
 // Variables de pagination
@@ -47,7 +42,6 @@ let pageClasse = 0;
 // ===============================
 // Gestion du vote (localStorage)
 // ===============================
-// Structure : vote_aes_0 = "Ali" (clé = type_posteIndex, valeur = nom/prenom)
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
@@ -56,6 +50,49 @@ function hasVoted(type, index) {
 }
 function setVote(type, index, candidat) {
     localStorage.setItem(getVoteKey(type, index), JSON.stringify(candidat));
+}
+function setUserVoted(type) {
+    // Optionnel : pour marquer qu'un utilisateur a voté pour ce type
+}
+
+// ===============================
+// Vérifie si une session de vote est active pour une catégorie
+function isVoteActive(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[categorie]) return false;
+    const now = Date.now();
+    // Fermeture automatique si la date de fin est dépassée
+    if (votes[categorie].active && now > votes[categorie].end) {
+        votes[categorie].active = false;
+        localStorage.setItem('votesSessions', JSON.stringify(votes));
+        return false;
+    }
+    // N'est actif que si la date de début est atteinte
+    if (votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end) {
+        return true;
+    }
+    return false;
+}
+
+// Vérifie si l'utilisateur a voté pour tous les postes/clubs d'une catégorie
+function hasVotedAll(type) {
+    if (type === 'aes') {
+        return donneesAES.length > 0 && donneesAES.every((_, idx) => hasVoted('aes', idx));
+    }
+    if (type === 'classe') {
+        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => hasVoted('classe', idx));
+    }
+    if (type === 'club') {
+        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => hasVoted('club', idx));
+    }
+    return false;
+}
+
+// Récupère l'état des sessions
+function getState() {
+    return {
+        vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
+    };
 }
 
 // ===============================
@@ -81,8 +118,30 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // Affichage AES (par poste)
 // ===============================
 function afficherAES(index = pageAES) {
+    loadCandidates(); // Recharge les données à chaque affichage
     const contenu = document.getElementById('contenu-vote');
+    if (!isVoteActive('aes')) {
+        // Affiche la période si existante
+        const state = getState();
+        const v = state.vote['aes'];
+        let periode = '';
+        if (v) {
+            const deb = new Date(v.start);
+            const end = new Date(v.end);
+            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+            if (Date.now() < v.start) {
+                contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
+                return;
+            }
+        }
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
+        return;
+    }
     const poste = donneesAES[index];
+    if (!poste) {
+        contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('aes', index);
     const dejaVote = hasVoted('aes', index);
 
@@ -120,10 +179,16 @@ function afficherAES(index = pageAES) {
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageAES = index - 1; afficherAES(pageAES); }
+        if (index > 0) {
+            pageAES = index - 1;
+            afficherAES(pageAES);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesAES.length - 1) { pageAES = index + 1; afficherAES(pageAES); }
+        if (index < donneesAES.length - 1) {
+            pageAES = index + 1;
+            afficherAES(pageAES);
+        }
     });
 
     // Vote
@@ -133,6 +198,10 @@ function afficherAES(index = pageAES) {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('aes', index, poste.candidats[idx]);
                 setUserVoted('aes');
+                // Vérifie si tous les votes sont faits pour AES
+                if (hasVotedAll('aes')) {
+                    localStorage.setItem('canSeeStats', 'aes');
+                }
                 afficherAES(index);
             });
         });
@@ -150,8 +219,29 @@ function afficherAES(index = pageAES) {
 // Affichage Clubs (par club)
 // ===============================
 function afficherClub(index = pageClub) {
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    if (!isVoteActive('club')) {
+        const state = getState();
+        const v = state.vote['club'];
+        let periode = '';
+        if (v) {
+            const deb = new Date(v.start);
+            const end = new Date(v.end);
+            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+            if (Date.now() < v.start) {
+                contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
+                return;
+            }
+        }
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
+        return;
+    }
     const club = donneesClubs[index];
+    if (!club) {
+        contenu.innerHTML = `<div class="alert">Aucun club disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('club', index);
     const dejaVote = hasVoted('club', index);
 
@@ -192,10 +282,16 @@ function afficherClub(index = pageClub) {
 
     // Pagination clubs
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageClub = index - 1; afficherClub(pageClub); }
+        if (index > 0) {
+            pageClub = index - 1;
+            afficherClub(pageClub);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClubs.length - 1) { pageClub = index + 1; afficherClub(pageClub); }
+        if (index < donneesClubs.length - 1) {
+            pageClub = index + 1;
+            afficherClub(pageClub);
+        }
     });
 
     // Vote
@@ -205,6 +301,9 @@ function afficherClub(index = pageClub) {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('club', index, club.candidats[idx]);
                 setUserVoted('club');
+                if (hasVotedAll('club')) {
+                    localStorage.setItem('canSeeStats', 'club');
+                }
                 afficherClub(index);
             });
         });
@@ -227,49 +326,32 @@ function afficherClub(index = pageClub) {
 }
 
 // ===============================
-// Affichage des membres d'un club
-// ===============================
-function afficherMembresClub(indexClub, indexCandidat) {
-    const club = donneesClubs[indexClub];
-    const candidat = club.candidats[indexCandidat];
-    const contenu = document.getElementById('contenu-vote');
-
-    const membresHTML = (candidat.membres || []).map(m => `
-        <div class="membre">
-            <img src="${m.photo}" alt="${m.prenom} ${m.nom}" class="photo-candidat"
-                data-nom="${m.prenom} ${m.nom}"
-                data-infos="<strong>Classe :</strong> ${m.classe}<br><strong>Nationalité :</strong> ${m.nationalite}">
-            <h4>${m.prenom} ${m.nom}</h4>
-            <p><strong>Classe :</strong> ${m.classe}</p>
-            <p><strong>Nationalité :</strong> ${m.nationalite}</p>
-        </div>
-    `).join('');
-
-    contenu.innerHTML = `
-        <h2>Club : ${club.nomClub}</h2>
-        <h3>Candidat : ${candidat.prenom} ${candidat.nom}</h3>
-        <h4>Membres de l’équipe</h4>
-        <div class="membres">${membresHTML}</div>
-        <button class="btn btn-retour">Retour</button>
-    `;
-
-    contenu.querySelector('.btn-retour')?.addEventListener('click', () => {
-        afficherClub(indexClub);
-    });
-
-    contenu.querySelectorAll('.photo-candidat').forEach(img => {
-        img.addEventListener('click', function() {
-            afficherPhotoGrand(this.src, this.dataset.nom, this.dataset.infos);
-        });
-    });
-}
-
-// ===============================
 // Affichage Classe (par poste)
 // ===============================
 function afficherClasse(index = pageClasse) {
+    loadCandidates();
     const contenu = document.getElementById('contenu-vote');
+    if (!isVoteActive('classe')) {
+        const state = getState();
+        const v = state.vote['classe'];
+        let periode = '';
+        if (v) {
+            const deb = new Date(v.start);
+            const end = new Date(v.end);
+            periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
+            if (Date.now() < v.start) {
+                contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
+                return;
+            }
+        }
+        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
+        return;
+    }
     const poste = donneesClasse[index];
+    if (!poste) {
+        contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
+        return;
+    }
     const voteKey = getVoteKey('classe', index);
     const dejaVote = hasVoted('classe', index);
 
@@ -307,10 +389,16 @@ function afficherClasse(index = pageClasse) {
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) { pageClasse = index - 1; afficherClasse(pageClasse); }
+        if (index > 0) {
+            pageClasse = index - 1;
+            afficherClasse(pageClasse);
+        }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClasse.length - 1) { pageClasse = index + 1; afficherClasse(pageClasse); }
+        if (index < donneesClasse.length - 1) {
+            pageClasse = index + 1;
+            afficherClasse(pageClasse);
+        }
     });
 
     // Vote
@@ -320,6 +408,9 @@ function afficherClasse(index = pageClasse) {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('classe', index, poste.candidats[idx]);
                 setUserVoted('classe');
+                if (hasVotedAll('classe')) {
+                    localStorage.setItem('canSeeStats', 'classe');
+                }
                 afficherClasse(index);
             });
         });
@@ -338,20 +429,28 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
     const selection = this.value;
+    // Réinitialise la pagination à chaque changement de type
+    pageAES = 0;
+    pageClub = 0;
+    pageClasse = 0;
+    if (!isVoteActive(selection)) {
+        document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
+        document.getElementById('contenu-vote').innerHTML = '';
+        return;
+    }
+    const state = getState();
+    const v = state.vote[selection];
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        document.getElementById('vote-info').textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
+    }
     if (selection === 'aes') {
-        pageAES = 0;
         afficherAES(pageAES);
     } else if (selection === 'club') {
-        pageClub = 0;
         afficherClub(pageClub);
     } else if (selection === 'classe') {
-        pageClasse = 0;
         afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-vote').innerHTML = `
-            <h2>Élections ${selection.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${selection} seront bientôt disponibles.</p>
-        `;
     }
 });
 
@@ -359,28 +458,24 @@ document.getElementById('type-election').addEventListener('change', function () 
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    const info = document.getElementById('vote-info');
-    if (!isVoteActive()) {
-        if (info) info.textContent = 'Aucun vote en cours.';
+    loadCandidates();
+    const select = document.getElementById('type-election');
+    select.value = 'aes'; // Par défaut, AES
+    pageAES = 0;
+    pageClub = 0;
+    pageClasse = 0;
+    const selection = select.value;
+    if (!isVoteActive(selection)) {
+        document.getElementById('vote-info').textContent = 'Aucun vote en cours pour ' + selection.toUpperCase();
         document.getElementById('contenu-vote').innerHTML = '';
         return;
-    } else if (info) {
-        const state = getState();
-        const deb = new Date(state.vote.startTime);
-        const fin = new Date(state.vote.endTime);
-        info.textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + fin.toLocaleString();
     }
-    const select = document.getElementById('type-election');
-    if (select.value === 'aes') {
-        afficherAES(pageAES);
-    } else if (select.value === 'club') {
-        afficherClub(pageClub);
-    } else if (select.value === 'classe') {
-        afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-vote').innerHTML = `
-            <h2>Élections ${select.value.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${select.value} seront bientôt disponibles.</p>
-        `;
+    const state = getState();
+    const v = state.vote[selection];
+    if (v) {
+        const deb = new Date(v.start);
+        const end = new Date(v.end);
+        document.getElementById('vote-info').textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
     }
+    afficherAES(pageAES);
 });

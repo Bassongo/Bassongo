@@ -59,6 +59,154 @@ document.addEventListener('DOMContentLoaded', () => {
     endCandDate.value = '';
   }
 
+  // Gestion des candidatures sessions (stockage et contrôle)
+  function isCandidatureActive(categorie) {
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    return candidatures[categorie] && candidatures[categorie].active;
+  }
+
+  function startCandidature(categorie, debut, fin, club) {
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    candidatures[categorie] = {
+      active: true,
+      start: debut,
+      end: fin,
+      ...(categorie === 'club' ? { club } : {})
+    };
+    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+  }
+
+  function endCandidature(categorie) {
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    if (candidatures[categorie]) {
+      candidatures[categorie].active = false;
+      localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    }
+  }
+
+
+    // ===============================
+  //  GESTION DES VOTES (COMPLET)
+  // ===============================
+  
+  // Vérifie si une session de vote est active pour une catégorie
+  function isVoteActive(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    // Fermeture automatique si la date de fin est dépassée
+    if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
+      votes[categorie].active = false;
+      localStorage.setItem('votesSessions', JSON.stringify(votes));
+      return false;
+    }
+    return votes[categorie] && votes[categorie].active;
+  }
+  
+  // Démarre une session de vote pour une catégorie
+  function startVote(categorie, debut, fin, club) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    votes[categorie] = {
+      active: true,
+      start: debut,
+      end: fin,
+      ...(categorie === 'club' ? { club } : {})
+    };
+    localStorage.setItem('votesSessions', JSON.stringify(votes));
+  }
+  
+  // Ferme une session de vote pour une catégorie
+  function endVote(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (votes[categorie] && votes[categorie].active) {
+      votes[categorie].active = false;
+      localStorage.setItem('votesSessions', JSON.stringify(votes));
+    }
+  }
+  
+  // Fermeture automatique des votes et candidatures à chaque chargement
+  function autoCloseSessions() {
+    // Candidatures
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let changed = false;
+    Object.keys(candidatures).forEach(cat => {
+      if (candidatures[cat].active && Date.now() > candidatures[cat].end) {
+        candidatures[cat].active = false;
+        changed = true;
+      }
+    });
+    if (changed) localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+  
+    // Votes
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    changed = false;
+    Object.keys(votes).forEach(cat => {
+      if (votes[cat].active && Date.now() > votes[cat].end) {
+        votes[cat].active = false;
+        changed = true;
+      }
+    });
+    if (changed) localStorage.setItem('votesSessions', JSON.stringify(votes));
+  }
+  autoCloseSessions();
+  
+  // ===============================
+  //  MODAL DE DEMARRAGE DES VOTES
+  // ===============================
+  
+  // À placer dans le DOMContentLoaded ou après le chargement du DOM
+    if (typeof validateVoteModal !== "undefined" && validateVoteModal) {
+    validateVoteModal.onclick = () => {
+      const categorie = voteType.value;
+      const club = voteType.value === 'club' ? voteClub.value : null;
+      const debut = Date.parse(startVoteInput.value);
+      const fin = Date.parse(endVoteInput.value);
+  
+      // Vérifications des champs
+      if (!categorie) { alert('Type manquant'); return; }
+      if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
+      if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+      if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+  
+      // Vérification de la présence de candidats
+      let candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+      let candidats;
+      if (categorie === 'club') {
+        candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === 'club' && c.club === club);
+      } else {
+        candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
+      }
+      if (candidats.length === 0) {
+        alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
+        return;
+      }
+  
+      // Stockage de la session de vote
+      startVote(categorie, debut, fin, club);
+      alert('Votes démarrés pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
+  
+      // Demander si on veut démarrer une autre session de vote
+      if (confirm('Voulez-vous démarrer une autre session de vote ?')) {
+        resetVoteModal();
+        startVotesModal.style.display = 'flex';
+      } else {
+        startVotesModal.style.display = 'none';
+        resetVoteModal();
+      }
+    };
+  }
+  
+  // ===============================
+  //  FERMER UN VOTE MANUELLEMENT
+  // ===============================
+  // À appeler sur le bouton "Arrêter les votes" dans l'UI
+  if (typeof stopVotesBtn !== "undefined" && stopVotesBtn) {
+    stopVotesBtn.onclick = () => {
+      const cat = prompt('Catégorie à fermer (aes, club, classe) :');
+      if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
+      if (!isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+      endVote(cat.toLowerCase());
+      alert('Votes fermés pour ' + cat.toUpperCase());
+    };
+  }
   if (closeStartVotes) closeStartVotes.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
   if (cancelVoteModal) cancelVoteModal.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
   if (voteType) voteType.onchange = () => {
@@ -75,22 +223,7 @@ document.addEventListener('DOMContentLoaded', () => {
     step1.style.display = 'none';
     step2.style.display = 'block';
   };
-  if (validateVoteModal) validateVoteModal.onclick = () => {
-    const categorie = voteType.value;
-    const club = voteType.value === 'club' ? voteClub.value : null;
-    const debut = Date.parse(startVoteInput.value);
-    const fin = Date.parse(endVoteInput.value);
-    if (!categorie) { alert('Type manquant'); return; }
-    if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
-    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-    const candidats = JSON.parse(localStorage.getItem('candidatures')) || [];
-    const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie && (categorie !== 'club' || c.club === club));
-    if (!existe) { alert('Pas possible car pas de candidats'); return; }
-    startVote(categorie, debut, fin, club);
-    alert('Votes démarrés pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
-    startVotesModal.style.display = 'none';
-    resetVoteModal();
-  };
+  
 
   if (closeStartCand) closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
   if (cancelCandModal) cancelCandModal.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
@@ -119,9 +252,16 @@ document.addEventListener('DOMContentLoaded', () => {
     if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
     startCandidature(categorie, debut, fin, club);
     alert('Candidatures ouvertes pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
-    startCandModal.style.display = 'none';
-    resetCandModal();
+    // Demander si on veut démarrer une autre session
+    if (confirm('Voulez-vous démarrer une autre session de candidature ?')) {
+      resetCandModal();
+      startCandModal.style.display = 'flex';
+    } else {
+      startCandModal.style.display = 'none';
+      resetCandModal();
+    }
   };
+
   // Redirection des boutons du haut
   const navLinks = document.querySelectorAll('.btn-nav');
   navLinks.forEach(link => {
@@ -163,6 +303,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sidebarBtns.forEach(btn => {
     btn.addEventListener('click', function() {
+      autoCloseSessions(); // <-- Ajoute ceci ici
       sidebarBtns.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       if (this.id === 'btn-gestion-elections') {
@@ -220,15 +361,19 @@ document.addEventListener('DOMContentLoaded', () => {
               startVotesModal.style.display = 'flex';
             };
           }
+          
+          // Correction : gestion du bouton "Arrêter les votes"
           const stopVotesBtn = document.getElementById('stopVotesBtn');
           if (stopVotesBtn) {
             stopVotesBtn.onclick = () => {
-              const state = getState();
-              if (!state.vote.active) { alert('Aucun vote en cours'); return; }
-              endVote();
-              alert('Votes arrêtés pour ' + (state.vote.category || '').toUpperCase());
+              const cat = prompt('Catégorie à fermer (aes, club, classe) :');
+              if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
+              if (!isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+              endVote(cat.toLowerCase());
+              alert('Votes fermés pour ' + cat.toUpperCase());
             };
           }
+        
           // Ajouter un poste PAR TYPE OU CLUB
           const addPoste = document.getElementById('addPoste');
           if (addPoste) {
@@ -351,10 +496,6 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             };
           }
-          // Les gestionnaires pour démarrer/arrêter les votes sont déjà
-          // définis plus haut dans ce même bloc. La duplication suivante
-          // empêchait le script de s'exécuter correctement car les constantes
-          // étaient redéclarées. Elles sont donc supprimées.
         }, 10);
       } else if (this.id === 'btn-gestion-candidats') {
         content.innerHTML = `

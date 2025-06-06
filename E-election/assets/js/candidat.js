@@ -78,16 +78,31 @@ function chargerPostesClub(club) {
   }
 }
 
+// Vérifie si une session de candidature est active pour une catégorie
+function isCandidatureActive(categorie) {
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  return candidatures[categorie] && candidatures[categorie].active;
+}
+
+// Récupère l'état des sessions
+function getState() {
+  return {
+    candidature: JSON.parse(localStorage.getItem('candidaturesSessions')) || {}
+  };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const info = document.getElementById('candidature-info');
   const state = getState();
   const msgs = [];
+  let sessionsOuvertes = [];
   ['aes','classe','club'].forEach(cat => {
     if (isCandidatureActive(cat)) {
+      sessionsOuvertes.push(cat);
       const c = cat === 'club' ? state.candidature.club : state.candidature[cat];
-      const deb = new Date(c.startTime);
-      const end = new Date(c.endTime);
-      const label = cat === 'club' ? c.club : cat.toUpperCase();
+      const deb = new Date(c.start);
+      const end = new Date(c.end);
+      const label = cat === 'club' ? (c.club || "Club") : cat.toUpperCase();
       msgs.push(`<strong>${label}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`);
     }
   });
@@ -103,23 +118,29 @@ document.addEventListener('DOMContentLoaded', () => {
   const clubGroup = document.getElementById('clubGroup');
   const clubSelect = document.getElementById('clubSelect');
 
+  // Désactive tous les boutons par défaut
+  
   electionButtons.forEach(btn => {
+    const type = btn.textContent.trim().toLowerCase();
+    btn.disabled = false; // Toujours actif
+    btn.classList.remove('disabled');
     btn.addEventListener('click', (e) => {
-      const type = e.target.textContent.trim().toLowerCase();
       if (!isCandidatureActive(type)) {
-        alert('Les candidatures pour ' + type.toUpperCase() + ' ne sont pas ouvertes.');
+        // Affiche le message et masque le formulaire
+        if (info) info.innerHTML = `<span style="color:red;">Session non ouverte pour ${type.toUpperCase()}.</span>`;
+        if (form) form.style.display = 'none';
         return;
       }
-      document.getElementById('electionType').value = e.target.textContent;
-      const state = getState();
+      // Affiche les périodes et le formulaire
+      document.getElementById('electionType').value = btn.textContent;
       const c = type === 'club' ? state.candidature.club : state.candidature[type];
       if (info) {
-        const deb = new Date(c.startTime);
-        const end = new Date(c.endTime);
-        const label = type === 'club' ? c.club : type.toUpperCase();
+        const deb = new Date(c.start);
+        const end = new Date(c.end);
+        const label = type === 'club' ? (c.club || "Club") : type.toUpperCase();
         info.innerHTML = `<strong>${label}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
       }
-      form.style.display = 'block';
+      if (form) form.style.display = 'block';
       if (type === 'club') {
         if (clubGroup) clubGroup.style.display = 'block';
         chargerClubs();
@@ -130,6 +151,8 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+  
+
 
   if (clubSelect) {
     clubSelect.addEventListener('change', (e) => {

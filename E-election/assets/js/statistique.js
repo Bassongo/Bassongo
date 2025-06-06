@@ -1,13 +1,10 @@
-// ===============================
-// Données des élections 
-// ===============================
-
-
-// Données dynamiques depuis les candidatures enregistrées
 let donneesAES = [];
 let donneesClubs = [];
 let donneesClasse = [];
 
+// ===============================
+// Chargement des données
+// ===============================
 function groupByPoste(candidats) {
     const map = {};
     candidats.forEach(c => {
@@ -17,7 +14,6 @@ function groupByPoste(candidats) {
     });
     return Object.values(map);
 }
-
 function groupByClub(candidats) {
     const map = {};
     candidats.forEach(c => {
@@ -27,7 +23,6 @@ function groupByClub(candidats) {
     });
     return Object.values(map);
 }
-
 function loadCandidates() {
     const all = JSON.parse(localStorage.getItem('candidatures')) || [];
     donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
@@ -35,17 +30,12 @@ function loadCandidates() {
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
 }
 
-
 // ===============================
 // Fonctions utilitaires pour les votes
 // ===============================
-
-// Génère la clé de vote pour chaque type et index
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
-
-// Récupère tous les votes pour un type d'élection
 function getVotes(type, data) {
     let votes = [];
     for (let i = 0; i < data.length; i++) {
@@ -54,13 +44,11 @@ function getVotes(type, data) {
     }
     return votes;
 }
-
-// Compte les votes pour chaque candidat d'un poste/club/classe
 function countVotes(type, data) {
     let result = [];
     for (let i = 0; i < data.length; i++) {
         const poste = data[i];
-        let candidats = poste.candidats || poste.candidats; // pour AES/Classe ou Club
+        let candidats = poste.candidats;
         let counts = candidats.map(c => ({ ...c, votes: 0 }));
         const vote = localStorage.getItem(getVoteKey(type, i));
         if (vote) {
@@ -72,10 +60,30 @@ function countVotes(type, data) {
     }
     return result;
 }
-
-// Nombre total de votes exprimés pour ce type
 function totalVotes(type, data) {
     return getVotes(type, data).length;
+}
+
+// ===============================
+// Vérifie si une session de vote est active et commencée pour une catégorie
+// ===============================
+function isVoteActive(categorie) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[categorie]) return false;
+    const now = Date.now();
+    return votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end;
+}
+function hasVotedAll(type) {
+    if (type === 'aes') {
+        return donneesAES.length > 0 && donneesAES.every((_, idx) => !!localStorage.getItem(getVoteKey('aes', idx)));
+    }
+    if (type === 'classe') {
+        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => !!localStorage.getItem(getVoteKey('classe', idx)));
+    }
+    if (type === 'club') {
+        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => !!localStorage.getItem(getVoteKey('club', idx)));
+    }
+    return false;
 }
 
 // ===============================
@@ -85,7 +93,6 @@ function afficherStatsGlobal(type, data) {
     const stats = countVotes(type, data);
     const nbPostes = data.length;
     const nbVotes = totalVotes(type, data);
-    // Pourcentage de participation (sur nbPostes)
     const taux = nbPostes === 0 ? 0 : Math.round((nbVotes / nbPostes) * 100);
 
     document.getElementById('stats-global').innerHTML = `
@@ -105,13 +112,11 @@ function afficherStatsGlobal(type, data) {
 }
 
 // ===============================
-// Affichage du graphique principal (barres ou camembert)
+// Affichage du graphique principal (barres)
 // ===============================
 let statsChart = null;
 function afficherStatsGraph(type, data) {
     const stats = countVotes(type, data);
-
-    // Pour le graphique, on prend le poste/club/classe le plus voté (ou le premier)
     const poste = stats.find(p => p.candidats.some(c => c.votes > 0)) || stats[0];
     if (!poste) {
         document.getElementById('stats-graph').style.display = "none";
@@ -122,10 +127,8 @@ function afficherStatsGraph(type, data) {
     const labels = poste.candidats.map(c => `${c.prenom} ${c.nom}`);
     const votes = poste.candidats.map(c => c.votes);
 
-    // Détruit l'ancien graphique si besoin
     if (statsChart) statsChart.destroy();
 
-    // Crée un graphique à barres
     const ctx = document.getElementById('statsChart').getContext('2d');
     statsChart = new Chart(ctx, {
         type: 'bar',
@@ -177,34 +180,42 @@ function afficherStatsDetail(type, data) {
 }
 
 // ===============================
-// Gestion du selecteur de type d'élection
+// Gestion du selecteur de type d'élection et affichage principal
 // ===============================
 function afficherStats(type) {
+    loadCandidates();
     let data;
     if (type === 'aes') data = donneesAES;
     else if (type === 'club') data = donneesClubs;
     else if (type === 'classe') data = donneesClasse;
     else return;
 
+    // Gestion des cas d'accès
+    if (!isVoteActive(type)) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:red;">Pas de vote démarré pour cette catégorie, donc pas de statistiques.</p>`;
+        document.getElementById('stats-graph').style.display = "none";
+        document.getElementById('stats-detail').innerHTML = "";
+        return;
+    }
+    if (!hasVotedAll(type)) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:orange;">Vote non fini pour cette catégorie.<br>Finissez tous les votes pour voir les statistiques.</p>`;
+        document.getElementById('stats-graph').style.display = "none";
+        document.getElementById('stats-detail').innerHTML = "";
+        return;
+    }
+
     afficherStatsGlobal(type, data);
     afficherStatsGraph(type, data);
     afficherStatsDetail(type, data);
 }
 
-document.getElementById('type-stats').addEventListener('change', function () {
-    afficherStats(this.value);
-});
-
-// ===============================
-// Affichage initial à l'ouverture de la page
-// ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    const state = getState();
-    const info = document.getElementById('stats-global');
-    if (!state.vote.category || !userHasVoted(state.vote.category)) {
-        if (info) info.innerHTML = '<p>Vous devez voter pour voir les statistiques.</p>';
-        return;
-    }
-
-    afficherStats(document.getElementById('type-stats').value);
+    loadCandidates();
+    const select = document.getElementById('type-stats');
+    if (!select) return;
+    select.value = 'aes';
+    afficherStats('aes');
+    select.addEventListener('change', function() {
+        afficherStats(this.value);
+    });
 });
