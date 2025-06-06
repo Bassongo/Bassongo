@@ -1,4 +1,45 @@
 document.addEventListener('DOMContentLoaded', () => {
+  // Elements du modal de démarrage des votes
+  const startVotesModal = document.getElementById('startVotesModal');
+  const closeStartVotes = document.getElementById('closeStartVotes');
+  const nextToDates = document.getElementById('nextToDates');
+  const validateVoteModal = document.getElementById('validateVoteModal');
+  const cancelVoteModal = document.getElementById('cancelVoteModal');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const voteType = document.getElementById('voteType');
+  const startVoteInput = document.getElementById('startVote');
+  const endVoteInput = document.getElementById('endVote');
+
+  function resetVoteModal() {
+    step1.style.display = 'block';
+    step2.style.display = 'none';
+    voteType.value = '';
+    startVoteInput.value = '';
+    endVoteInput.value = '';
+  }
+
+  if (closeStartVotes) closeStartVotes.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
+  if (cancelVoteModal) cancelVoteModal.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
+  if (nextToDates) nextToDates.onclick = () => {
+    if (!voteType.value) { alert('Choisissez un type'); return; }
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+  };
+  if (validateVoteModal) validateVoteModal.onclick = () => {
+    const categorie = voteType.value;
+    const debut = Date.parse(startVoteInput.value);
+    const fin = Date.parse(endVoteInput.value);
+    if (!categorie) { alert('Type manquant'); return; }
+    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    const candidats = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie);
+    if (!existe) { alert('Pas possible car pas de candidats'); return; }
+    startVote(categorie, debut, fin);
+    alert('Votes démarrés pour ' + categorie.toUpperCase());
+    startVotesModal.style.display = 'none';
+    resetVoteModal();
+  };
   // Redirection des boutons du haut
   const navLinks = document.querySelectorAll('.btn-nav');
   navLinks.forEach(link => {
@@ -94,30 +135,16 @@ document.addEventListener('DOMContentLoaded', () => {
           const startVotesBtn = document.getElementById('startVotesBtn');
           if (startVotesBtn) {
             startVotesBtn.onclick = () => {
-
-              const cat = prompt('Catégorie pour démarrer les votes (aes, club ou classe) ?');
-              const categorie = cat ? cat.toLowerCase() : '';
-              if (!['aes','club','classe'].includes(categorie)) { alert('Catégorie invalide'); return; }
-              const candidats = JSON.parse(localStorage.getItem('candidatures')) || [];
-              const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie);
-              if (!existe) { alert('Pas possible car pas de candidats'); return; }
-              const voteStatut = JSON.parse(localStorage.getItem('voteStatus')) || {};
-              voteStatut[categorie] = true;
-              localStorage.setItem('voteStatus', JSON.stringify(voteStatut));
-              alert('Votes démarrés pour ' + categorie.toUpperCase());
+              startVotesModal.style.display = 'flex';
             };
           }
           const stopVotesBtn = document.getElementById('stopVotesBtn');
           if (stopVotesBtn) {
             stopVotesBtn.onclick = () => {
-              const cat = prompt('Catégorie à arrêter (aes, club ou classe) ?');
-              const categorie = cat ? cat.toLowerCase() : '';
-              if (!['aes','club','classe'].includes(categorie)) return alert('Catégorie invalide');
-              const voteStatut = JSON.parse(localStorage.getItem('voteStatus')) || {};
-              voteStatut[categorie] = false;
-              localStorage.setItem('voteStatus', JSON.stringify(voteStatut));
-              alert('Votes arrêtés pour ' + categorie.toUpperCase());
-
+              const state = getState();
+              if (!state.vote.active) { alert('Aucun vote en cours'); return; }
+              endVote();
+              alert('Votes arrêtés pour ' + (state.vote.category || '').toUpperCase());
             };
           }
           // Ajouter un poste PAR TYPE OU CLUB
