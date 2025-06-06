@@ -116,6 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!categorie) { alert('Catégorie manquante'); return; }
     if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
     startCandidature(categorie, debut, fin, club);
     alert('Candidatures ouvertes pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
     startCandModal.style.display = 'none';
@@ -374,14 +375,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
 
           document.getElementById('startBtn').onclick = () => {
-            const state = getState();
-            if (state.candidature.active && Date.now() < state.candidature.endTime) {
-              alert('Une session de candidatures est déjà en cours');
-              return;
-            }
             startCandModal.style.display = 'flex';
           };
-          document.getElementById('closeBtn').onclick = () => { endCandidature(); alert('Candidatures fermées'); };
+          document.getElementById('closeBtn').onclick = () => {
+            const cat = prompt('Catégorie à fermer (aes, club, classe) :');
+            if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
+            if (!isCandidatureActive(cat.toLowerCase())) { alert('Pas de session ouverte pour cette catégorie'); return; }
+            endCandidature(cat.toLowerCase());
+            alert('Candidatures fermées pour ' + cat.toUpperCase());
+          };
           document.getElementById('statsBtn').onclick = () => alert('Statistiques des candidats');
           document.getElementById('deleteBtn').onclick = () => {
             if(confirm('Voulez-vous vraiment supprimer ?')) alert('Suppression effectuée');

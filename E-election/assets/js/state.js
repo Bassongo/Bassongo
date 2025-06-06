@@ -1,10 +1,8 @@
 const defaultState = {
   candidature: {
-    active: false,
-    category: null,
-    club: null,
-    startTime: null,
-    endTime: null
+    aes: { active: false, startTime: null, endTime: null },
+    classe: { active: false, startTime: null, endTime: null },
+    club: { active: false, club: null, startTime: null, endTime: null }
   },
   vote: { active: false, category: null, club: null, startTime: null, endTime: null }
 };
@@ -21,9 +19,16 @@ function saveState(state) {
 function getState() {
   const state = loadState();
   let changed = false;
-  if (state.candidature.active && Date.now() > state.candidature.endTime) {
-    state.candidature.active = false;
-    state.candidature.club = null;
+  ['aes', 'classe'].forEach(cat => {
+    const c = state.candidature[cat];
+    if (c.active && Date.now() > c.endTime) {
+      c.active = false;
+      changed = true;
+    }
+  });
+  if (state.candidature.club.active && Date.now() > state.candidature.club.endTime) {
+    state.candidature.club.active = false;
+    state.candidature.club.club = null;
     changed = true;
   }
   if (state.vote.active && Date.now() > state.vote.endTime) {
@@ -37,15 +42,22 @@ function getState() {
 
 function startCandidature(category, startTime, endTime, club = null) {
   const state = getState();
-  state.candidature = { active: true, category, club, startTime, endTime };
+  if (category === 'club') {
+    state.candidature.club = { active: true, club, startTime, endTime };
+  } else if (category === 'aes' || category === 'classe') {
+    state.candidature[category] = { active: true, startTime, endTime };
+  }
   saveState(state);
 }
 
-function endCandidature() {
+function endCandidature(category) {
   const state = getState();
-  state.candidature.active = false;
-  state.candidature.club = null;
-  state.candidature.startTime = null;
+  if (category === 'club') {
+    state.candidature.club.active = false;
+    state.candidature.club.club = null;
+  } else if (category === 'aes' || category === 'classe') {
+    state.candidature[category].active = false;
+  }
   saveState(state);
 }
 
@@ -62,13 +74,17 @@ function endVote() {
   saveState(state);
 }
 
-function isCandidatureActive() {
+function isCandidatureActive(category = null) {
   const s = getState();
-  return (
-    s.candidature.active &&
-    Date.now() >= s.candidature.startTime &&
-    Date.now() < s.candidature.endTime
-  );
+  if (category) {
+    const c = category === 'club' ? s.candidature.club : s.candidature[category];
+    if (!c) return false;
+    return c.active && Date.now() >= c.startTime && Date.now() < c.endTime;
+  }
+  return ['aes', 'classe', 'club'].some(cat => {
+    const c = cat === 'club' ? s.candidature.club : s.candidature[cat];
+    return c.active && Date.now() >= c.startTime && Date.now() < c.endTime;
+  });
 }
 
 function isVoteActive() {

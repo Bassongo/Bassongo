@@ -80,16 +80,22 @@ function chargerPostesClub(club) {
 
 document.addEventListener('DOMContentLoaded', () => {
   const info = document.getElementById('candidature-info');
-  if (!isCandidatureActive()) {
-    if (info) info.textContent = 'Les candidatures ne sont pas ouvertes.';
-    return;
-  } else {
-    const state = getState();
-    if (info) {
-      const deb = new Date(state.candidature.startTime);
-      const end = new Date(state.candidature.endTime);
-      info.textContent =
-        'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
+  const state = getState();
+  const msgs = [];
+  ['aes','classe','club'].forEach(cat => {
+    if (isCandidatureActive(cat)) {
+      const c = cat === 'club' ? state.candidature.club : state.candidature[cat];
+      const deb = new Date(c.startTime);
+      const end = new Date(c.endTime);
+      const label = cat === 'club' ? c.club : cat.toUpperCase();
+      msgs.push(`<strong>${label}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`);
+    }
+  });
+  if (info) {
+    if (msgs.length === 0) {
+      info.textContent = 'Les candidatures ne sont pas ouvertes.';
+    } else {
+      info.innerHTML = msgs.join('<br>');
     }
   }
   const electionButtons = document.querySelectorAll('.election-btn');
@@ -100,7 +106,19 @@ document.addEventListener('DOMContentLoaded', () => {
   electionButtons.forEach(btn => {
     btn.addEventListener('click', (e) => {
       const type = e.target.textContent.trim().toLowerCase();
+      if (!isCandidatureActive(type)) {
+        alert('Les candidatures pour ' + type.toUpperCase() + ' ne sont pas ouvertes.');
+        return;
+      }
       document.getElementById('electionType').value = e.target.textContent;
+      const state = getState();
+      const c = type === 'club' ? state.candidature.club : state.candidature[type];
+      if (info) {
+        const deb = new Date(c.startTime);
+        const end = new Date(c.endTime);
+        const label = type === 'club' ? c.club : type.toUpperCase();
+        info.innerHTML = `<strong>${label}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
+      }
       form.style.display = 'block';
       if (type === 'club') {
         if (clubGroup) clubGroup.style.display = 'block';
