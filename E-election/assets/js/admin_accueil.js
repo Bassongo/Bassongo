@@ -374,6 +374,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
 
           document.getElementById('startBtn').onclick = () => {
+            const state = getState();
+            if (state.candidature.active && Date.now() < state.candidature.endTime) {
+              alert('Une session de candidatures est déjà en cours');
+              return;
+            }
             startCandModal.style.display = 'flex';
           };
           document.getElementById('closeBtn').onclick = () => { endCandidature(); alert('Candidatures fermées'); };
