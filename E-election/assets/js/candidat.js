@@ -86,8 +86,10 @@ document.addEventListener('DOMContentLoaded', () => {
   } else {
     const state = getState();
     if (info) {
+      const deb = new Date(state.candidature.startTime);
       const end = new Date(state.candidature.endTime);
-      info.textContent = 'Fin des candidatures : ' + end.toLocaleString();
+      info.textContent =
+        'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
     }
   }
   const electionButtons = document.querySelectorAll('.election-btn');

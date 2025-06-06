@@ -1,5 +1,11 @@
 const defaultState = {
-  candidature: { active: false, category: null, club: null, endTime: null },
+  candidature: {
+    active: false,
+    category: null,
+    club: null,
+    startTime: null,
+    endTime: null
+  },
   vote: { active: false, category: null, club: null, startTime: null, endTime: null }
 };
 
@@ -29,9 +35,9 @@ function getState() {
   return state;
 }
 
-function startCandidature(category, endTime, club = null) {
+function startCandidature(category, startTime, endTime, club = null) {
   const state = getState();
-  state.candidature = { active: true, category, club, endTime };
+  state.candidature = { active: true, category, club, startTime, endTime };
   saveState(state);
 }
 
@@ -39,6 +45,7 @@ function endCandidature() {
   const state = getState();
   state.candidature.active = false;
   state.candidature.club = null;
+  state.candidature.startTime = null;
   saveState(state);
 }
 
@@ -57,7 +64,11 @@ function endVote() {
 
 function isCandidatureActive() {
   const s = getState();
-  return s.candidature.active && Date.now() < s.candidature.endTime;
+  return (
+    s.candidature.active &&
+    Date.now() >= s.candidature.startTime &&
+    Date.now() < s.candidature.endTime
+  );
 }
 
 function isVoteActive() {
