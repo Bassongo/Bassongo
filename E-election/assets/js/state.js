@@ -1,6 +1,6 @@
 const defaultState = {
-  candidature: { active: false, category: null, endTime: null },
-  vote: { active: false, category: null, startTime: null, endTime: null }
+  candidature: { active: false, category: null, club: null, endTime: null },
+  vote: { active: false, category: null, club: null, startTime: null, endTime: null }
 };
 
 function loadState() {
@@ -17,37 +17,41 @@ function getState() {
   let changed = false;
   if (state.candidature.active && Date.now() > state.candidature.endTime) {
     state.candidature.active = false;
+    state.candidature.club = null;
     changed = true;
   }
   if (state.vote.active && Date.now() > state.vote.endTime) {
     state.vote.active = false;
+    state.vote.club = null;
     changed = true;
   }
   if (changed) saveState(state);
   return state;
 }
 
-function startCandidature(category, endTime) {
+function startCandidature(category, endTime, club = null) {
   const state = getState();
-  state.candidature = { active: true, category, endTime };
+  state.candidature = { active: true, category, club, endTime };
   saveState(state);
 }
 
 function endCandidature() {
   const state = getState();
   state.candidature.active = false;
+  state.candidature.club = null;
   saveState(state);
 }
 
-function startVote(category, startTime, endTime) {
+function startVote(category, startTime, endTime, club = null) {
   const state = getState();
-  state.vote = { active: true, category, startTime, endTime };
+  state.vote = { active: true, category, club, startTime, endTime };
   saveState(state);
 }
 
 function endVote() {
   const state = getState();
   state.vote.active = false;
+  state.vote.club = null;
   saveState(state);
 }
 
