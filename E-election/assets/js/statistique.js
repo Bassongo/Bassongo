@@ -372,5 +372,11 @@ document.getElementById('type-stats').addEventListener('change', function () {
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
+    const state = getState();
+    const info = document.getElementById('stats-global');
+    if (!state.vote.category || !userHasVoted(state.vote.category)) {
+        if (info) info.innerHTML = '<p>Vous devez voter pour voir les statistiques.</p>';
+        return;
+    }
     afficherStats(document.getElementById('type-stats').value);
 });

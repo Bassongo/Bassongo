@@ -489,6 +489,16 @@ document.getElementById('type-election').addEventListener('change', function () 
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
+    const info = document.getElementById('campagne-info');
+    if (!isCandidatureActive()) {
+        if (info) info.textContent = 'Aucune campagne en cours.';
+        document.getElementById('contenu-election').innerHTML = '';
+        return;
+    } else if (info) {
+        const state = getState();
+        const end = new Date(state.candidature.endTime);
+        info.textContent = 'Fin des candidatures : ' + end.toLocaleString();
+    }
     const select = document.getElementById('type-election');
     if (select.value === 'aes') {
         pageAES = parseInt(localStorage.getItem('pageAES')) || 0;

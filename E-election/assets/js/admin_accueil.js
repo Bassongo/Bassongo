@@ -213,6 +213,23 @@ document.addEventListener('DOMContentLoaded', () => {
               }
             };
           }
+          const startVotesBtn = document.getElementById('startVotesBtn');
+          if (startVotesBtn) {
+            startVotesBtn.onclick = () => {
+              const cat = prompt('Catégorie (aes, club, classe) :').toLowerCase();
+              if (!['aes','club','classe'].includes(cat)) return;
+              const duree = parseFloat(prompt('Durée en heures :', '1'));
+              if (isNaN(duree)) return;
+              const start = Date.now();
+              const end = start + duree * 3600000;
+              startVote(cat, start, end);
+              alert('Votes démarrés');
+            };
+          }
+          const stopVotesBtn = document.getElementById('stopVotesBtn');
+          if (stopVotesBtn) {
+            stopVotesBtn.onclick = () => { endVote(); alert('Votes arrêtés'); };
+          }
         }, 10);
       } else if (this.id === 'btn-gestion-candidats') {
         content.innerHTML = `
@@ -231,8 +248,16 @@ document.addEventListener('DOMContentLoaded', () => {
           </div>
         `;
         setTimeout(() => {
-          document.getElementById('startBtn').onclick = () => alert('Candidatures ouvertes !');
-          document.getElementById('closeBtn').onclick = () => alert('Candidatures fermées !');
+          document.getElementById('startBtn').onclick = () => {
+            const cat = prompt("Catégorie (aes, club, classe) :").toLowerCase();
+            if (!['aes','club','classe'].includes(cat)) return;
+            const fin = prompt('Date/heure fin (YYYY-MM-DD HH:MM) :');
+            const end = Date.parse(fin.replace(' ', 'T'));
+            if (isNaN(end)) { alert('Date invalide'); return; }
+            startCandidature(cat, end);
+            alert('Candidatures ouvertes');
+          };
+          document.getElementById('closeBtn').onclick = () => { endCandidature(); alert('Candidatures fermées'); };
           document.getElementById('statsBtn').onclick = () => alert('Statistiques des candidats');
           document.getElementById('deleteBtn').onclick = () => {
             if(confirm('Voulez-vous vraiment supprimer ?')) alert('Suppression effectuée');

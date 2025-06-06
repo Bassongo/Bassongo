@@ -305,6 +305,7 @@ function afficherAES(index = pageAES) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('aes', index, poste.candidats[idx]);
+                setUserVoted('aes');
                 afficherAES(index);
             });
         });
@@ -376,6 +377,7 @@ function afficherClub(index = pageClub) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('club', index, club.candidats[idx]);
+                setUserVoted('club');
                 afficherClub(index);
             });
         });
@@ -490,6 +492,7 @@ function afficherClasse(index = pageClasse) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('classe', index, poste.candidats[idx]);
+                setUserVoted('classe');
                 afficherClasse(index);
             });
         });
@@ -529,6 +532,17 @@ document.getElementById('type-election').addEventListener('change', function () 
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
+    const info = document.getElementById('vote-info');
+    if (!isVoteActive()) {
+        if (info) info.textContent = 'Aucun vote en cours.';
+        document.getElementById('contenu-vote').innerHTML = '';
+        return;
+    } else if (info) {
+        const state = getState();
+        const deb = new Date(state.vote.startTime);
+        const fin = new Date(state.vote.endTime);
+        info.textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + fin.toLocaleString();
+    }
     const select = document.getElementById('type-election');
     if (select.value === 'aes') {
         afficherAES(pageAES);
