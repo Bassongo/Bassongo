@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 chargerPostes(type);
             }
         });
-    });
+});
 
     // Si la page est dédiée à la classe, charger directement les postes de classe
     if (document.body.dataset.candidatureClasse === "true") {
@@ -168,4 +168,48 @@ document.addEventListener('DOMContentLoaded', () => {
         chargerPostes('classe');
         if (form) form.style.display = 'block';
     }
+});
+// Gestion de la soumission du formulaire de candidature
+// Sauvegarde les données et redirige vers la page Mes candidatures
+window.addEventListener('DOMContentLoaded', () => {
+    const btn = document.getElementById('validerCandidatureBtn');
+    const form = document.getElementById('newCandidature');
+    if (!btn || !form) return;
+    btn.addEventListener('click', () => {
+        const type = localStorage.getItem('lastCandidatureType');
+        if (!type) {
+            alert('Sélectionnez d\'abord le type d\'élection');
+            return;
+        }
+        const nom = document.getElementById('nom').value.trim();
+        const prenom = document.getElementById('prenom').value.trim();
+        const classe = document.getElementById('classe').value;
+        const poste = document.getElementById('posteSelect').value;
+        const programme = document.getElementById('programme').value.trim();
+        const club = type === 'club' ? document.getElementById('clubSelect').value : '';
+        if (!nom || !prenom || !classe || !poste || !programme || (type === 'club' && !club)) {
+            alert('Veuillez remplir tous les champs requis');
+            return;
+        }
+        const photoInput = document.getElementById('photo');
+        let photoUrl = '';
+        if (photoInput.files && photoInput.files[0]) {
+            photoUrl = URL.createObjectURL(photoInput.files[0]);
+        }
+        const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+        candidatures.push({
+            id: Date.now(),
+            type,
+            club,
+            nom,
+            prenom,
+            classe,
+            poste,
+            programme,
+            photo: photoUrl,
+            date: new Date().toLocaleDateString()
+        });
+        localStorage.setItem('candidatures', JSON.stringify(candidatures));
+        window.location.href = 'mes-candidatures.html';
+    });
 });
