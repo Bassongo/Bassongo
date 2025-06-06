@@ -294,6 +294,19 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
     const selection = this.value;
+    const info = document.getElementById('campagne-info');
+    if (!isCandidatureActive(selection)) {
+        if (info) info.textContent = 'Aucune campagne en cours pour ' + selection.toUpperCase();
+        document.getElementById('contenu-election').innerHTML = '';
+        return;
+    }
+    const state = getState();
+    const c = selection === 'club' ? state.candidature.club : state.candidature[selection];
+    if (info) {
+        const deb = new Date(c.startTime);
+        const end = new Date(c.endTime);
+        info.textContent = 'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
+    }
     if (selection === 'aes') {
         pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
         afficherAES(pageAES);
@@ -304,7 +317,6 @@ document.getElementById('type-election').addEventListener('change', function () 
         pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
         afficherClasse(pageClasse);
     } else {
-        // Cas par défaut : message d'attente
         document.getElementById('contenu-election').innerHTML = `
             <h2>Élections ${selection.toUpperCase()}</h2>
             <p>Les détails des élections pour ${selection} seront bientôt disponibles.</p>
@@ -317,18 +329,18 @@ document.getElementById('type-election').addEventListener('change', function () 
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
     const info = document.getElementById('campagne-info');
-    if (!isCandidatureActive()) {
-        if (info) info.textContent = 'Aucune campagne en cours.';
+    const select = document.getElementById('type-election');
+    if (!isCandidatureActive(select.value)) {
+        if (info) info.textContent = 'Aucune campagne en cours pour ' + select.value.toUpperCase();
         document.getElementById('contenu-election').innerHTML = '';
         return;
     } else if (info) {
         const state = getState();
-        const deb = new Date(state.candidature.startTime);
-        const end = new Date(state.candidature.endTime);
+        const c = select.value === 'club' ? state.candidature.club : state.candidature[select.value];
+        const deb = new Date(c.startTime);
+        const end = new Date(c.endTime);
         info.textContent = 'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
     }
-
-    const select = document.getElementById('type-election');
     if (select.value === 'aes') {
         pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
         afficherAES(pageAES);
