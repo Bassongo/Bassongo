@@ -1,9 +1,54 @@
 // ===============================
 // Fonctions utilitaires pour charger les postes et clubs
 // ===============================
-function chargerPostes(type) { /* ... */ }
-function chargerClubs() { /* ... */ }
-function chargerPostesClub(club) { /* ... */ }
+
+// Charge les postes pour AES ou Classe selon le type sélectionné
+function chargerPostes(type) {
+    const select = document.getElementById('posteSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
+    let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+    const postes = postesByType[type] || [];
+    postes.forEach(poste => {
+        const opt = document.createElement('option');
+        opt.value = poste;
+        opt.textContent = poste;
+        select.appendChild(opt);
+    });
+}
+
+// Charge les clubs dans la liste déroulante
+function chargerClubs() {
+    const select = document.getElementById('clubSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="" disabled selected>Choisir un club</option>';
+    const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+    clubs.forEach(club => {
+        const opt = document.createElement('option');
+        opt.value = club;
+        opt.textContent = club;
+        select.appendChild(opt);
+    });
+    // Recharge les postes du club sélectionné à chaque changement
+    select.onchange = function() {
+        chargerPostesClub(this.value);
+    };
+}
+
+// Charge les postes pour un club donné
+function chargerPostesClub(club) {
+    const select = document.getElementById('posteSelect');
+    if (!select) return;
+    select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
+    let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+    const postes = postesByClub[club] || [];
+    postes.forEach(poste => {
+        const opt = document.createElement('option');
+        opt.value = poste;
+        opt.textContent = poste;
+        select.appendChild(opt);
+    });
+}
 
 // ===============================
 // Récupère l'état des sessions de candidature
@@ -52,7 +97,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const form = document.getElementById('newCandidature');
     const clubGroup = document.getElementById('clubGroup');
     const clubSelect = document.getElementById('clubSelect');
+    const posteSelect = document.getElementById('posteSelect');
 
+    // Par défaut, masquer le formulaire et les groupes spécifiques
+    if (form) form.style.display = 'none';
+    if (clubGroup) clubGroup.style.display = 'none';
+
+    // Lorsqu'on clique sur un bouton de type (AES, Club, Classe)
     electionButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const type = btn.dataset.type;
@@ -64,6 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!checkAndCloseCandidatureSession(type)) {
                 if (info) info.innerHTML = `<span style="color:red;">Session terminée ou non ouverte pour ${type.toUpperCase()}.</span>`;
                 if (form) form.style.display = 'none';
+                if (clubGroup) clubGroup.style.display = 'none';
                 return;
             }
 
@@ -71,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!c || !c.active) {
                 if (info) info.innerHTML = `<span style="color:red;">Session non ouverte pour ${type.toUpperCase()}.</span>`;
                 if (form) form.style.display = 'none';
+                if (clubGroup) clubGroup.style.display = 'none';
                 return;
             }
 
@@ -78,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Date.now() < c.start) {
                 if (info) info.innerHTML = `<span style="color:orange;">La session de candidature pour ${type.toUpperCase()} n'a pas encore commencé.</span>`;
                 if (form) form.style.display = 'none';
+                if (clubGroup) clubGroup.style.display = 'none';
                 return;
             }
 
@@ -95,10 +149,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (clubGroup) clubGroup.style.display = 'block';
                 chargerClubs();
                 chargerPostesClub(clubSelect.value);
+            } else if (type === 'aes') {
+                if (clubGroup) clubGroup.style.display = 'none';
+                chargerPostes('aes');
+            } else if (type === 'classe') {
+                if (clubGroup) clubGroup.style.display = 'none';
+                chargerPostes('classe');
             } else {
                 if (clubGroup) clubGroup.style.display = 'none';
                 chargerPostes(type);
             }
         });
     });
+
+    // Si la page est dédiée à la classe, charger directement les postes de classe
+    if (document.body.dataset.candidatureClasse === "true") {
+        if (clubGroup) clubGroup.style.display = 'none';
+        chargerPostes('classe');
+        if (form) form.style.display = 'block';
+    }
 });
