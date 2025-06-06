@@ -8,8 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const step1 = document.getElementById('step1');
   const step2 = document.getElementById('step2');
   const voteType = document.getElementById('voteType');
-  const voteClubGroup = document.getElementById('voteClubGroup');
-  const voteClub = document.getElementById('voteClub');
+  const voteClubGroup = null;
+  const voteClub = null;
   const startVoteInput = document.getElementById('startVote');
   const endVoteInput = document.getElementById('endVote');
 
@@ -22,8 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const candStep1 = document.getElementById('candStep1');
   const candStep2 = document.getElementById('candStep2');
   const candType = document.getElementById('candType');
-  const candClubGroup = document.getElementById('candClubGroup');
-  const candClub = document.getElementById('candClub');
+  const candClubGroup = null;
+  const candClub = null;
   const startCandDate = document.getElementById('startCandDate');
   const endCandDate = document.getElementById('endCandDate');
 
@@ -43,8 +43,6 @@ document.addEventListener('DOMContentLoaded', () => {
     step1.style.display = 'block';
     step2.style.display = 'none';
     voteType.value = '';
-    if (voteClubGroup) voteClubGroup.style.display = 'none';
-    if (voteClub) voteClub.innerHTML = '';
     startVoteInput.value = '';
     endVoteInput.value = '';
   }
@@ -53,72 +51,55 @@ document.addEventListener('DOMContentLoaded', () => {
     candStep1.style.display = 'block';
     candStep2.style.display = 'none';
     candType.value = '';
-    if (candClubGroup) candClubGroup.style.display = 'none';
-    if (candClub) candClub.innerHTML = '';
     if (startCandDate) startCandDate.value = '';
     endCandDate.value = '';
   }
 
   if (closeStartVotes) closeStartVotes.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
   if (cancelVoteModal) cancelVoteModal.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
-  if (voteType) voteType.onchange = () => {
-    if (voteType.value === 'club') {
-      loadClubs(voteClub);
-      if (voteClubGroup) voteClubGroup.style.display = 'block';
-    } else if (voteClubGroup) {
-      voteClubGroup.style.display = 'none';
-    }
-  };
+  if (voteType) voteType.onchange = () => {};
   if (nextToDates) nextToDates.onclick = () => {
     if (!voteType.value) { alert('Choisissez un type'); return; }
-    if (voteType.value === 'club' && !voteClub.value) { alert('Sélectionnez un club'); return; }
     step1.style.display = 'none';
     step2.style.display = 'block';
   };
   if (validateVoteModal) validateVoteModal.onclick = () => {
     const categorie = voteType.value;
-    const club = voteType.value === 'club' ? voteClub.value : null;
+    const club = null;
     const debut = Date.parse(startVoteInput.value);
     const fin = Date.parse(endVoteInput.value);
     if (!categorie) { alert('Type manquant'); return; }
-    if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
     const candidats = JSON.parse(localStorage.getItem('candidatures')) || [];
-    const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie && (categorie !== 'club' || c.club === club));
+    const existe = candidats.some(c => (c.type || '').toLowerCase() === categorie);
+    const state = getState();
+    const candActive = categorie === 'club' ? state.candidature.club.active : state.candidature[categorie].active;
+    if (candActive) { alert('Les candidatures pour cette catégorie ne sont pas terminées'); return; }
     if (!existe) { alert('Pas possible car pas de candidats'); return; }
     startVote(categorie, debut, fin, club);
-    alert('Votes démarrés pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
+    alert('Votes démarrés pour ' + categorie.toUpperCase());
     startVotesModal.style.display = 'none';
     resetVoteModal();
   };
 
   if (closeStartCand) closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
   if (cancelCandModal) cancelCandModal.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
-  if (candType) candType.onchange = () => {
-    if (candType.value === 'club') {
-      loadClubs(candClub);
-      if (candClubGroup) candClubGroup.style.display = 'block';
-    } else if (candClubGroup) {
-      candClubGroup.style.display = 'none';
-    }
-  };
+  if (candType) candType.onchange = () => {};
   if (candNextToDate) candNextToDate.onclick = () => {
     if (!candType.value) { alert('Choisissez une catégorie'); return; }
-    if (candType.value === 'club' && !candClub.value) { alert('Sélectionnez un club'); return; }
     candStep1.style.display = 'none';
     candStep2.style.display = 'block';
   };
   if (validateCandModal) validateCandModal.onclick = () => {
     const categorie = candType.value;
-    const club = candType.value === 'club' ? candClub.value : null;
+    const club = null;
     const debut = Date.parse(startCandDate.value);
     const fin = Date.parse(endCandDate.value);
     if (!categorie) { alert('Catégorie manquante'); return; }
-    if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
     if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
     startCandidature(categorie, debut, fin, club);
-    alert('Candidatures ouvertes pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
+    alert('Candidatures ouvertes pour ' + categorie.toUpperCase());
     startCandModal.style.display = 'none';
     resetCandModal();
   };

@@ -78,7 +78,7 @@ function chargerPostesClub(club) {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+function updateInfo() {
   const info = document.getElementById('candidature-info');
   const state = getState();
   const msgs = [];
@@ -98,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
       info.innerHTML = msgs.join('<br>');
     }
   }
+}
+
+function initCandidatPage() {
+  updateInfo();
   const electionButtons = document.querySelectorAll('.election-btn');
   const form = document.getElementById('newCandidature');
   const clubGroup = document.getElementById('clubGroup');
@@ -120,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         info.innerHTML = `<strong>${label}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
       }
       form.style.display = 'block';
+      localStorage.setItem('lastCandidatureType', type);
       if (type === 'club') {
         if (clubGroup) clubGroup.style.display = 'block';
         chargerClubs();
@@ -135,6 +140,12 @@ document.addEventListener('DOMContentLoaded', () => {
     clubSelect.addEventListener('change', (e) => {
       chargerPostesClub(e.target.value);
     });
+  }
+
+  const last = localStorage.getItem('lastCandidatureType');
+  if (last) {
+    const btn = Array.from(electionButtons).find(b => b.textContent.trim().toLowerCase() === last);
+    if (btn && isCandidatureActive(last)) btn.click();
   }
 
   document.getElementById('validerCandidatureBtn').addEventListener('click', () => {
@@ -158,4 +169,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     window.location.href = 'mes-candidatures.html';
   });
-});
+
+}
+
+document.addEventListener('DOMContentLoaded', initCandidatPage);
+document.addEventListener('stateChanged', initCandidatPage);

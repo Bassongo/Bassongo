@@ -337,6 +337,7 @@ function afficherClasse(index = pageClasse) {
 // Gestion du selecteur de type d'élection
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
+    localStorage.setItem('lastVoteType', this.value);
     const selection = this.value;
     if (selection === 'aes') {
         pageAES = 0;
@@ -358,8 +359,11 @@ document.getElementById('type-election').addEventListener('change', function () 
 // ===============================
 // Affichage initial à l'ouverture de la page
 // ===============================
-window.addEventListener('DOMContentLoaded', function() {
+function initVotePage() {
     const info = document.getElementById('vote-info');
+    const select = document.getElementById('type-election');
+    const stored = localStorage.getItem('lastVoteType');
+    if (stored) select.value = stored;
     if (!isVoteActive()) {
         if (info) info.textContent = 'Aucun vote en cours.';
         document.getElementById('contenu-vote').innerHTML = '';
@@ -370,17 +374,8 @@ window.addEventListener('DOMContentLoaded', function() {
         const fin = new Date(state.vote.endTime);
         info.textContent = 'Vote du ' + deb.toLocaleString() + ' au ' + fin.toLocaleString();
     }
-    const select = document.getElementById('type-election');
-    if (select.value === 'aes') {
-        afficherAES(pageAES);
-    } else if (select.value === 'club') {
-        afficherClub(pageClub);
-    } else if (select.value === 'classe') {
-        afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-vote').innerHTML = `
-            <h2>Élections ${select.value.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${select.value} seront bientôt disponibles.</p>
-        `;
-    }
-});
+    select.dispatchEvent(new Event('change'));
+}
+
+document.addEventListener('DOMContentLoaded', initVotePage);
+document.addEventListener('stateChanged', initVotePage);

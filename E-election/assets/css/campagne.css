@@ -9,6 +9,17 @@
     border-radius: var(--radius);
     box-shadow: 0 4px 24px 0 rgba(37, 99, 235, 0.10);
 }
+
+#campagne-info {
+    background: var(--primary-light);
+    border-left: 4px solid var(--primary);
+    padding: 0.5rem 1rem;
+    margin-bottom: 1rem;
+    text-align: center;
+    border-radius: var(--radius);
+    font-weight: 600;
+    color: var(--primary);
+}
 .candidats, .membres {
     display: flex;
     flex-wrap: wrap;
