@@ -323,8 +323,9 @@ window.addEventListener('DOMContentLoaded', function() {
         return;
     } else if (info) {
         const state = getState();
+        const deb = new Date(state.candidature.startTime);
         const end = new Date(state.candidature.endTime);
-        info.textContent = 'Fin des candidatures : ' + end.toLocaleString();
+        info.textContent = 'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
     }
 
     const select = document.getElementById('type-election');

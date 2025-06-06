@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const candType = document.getElementById('candType');
   const candClubGroup = document.getElementById('candClubGroup');
   const candClub = document.getElementById('candClub');
+  const startCandDate = document.getElementById('startCandDate');
   const endCandDate = document.getElementById('endCandDate');
 
   function loadClubs(select) {
@@ -54,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
     candType.value = '';
     if (candClubGroup) candClubGroup.style.display = 'none';
     if (candClub) candClub.innerHTML = '';
+    if (startCandDate) startCandDate.value = '';
     endCandDate.value = '';
   }
 
@@ -109,11 +111,12 @@ document.addEventListener('DOMContentLoaded', () => {
   if (validateCandModal) validateCandModal.onclick = () => {
     const categorie = candType.value;
     const club = candType.value === 'club' ? candClub.value : null;
+    const debut = Date.parse(startCandDate.value);
     const fin = Date.parse(endCandDate.value);
     if (!categorie) { alert('Catégorie manquante'); return; }
     if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
-    if (isNaN(fin)) { alert('Date invalide'); return; }
-    startCandidature(categorie, fin, club);
+    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    startCandidature(categorie, debut, fin, club);
     alert('Candidatures ouvertes pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
     startCandModal.style.display = 'none';
     resetCandModal();
