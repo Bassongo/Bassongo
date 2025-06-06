@@ -129,3 +129,12 @@
     .main-vote { margin: 10px 0 0 0; border-radius: 0; }
     #contenu-vote { padding: 1rem 0.2rem; }
 }
+
+.fade-in {
+    animation: fadeInVote 0.4s ease;
+}
+
+@keyframes fadeInVote {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
