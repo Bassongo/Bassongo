@@ -140,8 +140,9 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // ===============================
 // Affichage AES (par poste)
 // ===============================
-function afficherAES(index = pageAES) {
+function afficherAES(index = 0) {
     loadCandidates();
+    pageAES = index;
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('aes');
     const state = getState();
@@ -155,9 +156,7 @@ function afficherAES(index = pageAES) {
             contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
             return;
         }
-        // Si la date de fin est atteinte, fermer la session et afficher un message
         if (Date.now() > v.end) {
-            // Fermer la session côté localStorage
             let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
             if (votes['aes'] && votes['aes'].active) {
                 votes['aes'].active = false;
@@ -171,13 +170,13 @@ function afficherAES(index = pageAES) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
         return;
     }
-    const poste = donneesAES[index];
+    const poste = donneesAES[pageAES];
     if (!poste) {
         contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('aes', index);
-    const dejaVote = hasVoted('aes', index);
+    const voteKey = getVoteKey('aes', pageAES);
+    const dejaVote = hasVoted('aes', pageAES);
 
     // Génère le HTML des candidats avec bouton de vote
     const candidatsHTML = poste.candidats.map((c, i) => {
@@ -196,9 +195,9 @@ function afficherAES(index = pageAES) {
 
     // Pagination
     const paginationHTML = `
-        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Poste ${index + 1} / ${donneesAES.length}</span>
-        <button class="page-next" ${index === donneesAES.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${pageAES === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Poste ${pageAES + 1} / ${donneesAES.length}</span>
+        <button class="page-next" ${pageAES === donneesAES.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -210,20 +209,16 @@ function afficherAES(index = pageAES) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
-    contenu.classList.add('fade-in');
-    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) {
-            pageAES = index - 1;
-            afficherAES(pageAES);
+        if (pageAES > 0) {
+            afficherAES(pageAES - 1);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesAES.length - 1) {
-            pageAES = index + 1;
-            afficherAES(pageAES);
+        if (pageAES < donneesAES.length - 1) {
+            afficherAES(pageAES + 1);
         }
     });
 
@@ -232,12 +227,12 @@ function afficherAES(index = pageAES) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('aes', index, poste.candidats[idx]);
+                setVote('aes', pageAES, poste.candidats[idx]);
                 setUserVoted('aes');
                 if (hasVotedAll('aes')) {
                     localStorage.setItem('canSeeStats', 'aes');
                 }
-                afficherAES(index);
+                afficherAES(pageAES);
             });
         });
     }
@@ -253,8 +248,9 @@ function afficherAES(index = pageAES) {
 // ===============================
 // Affichage Clubs (par club)
 // ===============================
-function afficherClub(index = pageClub) {
+function afficherClub(index = 0) {
     loadCandidates();
+    pageClub = index;
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('club');
     const state = getState();
@@ -268,7 +264,6 @@ function afficherClub(index = pageClub) {
             contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
             return;
         }
-        // Si la date de fin est atteinte, fermer la session et afficher un message
         if (Date.now() > v.end) {
             let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
             if (votes['club'] && votes['club'].active) {
@@ -283,13 +278,13 @@ function afficherClub(index = pageClub) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
         return;
     }
-    const club = donneesClubs[index];
+    const club = donneesClubs[pageClub];
     if (!club) {
         contenu.innerHTML = `<div class="alert">Aucun club disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('club', index);
-    const dejaVote = hasVoted('club', index);
+    const voteKey = getVoteKey('club', pageClub);
+    const dejaVote = hasVoted('club', pageClub);
 
     // Génère le HTML pour chaque candidat à la présidence du club
     const candidatsHTML = club.candidats.map((candidat, idx) => {
@@ -313,9 +308,9 @@ function afficherClub(index = pageClub) {
 
     // Pagination clubs
     const paginationHTML = `
-        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Club ${index + 1} / ${donneesClubs.length}</span>
-        <button class="page-next" ${index === donneesClubs.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${pageClub === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Club ${pageClub + 1} / ${donneesClubs.length}</span>
+        <button class="page-next" ${pageClub === donneesClubs.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -325,20 +320,16 @@ function afficherClub(index = pageClub) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce club.<br>Merci pour votre participation !</div>` : ""}
     `;
-    contenu.classList.add('fade-in');
-    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination clubs
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) {
-            pageClub = index - 1;
-            afficherClub(pageClub);
+        if (pageClub > 0) {
+            afficherClub(pageClub - 1);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClubs.length - 1) {
-            pageClub = index + 1;
-            afficherClub(pageClub);
+        if (pageClub < donneesClubs.length - 1) {
+            afficherClub(pageClub + 1);
         }
     });
 
@@ -347,12 +338,12 @@ function afficherClub(index = pageClub) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('club', index, club.candidats[idx]);
+                setVote('club', pageClub, club.candidats[idx]);
                 setUserVoted('club');
                 if (hasVotedAll('club')) {
                     localStorage.setItem('canSeeStats', 'club');
                 }
-                afficherClub(index);
+                afficherClub(pageClub);
             });
         });
     }
@@ -368,7 +359,7 @@ function afficherClub(index = pageClub) {
     contenu.querySelectorAll('.btn-membres').forEach(btn => {
         btn.addEventListener('click', function() {
             const idxCandidat = parseInt(this.getAttribute('data-candidat'));
-            afficherMembresClub(index, idxCandidat);
+            afficherMembresClub(pageClub, idxCandidat);
         });
     });
 }
@@ -376,8 +367,9 @@ function afficherClub(index = pageClub) {
 // ===============================
 // Affichage Classe (par poste)
 // ===============================
-function afficherClasse(index = pageClasse) {
+function afficherClasse(index = 0) {
     loadCandidates();
+    pageClasse = index;
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('classe');
     const state = getState();
@@ -391,7 +383,6 @@ function afficherClasse(index = pageClasse) {
             contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
             return;
         }
-        // Si la date de fin est atteinte, fermer la session et afficher un message
         if (Date.now() > v.end) {
             let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
             if (votes['classe'] && votes['classe'].active) {
@@ -406,13 +397,13 @@ function afficherClasse(index = pageClasse) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
         return;
     }
-    const poste = donneesClasse[index];
+    const poste = donneesClasse[pageClasse];
     if (!poste) {
         contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('classe', index);
-    const dejaVote = hasVoted('classe', index);
+    const voteKey = getVoteKey('classe', pageClasse);
+    const dejaVote = hasVoted('classe', pageClasse);
 
     // Génère le HTML des candidats
     const candidatsHTML = poste.candidats.map((c, i) => {
@@ -431,9 +422,9 @@ function afficherClasse(index = pageClasse) {
 
     // Pagination
     const paginationHTML = `
-        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Poste ${index + 1} / ${donneesClasse.length}</span>
-        <button class="page-next" ${index === donneesClasse.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${pageClasse === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Poste ${pageClasse + 1} / ${donneesClasse.length}</span>
+        <button class="page-next" ${pageClasse === donneesClasse.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -445,20 +436,16 @@ function afficherClasse(index = pageClasse) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
-    contenu.classList.add('fade-in');
-    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (index > 0) {
-            pageClasse = index - 1;
-            afficherClasse(pageClasse);
+        if (pageClasse > 0) {
+            afficherClasse(pageClasse - 1);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (index < donneesClasse.length - 1) {
-            pageClasse = index + 1;
-            afficherClasse(pageClasse);
+        if (pageClasse < donneesClasse.length - 1) {
+            afficherClasse(pageClasse + 1);
         }
     });
 
@@ -467,12 +454,12 @@ function afficherClasse(index = pageClasse) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('classe', index, poste.candidats[idx]);
+                setVote('classe', pageClasse, poste.candidats[idx]);
                 setUserVoted('classe');
                 if (hasVotedAll('classe')) {
                     localStorage.setItem('canSeeStats', 'classe');
                 }
-                afficherClasse(index);
+                afficherClasse(pageClasse);
             });
         });
     }
@@ -488,9 +475,11 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-document.getElementById('type-election').addEventListener('change', function () {
-    const selection = this.value;
+function handleTypeElectionChange() {
+    const select = document.getElementById('type-election');
+    const selection = select.value;
     updateVoteInfo(selection);
+    // Réinitialise la pagination à chaque changement de filtre
     pageAES = 0;
     pageClub = 0;
     pageClasse = 0;
@@ -501,7 +490,7 @@ document.getElementById('type-election').addEventListener('change', function () 
     } else if (selection === 'classe') {
         afficherClasse(pageClasse);
     }
-});
+}
 
 // ===============================
 // Affichage initial à l'ouverture de la page
@@ -511,8 +500,9 @@ window.addEventListener('DOMContentLoaded', function() {
     const select = document.getElementById('type-election');
     select.value = 'aes';
     updateVoteInfo('aes');
-    pageAES = 0;
-    pageClub = 0;
-    pageClasse = 0;
     afficherAES(pageAES);
+
+    // Ajoute l'écouteur de changement à chaque fois (pour navigation fluide)
+    select.removeEventListener('change', handleTypeElectionChange);
+    select.addEventListener('change', handleTypeElectionChange);
 });

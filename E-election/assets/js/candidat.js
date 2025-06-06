@@ -1,8 +1,6 @@
 // ===============================
 // Fonctions utilitaires pour charger les postes et clubs
 // ===============================
-
-// Charge les postes pour AES ou Classe selon le type sélectionné
 function chargerPostes(type) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
@@ -17,7 +15,6 @@ function chargerPostes(type) {
     });
 }
 
-// Charge les clubs dans la liste déroulante
 function chargerClubs() {
     const select = document.getElementById('clubSelect');
     if (!select) return;
@@ -29,13 +26,11 @@ function chargerClubs() {
         opt.textContent = club;
         select.appendChild(opt);
     });
-    // Recharge les postes du club sélectionné à chaque changement
     select.onchange = function() {
         chargerPostesClub(this.value);
     };
 }
 
-// Charge les postes pour un club donné
 function chargerPostesClub(club) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
@@ -73,22 +68,6 @@ function checkAndCloseCandidatureSession(categorie) {
 }
 
 // ===============================
-// Vérifie si une session de candidature est active et dans la période
-// ===============================
-function isCandidatureActive(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
-    if (!candidatures[categorie]) return false;
-    const now = Date.now();
-    // Ferme la session si la date de fin est dépassée
-    if (candidatures[categorie].active && now > candidatures[categorie].end) {
-        candidatures[categorie].active = false;
-        localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-        return false;
-    }
-    return candidatures[categorie].active && now >= candidatures[categorie].start && now <= candidatures[categorie].end;
-}
-
-// ===============================
 // Gestion de l'affichage du formulaire de candidature selon la session
 // ===============================
 document.addEventListener('DOMContentLoaded', () => {
@@ -103,12 +82,15 @@ document.addEventListener('DOMContentLoaded', () => {
     if (form) form.style.display = 'none';
     if (clubGroup) clubGroup.style.display = 'none';
 
+    // Stocke le type sélectionné pour la soumission
+    let currentType = null;
+
     // Lorsqu'on clique sur un bouton de type (AES, Club, Classe)
     electionButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const type = btn.dataset.type;
+            currentType = type;
             const state = getState();
-            // Récupère la session pour la catégorie
             const c = type === 'club' ? state.candidature.club : state.candidature[type];
 
             // 1. Ferme la session si la date de fin est dépassée
@@ -160,56 +142,73 @@ document.addEventListener('DOMContentLoaded', () => {
                 chargerPostes(type);
             }
         });
-});
+    });
+
+    // Gestion de la soumission du formulaire de candidature
+    if (form) {
+        form.onsubmit = function(e) {
+            e.preventDefault();
+
+            // Vérifie le type sélectionné
+            const type = currentType || localStorage.getItem('lastCandidatureType');
+            if (!type) {
+                alert("Veuillez d'abord choisir un type de candidature.");
+                return;
+            }
+
+            // Vérifie le poste sélectionné
+            const poste = posteSelect ? posteSelect.value : '';
+            if (!poste) {
+                alert("Veuillez choisir un poste.");
+                return;
+            }
+
+            // Pour club, vérifie le club sélectionné
+            let club = '';
+            if (type === 'club') {
+                club = clubSelect ? clubSelect.value : '';
+                if (!club) {
+                    alert("Veuillez choisir un club.");
+                    return;
+                }
+            }
+
+            // Récupère les autres champs du formulaire (exemple)
+            const nom = form.querySelector('[name="nom"]')?.value || '';
+            const prenom = form.querySelector('[name="prenom"]')?.value || '';
+            // Ajoute ici d'autres champs si besoin
+
+            if (!nom || !prenom) {
+                alert("Veuillez remplir tous les champs obligatoires.");
+                return;
+            }
+
+            // Création de la candidature
+            const candidature = {
+                type,
+                poste,
+                club,
+                nom,
+                prenom
+                // ...autres champs...
+            };
+
+            // Ajout dans le localStorage
+            let candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+            candidatures.push(candidature);
+            localStorage.setItem('candidatures', JSON.stringify(candidatures));
+
+            // Redirection vers la page de mes candidatures
+            window.location.href = "mes_candidatures.html";
+        };
+    }
 
     // Si la page est dédiée à la classe, charger directement les postes de classe
     if (document.body.dataset.candidatureClasse === "true") {
         if (clubGroup) clubGroup.style.display = 'none';
         chargerPostes('classe');
         if (form) form.style.display = 'block';
+        currentType = 'classe';
+        localStorage.setItem('lastCandidatureType', 'classe');
     }
-});
-// Gestion de la soumission du formulaire de candidature
-// Sauvegarde les données et redirige vers la page Mes candidatures
-window.addEventListener('DOMContentLoaded', () => {
-    const btn = document.getElementById('validerCandidatureBtn');
-    const form = document.getElementById('newCandidature');
-    if (!btn || !form) return;
-    btn.addEventListener('click', () => {
-        const type = localStorage.getItem('lastCandidatureType');
-        if (!type) {
-            alert('Sélectionnez d\'abord le type d\'élection');
-            return;
-        }
-        const nom = document.getElementById('nom').value.trim();
-        const prenom = document.getElementById('prenom').value.trim();
-        const classe = document.getElementById('classe').value;
-        const poste = document.getElementById('posteSelect').value;
-        const programme = document.getElementById('programme').value.trim();
-        const club = type === 'club' ? document.getElementById('clubSelect').value : '';
-        if (!nom || !prenom || !classe || !poste || !programme || (type === 'club' && !club)) {
-            alert('Veuillez remplir tous les champs requis');
-            return;
-        }
-        const photoInput = document.getElementById('photo');
-        let photoUrl = '';
-        if (photoInput.files && photoInput.files[0]) {
-            photoUrl = URL.createObjectURL(photoInput.files[0]);
-        }
-        const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
-        candidatures.push({
-            id: Date.now(),
-            type,
-            club,
-            nom,
-            prenom,
-            classe,
-            poste,
-            programme,
-            photo: photoUrl,
-            date: new Date().toLocaleDateString()
-        });
-        localStorage.setItem('candidatures', JSON.stringify(candidatures));
-        window.location.href = 'mes-candidatures.html';
-    });
 });
