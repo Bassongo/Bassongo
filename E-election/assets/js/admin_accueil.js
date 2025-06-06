@@ -94,6 +94,7 @@ document.addEventListener('DOMContentLoaded', () => {
           const startVotesBtn = document.getElementById('startVotesBtn');
           if (startVotesBtn) {
             startVotesBtn.onclick = () => {
+
               const cat = prompt('Catégorie pour démarrer les votes (aes, club ou classe) ?');
               const categorie = cat ? cat.toLowerCase() : '';
               if (!['aes','club','classe'].includes(categorie)) { alert('Catégorie invalide'); return; }
@@ -116,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
               voteStatut[categorie] = false;
               localStorage.setItem('voteStatus', JSON.stringify(voteStatut));
               alert('Votes arrêtés pour ' + categorie.toUpperCase());
+
             };
           }
           // Ajouter un poste PAR TYPE OU CLUB
