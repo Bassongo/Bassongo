@@ -172,6 +172,11 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
+      if (isCandidatureActive(categorie)) {
+        alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
+        return;
+      }
+
       // Stockage de la session de vote
       startVote(categorie, debut, fin, club);
       alert('Votes démarrés pour ' + (categorie === 'club' ? club : categorie).toUpperCase());

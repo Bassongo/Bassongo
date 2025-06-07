@@ -34,6 +34,13 @@ function loadCandidates() {
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
 }
 
+function hasCandidates(cat) {
+    if (cat === 'aes') return donneesAES.length > 0;
+    if (cat === 'club') return donneesClubs.length > 0;
+    if (cat === 'classe') return donneesClasse.length > 0;
+    return false;
+}
+
 
 // ===============================
 // Variables de pagination
@@ -291,71 +298,40 @@ function afficherClasse(index = pageClasse) {
     });
 }
 
+function afficherCategorie(cat) {
+    loadCandidates();
+    const info = document.getElementById('campagne-info');
+    const contenu = document.getElementById('contenu-election');
+    if (!hasCandidates(cat)) {
+        if (info) info.textContent = 'Pas de candidat pour ' + cat.toUpperCase();
+        if (contenu) contenu.innerHTML = '';
+        return;
+    }
+    if (info) info.textContent = 'Candidats ' + cat.toUpperCase();
+    if (cat === 'aes') {
+        pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
+        afficherAES(pageAES);
+    } else if (cat === 'club') {
+        pageClub = parseInt(localStorage.getItem('pageClubs')) || 0;
+        afficherClub(pageClub);
+    } else if (cat === 'classe') {
+        pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
+        afficherClasse(pageClasse);
+    }
+}
+
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
 document.getElementById('type-election').addEventListener('change', function () {
-    const selection = this.value;
-    const info = document.getElementById('campagne-info');
-    if (!isCandidatureActive(selection)) {
-        if (info) info.textContent = 'Aucune campagne en cours pour ' + selection.toUpperCase();
-        document.getElementById('contenu-election').innerHTML = '';
-        return;
-    }
-    const state = getState();
-    const c = selection === 'club' ? state.candidature.club : state.candidature[selection];
-    if (info) {
-        const deb = new Date(c.startTime);
-        const end = new Date(c.endTime);
-        info.textContent = 'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
-    }
-    if (selection === 'aes') {
-        pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
-        afficherAES(pageAES);
-    } else if (selection === 'club') {
-        pageClub = parseInt(localStorage.getItem('pageClubs')) || 0;
-        afficherClub(pageClub);
-    } else if (selection === 'classe') {
-        pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
-        afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-election').innerHTML = `
-            <h2>Élections ${selection.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${selection} seront bientôt disponibles.</p>
-        `;
-    }
+    afficherCategorie(this.value);
 });
 
 // ===============================
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    const info = document.getElementById('campagne-info');
+    loadCandidates();
     const select = document.getElementById('type-election');
-    if (!isCandidatureActive(select.value)) {
-        if (info) info.textContent = 'Aucune campagne en cours pour ' + select.value.toUpperCase();
-        document.getElementById('contenu-election').innerHTML = '';
-        return;
-    } else if (info) {
-        const state = getState();
-        const c = select.value === 'club' ? state.candidature.club : state.candidature[select.value];
-        const deb = new Date(c.startTime);
-        const end = new Date(c.endTime);
-        info.textContent = 'Candidatures du ' + deb.toLocaleString() + ' au ' + end.toLocaleString();
-    }
-    if (select.value === 'aes') {
-        pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
-        afficherAES(pageAES);
-    } else if (select.value === 'club') {
-        pageClub = parseInt(localStorage.getItem('pageClubs')) || 0;
-        afficherClub(pageClub);
-    } else if (select.value === 'classe') {
-        pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
-        afficherClasse(pageClasse);
-    } else {
-        document.getElementById('contenu-election').innerHTML = `
-            <h2>Élections ${select.value.toUpperCase()}</h2>
-            <p>Les détails des élections pour ${select.value} seront bientôt disponibles.</p>
-        `;
-    }
+    afficherCategorie(select.value);
 });
