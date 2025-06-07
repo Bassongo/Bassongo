@@ -35,10 +35,9 @@ function loadCandidates() {
 // ===============================
 // Variables de pagination
 // ===============================
-let pageAES = parseInt(localStorage.getItem('votePageAES')) || 0;
-let pageClub = parseInt(localStorage.getItem('votePageClub')) || 0;
-let pageClasse = parseInt(localStorage.getItem('votePageClasse')) || 0;
-let currentType = localStorage.getItem('voteType') || 'aes';
+let pageAES = 0;
+let pageClub = 0;
+let pageClasse = 0;
 
 // ===============================
 // Gestion du vote (localStorage)
@@ -88,7 +87,7 @@ function hasVotedAll(type) {
 }
 
 // Récupère l'état des sessions
-function getVoteState() {
+function getState() {
     return {
         vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
     };
@@ -100,7 +99,7 @@ function getVoteState() {
 function updateVoteInfo(type) {
     const info = document.getElementById('vote-info');
     if (!info) return;
-    const state = getVoteState();
+    const state = getState();
     const session = state.vote[type];
     if (!session || !session.active) {
         info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
@@ -141,13 +140,11 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // ===============================
 // Affichage AES (par poste)
 // ===============================
-function afficherAES(index = 0) {
+function afficherAES(index = pageAES) {
     loadCandidates();
-    pageAES = index;
-    localStorage.setItem('votePageAES', pageAES);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('aes');
-    const state = getVoteState();
+    const state = getState();
     const v = state.vote['aes'];
     let periode = '';
     if (v) {
@@ -172,13 +169,13 @@ function afficherAES(index = 0) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
         return;
     }
-    const poste = donneesAES[pageAES];
+    const poste = donneesAES[index];
     if (!poste) {
         contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('aes', pageAES);
-    const dejaVote = hasVoted('aes', pageAES);
+    const voteKey = getVoteKey('aes', index);
+    const dejaVote = hasVoted('aes', index);
 
     // Génère le HTML des candidats avec bouton de vote
     const candidatsHTML = poste.candidats.map((c, i) => {
@@ -197,9 +194,9 @@ function afficherAES(index = 0) {
 
     // Pagination
     const paginationHTML = `
-        <button class="page-prev" ${pageAES === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Poste ${pageAES + 1} / ${donneesAES.length}</span>
-        <button class="page-next" ${pageAES === donneesAES.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Poste ${index + 1} / ${donneesAES.length}</span>
+        <button class="page-next" ${index === donneesAES.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -211,16 +208,20 @@ function afficherAES(index = 0) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (pageAES > 0) {
-            afficherAES(pageAES - 1);
+        if (index > 0) {
+            pageAES = index - 1;
+            afficherAES(pageAES);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (pageAES < donneesAES.length - 1) {
-            afficherAES(pageAES + 1);
+        if (index < donneesAES.length - 1) {
+            pageAES = index + 1;
+            afficherAES(pageAES);
         }
     });
 
@@ -229,12 +230,12 @@ function afficherAES(index = 0) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('aes', pageAES, poste.candidats[idx]);
+                setVote('aes', index, poste.candidats[idx]);
                 setUserVoted('aes');
                 if (hasVotedAll('aes')) {
                     localStorage.setItem('canSeeStats', 'aes');
                 }
-                afficherAES(pageAES);
+                afficherAES(index);
             });
         });
     }
@@ -250,13 +251,11 @@ function afficherAES(index = 0) {
 // ===============================
 // Affichage Clubs (par club)
 // ===============================
-function afficherClub(index = 0) {
+function afficherClub(index = pageClub) {
     loadCandidates();
-    pageClub = index;
-    localStorage.setItem('votePageClub', pageClub);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('club');
-    const state = getVoteState();
+    const state = getState();
     const v = state.vote['club'];
     let periode = '';
     if (v) {
@@ -281,13 +280,13 @@ function afficherClub(index = 0) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
         return;
     }
-    const club = donneesClubs[pageClub];
+    const club = donneesClubs[index];
     if (!club) {
         contenu.innerHTML = `<div class="alert">Aucun club disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('club', pageClub);
-    const dejaVote = hasVoted('club', pageClub);
+    const voteKey = getVoteKey('club', index);
+    const dejaVote = hasVoted('club', index);
 
     // Génère le HTML pour chaque candidat à la présidence du club
     const candidatsHTML = club.candidats.map((candidat, idx) => {
@@ -311,9 +310,9 @@ function afficherClub(index = 0) {
 
     // Pagination clubs
     const paginationHTML = `
-        <button class="page-prev" ${pageClub === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Club ${pageClub + 1} / ${donneesClubs.length}</span>
-        <button class="page-next" ${pageClub === donneesClubs.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Club ${index + 1} / ${donneesClubs.length}</span>
+        <button class="page-next" ${index === donneesClubs.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -323,16 +322,20 @@ function afficherClub(index = 0) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce club.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination clubs
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (pageClub > 0) {
-            afficherClub(pageClub - 1);
+        if (index > 0) {
+            pageClub = index - 1;
+            afficherClub(pageClub);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (pageClub < donneesClubs.length - 1) {
-            afficherClub(pageClub + 1);
+        if (index < donneesClubs.length - 1) {
+            pageClub = index + 1;
+            afficherClub(pageClub);
         }
     });
 
@@ -341,12 +344,12 @@ function afficherClub(index = 0) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('club', pageClub, club.candidats[idx]);
+                setVote('club', index, club.candidats[idx]);
                 setUserVoted('club');
                 if (hasVotedAll('club')) {
                     localStorage.setItem('canSeeStats', 'club');
                 }
-                afficherClub(pageClub);
+                afficherClub(index);
             });
         });
     }
@@ -362,7 +365,7 @@ function afficherClub(index = 0) {
     contenu.querySelectorAll('.btn-membres').forEach(btn => {
         btn.addEventListener('click', function() {
             const idxCandidat = parseInt(this.getAttribute('data-candidat'));
-            afficherMembresClub(pageClub, idxCandidat);
+            afficherMembresClub(index, idxCandidat);
         });
     });
 }
@@ -370,13 +373,11 @@ function afficherClub(index = 0) {
 // ===============================
 // Affichage Classe (par poste)
 // ===============================
-function afficherClasse(index = 0) {
+function afficherClasse(index = pageClasse) {
     loadCandidates();
-    pageClasse = index;
-    localStorage.setItem('votePageClasse', pageClasse);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('classe');
-    const state = getVoteState();
+    const state = getState();
     const v = state.vote['classe'];
     let periode = '';
     if (v) {
@@ -401,13 +402,13 @@ function afficherClasse(index = 0) {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
         return;
     }
-    const poste = donneesClasse[pageClasse];
+    const poste = donneesClasse[index];
     if (!poste) {
         contenu.innerHTML = `<div class="alert">Aucun poste disponible.</div>`;
         return;
     }
-    const voteKey = getVoteKey('classe', pageClasse);
-    const dejaVote = hasVoted('classe', pageClasse);
+    const voteKey = getVoteKey('classe', index);
+    const dejaVote = hasVoted('classe', index);
 
     // Génère le HTML des candidats
     const candidatsHTML = poste.candidats.map((c, i) => {
@@ -426,9 +427,9 @@ function afficherClasse(index = 0) {
 
     // Pagination
     const paginationHTML = `
-        <button class="page-prev" ${pageClasse === 0 ? 'disabled' : ''}>Précédent</button>
-        <span>Poste ${pageClasse + 1} / ${donneesClasse.length}</span>
-        <button class="page-next" ${pageClasse === donneesClasse.length - 1 ? 'disabled' : ''}>Suivant</button>
+        <button class="page-prev" ${index === 0 ? 'disabled' : ''}>Précédent</button>
+        <span>Poste ${index + 1} / ${donneesClasse.length}</span>
+        <button class="page-next" ${index === donneesClasse.length - 1 ? 'disabled' : ''}>Suivant</button>
     `;
 
     contenu.innerHTML = `
@@ -440,16 +441,20 @@ function afficherClasse(index = 0) {
         <div class="pagination">${paginationHTML}</div>
         ${dejaVote ? `<div class="vote-confirm">Vous avez voté pour ce poste.<br>Merci pour votre participation !</div>` : ""}
     `;
+    contenu.classList.add('fade-in');
+    setTimeout(() => contenu.classList.remove('fade-in'), 400);
 
     // Pagination
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
-        if (pageClasse > 0) {
-            afficherClasse(pageClasse - 1);
+        if (index > 0) {
+            pageClasse = index - 1;
+            afficherClasse(pageClasse);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
-        if (pageClasse < donneesClasse.length - 1) {
-            afficherClasse(pageClasse + 1);
+        if (index < donneesClasse.length - 1) {
+            pageClasse = index + 1;
+            afficherClasse(pageClasse);
         }
     });
 
@@ -458,12 +463,12 @@ function afficherClasse(index = 0) {
         contenu.querySelectorAll('.vote-btn').forEach(btn => {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
-                setVote('classe', pageClasse, poste.candidats[idx]);
+                setVote('classe', index, poste.candidats[idx]);
                 setUserVoted('classe');
                 if (hasVotedAll('classe')) {
                     localStorage.setItem('canSeeStats', 'classe');
                 }
-                afficherClasse(pageClasse);
+                afficherClasse(index);
             });
         });
     }
@@ -479,44 +484,28 @@ function afficherClasse(index = 0) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-function handleTypeElectionChange() {
-    const select = document.getElementById('type-election');
-    const selection = select.value;
-    localStorage.setItem('voteType', selection);
-    updateVoteInfo(selection);
-    if (selection === 'aes') {
-        pageAES = parseInt(localStorage.getItem('votePageAES')) || 0;
-        afficherAES(pageAES);
-    } else if (selection === 'club') {
-        pageClub = parseInt(localStorage.getItem('votePageClub')) || 0;
-        afficherClub(pageClub);
-    } else if (selection === 'classe') {
-        pageClasse = parseInt(localStorage.getItem('votePageClasse')) || 0;
-        afficherClasse(pageClasse);
-    }
-}
-
-// ===============================
-// Affichage initial à l'ouverture de la page
-// ===============================
-function initVotePage() {
+document.addEventListener('DOMContentLoaded', function() {
     loadCandidates();
     const select = document.getElementById('type-election');
-    select.value = currentType;
-    updateVoteInfo(currentType);
-    if (currentType === 'aes') {
-        afficherAES(pageAES);
-    } else if (currentType === 'club') {
-        afficherClub(pageClub);
-    } else if (currentType === 'classe') {
-        afficherClasse(pageClasse);
-    }
-    select.removeEventListener('change', handleTypeElectionChange);
-    select.addEventListener('change', handleTypeElectionChange);
-}
+    select.value = 'aes';
+    updateVoteInfo('aes');
+    pageAES = 0;
+    pageClub = 0;
+    pageClasse = 0;
+    afficherAES(pageAES);
 
-if (document.readyState === 'loading') {
-    window.addEventListener('DOMContentLoaded', initVotePage);
-} else {
-    initVotePage();
-}
+    select.addEventListener('change', function () {
+        const selection = this.value;
+        updateVoteInfo(selection);
+        pageAES = 0;
+        pageClub = 0;
+        pageClasse = 0;
+        if (selection === 'aes') {
+            afficherAES(pageAES);
+        } else if (selection === 'club') {
+            afficherClub(pageClub);
+        } else if (selection === 'classe') {
+            afficherClasse(pageClasse);
+        }
+    });
+});

@@ -36,14 +36,6 @@ function loadCandidates() {
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
-function getVotes(type, data) {
-    let votes = [];
-    for (let i = 0; i < data.length; i++) {
-        const vote = localStorage.getItem(getVoteKey(type, i));
-        if (vote) votes.push({ posteIndex: i, candidat: JSON.parse(vote) });
-    }
-    return votes;
-}
 function countVotes(type, data) {
     let result = [];
     for (let i = 0; i < data.length; i++) {
@@ -52,16 +44,30 @@ function countVotes(type, data) {
         let counts = candidats.map(c => ({ ...c, votes: 0 }));
         const vote = localStorage.getItem(getVoteKey(type, i));
         if (vote) {
-            const v = JSON.parse(vote);
-            const idx = candidats.findIndex(c => c.nom === v.nom && c.prenom === v.prenom);
-            if (idx !== -1) counts[idx].votes = 1; // 1 vote par navigateur
+            try {
+                const v = JSON.parse(vote);
+                // Recherche tolérante (trim et insensible à la casse)
+                const idx = candidats.findIndex(c =>
+                    c.nom && v.nom &&
+                    c.prenom && v.prenom &&
+                    c.nom.trim().toLowerCase() === v.nom.trim().toLowerCase() &&
+                    c.prenom.trim().toLowerCase() === v.prenom.trim().toLowerCase()
+                );
+                if (idx !== -1) counts[idx].votes = 1; // 1 vote par navigateur
+            } catch (e) {
+                // Erreur de parsing, ignorer
+            }
         }
         result.push({ poste: poste.poste || poste.nomClub, candidats: counts });
     }
     return result;
 }
 function totalVotes(type, data) {
-    return getVotes(type, data).length;
+    let count = 0;
+    for (let i = 0; i < data.length; i++) {
+        if (localStorage.getItem(getVoteKey(type, i))) count++;
+    }
+    return count;
 }
 
 // ===============================
@@ -90,7 +96,6 @@ function hasVotedAll(type) {
 // Affichage des chiffres clés
 // ===============================
 function afficherStatsGlobal(type, data) {
-    const stats = countVotes(type, data);
     const nbPostes = data.length;
     const nbVotes = totalVotes(type, data);
     const taux = nbPostes === 0 ? 0 : Math.round((nbVotes / nbPostes) * 100);
