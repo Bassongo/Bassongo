@@ -133,23 +133,49 @@ function afficherResultats(type) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
+function formatDuration(ms) {
+    const totalSec = Math.floor(ms / 1000);
+    const h = Math.floor(totalSec / 3600);
+    const m = Math.floor((totalSec % 3600) / 60);
+    return `${h}h ${m}m`;
+}
+
+function updateResultats(type) {
+    const info = document.getElementById('resultats');
+    const state = getState();
+
+    if (!state.vote.category || state.vote.category !== type) {
+        info.innerHTML = '<p>Aucune session de vote ouverte pour cette catégorie.</p>';
+        return;
+    }
+
+    const now = Date.now();
+
+    if (state.vote.active && now < state.vote.endTime) {
+        const remaining = formatDuration(state.vote.endTime - now);
+        info.innerHTML = `<p>Pas de résultats pour le moment. Session ouverte (fin dans ${remaining}).</p>`;
+        return;
+    }
+
+    if (now > state.vote.endTime + 7 * 24 * 60 * 60 * 1000) {
+        info.innerHTML = '<p>Les résultats ne sont plus disponibles.</p>';
+        return;
+    }
+
+    afficherResultats(type);
+}
+
 document.getElementById('type-result').addEventListener('change', function () {
-    afficherResultats(this.value);
+    updateResultats(this.value);
 });
 
 // ===============================
 // Affichage initial à l'ouverture de la page
 // ===============================
 window.addEventListener('DOMContentLoaded', function() {
-    const state = getState();
-    const info = document.getElementById('resultats');
-    if (isVoteActive()) {
-        if (info) info.innerHTML = '<p>Les résultats seront disponibles à la fin des votes.</p>';
-        return;
+    loadCandidates();
+    const select = document.getElementById('type-result');
+    if (select) {
+        updateResultats(select.value);
     }
-    if (!state.vote.endTime || Date.now() < state.vote.endTime) {
-        if (info) info.innerHTML = '<p>Aucun résultat disponible.</p>';
-        return;
-    }
-    afficherResultats(document.getElementById('type-result').value);
 });

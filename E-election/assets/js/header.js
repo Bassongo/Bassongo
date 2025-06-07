@@ -59,7 +59,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     const canSeeStats = state.vote.category && userHasVoted(state.vote.category);
     toggleLink('a[href$="statistique.html"]', !canSeeStats);
-    const showResults = state.vote.category && !voteOn && state.vote.endTime && Date.now() >= state.vote.endTime;
+    const showResults = state.vote.category && !voteOn && state.vote.endTime && Date.now() >= state.vote.endTime && Date.now() <= state.vote.endTime + 7 * 24 * 60 * 60 * 1000;
     toggleLink('a[href$="resultat.html"]', !showResults);
   }
 
