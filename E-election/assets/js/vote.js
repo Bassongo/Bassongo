@@ -53,6 +53,27 @@ function setVote(type, index, candidat) {
 }
 function setUserVoted(type) {}
 
+const ONE_DAY = 24 * 60 * 60 * 1000;
+
+function getVoteSessionStatus(type) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[type]) return { status: 'none', session: null };
+    const session = votes[type];
+    const now = Date.now();
+    if (session.active && now > session.end) {
+        session.active = false;
+        votes[type] = session;
+        localStorage.setItem('votesSessions', JSON.stringify(votes));
+    }
+    if (!session.active) {
+        if (now - session.end <= ONE_DAY) return { status: 'closed_recently', session };
+        return { status: 'none', session };
+    }
+    if (now < session.start) return { status: 'not_started', session };
+    if (now >= session.start && now <= session.end) return { status: 'active', session };
+    return { status: 'none', session };
+}
+
 // ===============================
 // Vérifie si une session de vote est active pour une catégorie
 function isVoteActive(categorie) {
@@ -99,23 +120,22 @@ function getState() {
 function updateVoteInfo(type) {
     const info = document.getElementById('vote-info');
     if (!info) return;
-    const state = getState();
-    const session = state.vote[type];
-    if (!session || !session.active) {
+    const { status, session } = getVoteSessionStatus(type);
+    if (!session) {
         info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
         return;
     }
     const start = new Date(session.start);
     const end = new Date(session.end);
-    if (Date.now() < session.start) {
+    if (status === 'not_started') {
         info.textContent = `La session de vote ${type.toUpperCase()} commencera le ${start.toLocaleString()}.`;
-        return;
-    }
-    if (Date.now() > session.end) {
+    } else if (status === 'active') {
+        info.textContent = `Vote ${type.toUpperCase()} : du ${start.toLocaleString()} au ${end.toLocaleString()}`;
+    } else if (status === 'closed_recently') {
         info.textContent = `La session de vote ${type.toUpperCase()} est terminée.`;
-        return;
+    } else {
+        info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
     }
-    info.textContent = `Vote ${type.toUpperCase()} : du ${start.toLocaleString()} au ${end.toLocaleString()}`;
 }
 
 // ===============================
@@ -144,28 +164,22 @@ function afficherAES(index = pageAES) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('aes');
-    const state = getState();
-    const v = state.vote['aes'];
+    const { status, session } = getVoteSessionStatus('aes');
     let periode = '';
-    if (v) {
-        const deb = new Date(v.start);
-        const end = new Date(v.end);
+    if (session) {
+        const deb = new Date(session.start);
+        const end = new Date(session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-        if (Date.now() < v.start) {
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
-            return;
-        }
-        if (Date.now() > v.end) {
-            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
-            if (votes['aes'] && votes['aes'].active) {
-                votes['aes'].active = false;
-                localStorage.setItem('votesSessions', JSON.stringify(votes));
-            }
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote AES est terminée.</div>`;
-            return;
-        }
     }
-    if (!isVoteActive('aes')) {
+    if (status === 'not_started') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote AES n'a pas encore commencé.</div>`;
+        return;
+    }
+    if (status === 'closed_recently') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote AES est terminée.</div>`;
+        return;
+    }
+    if (status === 'none') {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
         return;
     }
@@ -255,28 +269,22 @@ function afficherClub(index = pageClub) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('club');
-    const state = getState();
-    const v = state.vote['club'];
+    const { status, session } = getVoteSessionStatus('club');
     let periode = '';
-    if (v) {
-        const deb = new Date(v.start);
-        const end = new Date(v.end);
+    if (session) {
+        const deb = new Date(session.start);
+        const end = new Date(session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-        if (Date.now() < v.start) {
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
-            return;
-        }
-        if (Date.now() > v.end) {
-            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
-            if (votes['club'] && votes['club'].active) {
-                votes['club'].active = false;
-                localStorage.setItem('votesSessions', JSON.stringify(votes));
-            }
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote Club est terminée.</div>`;
-            return;
-        }
     }
-    if (!isVoteActive('club')) {
+    if (status === 'not_started') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote Club n'a pas encore commencé.</div>`;
+        return;
+    }
+    if (status === 'closed_recently') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote Club est terminée.</div>`;
+        return;
+    }
+    if (status === 'none') {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
         return;
     }
@@ -377,28 +385,22 @@ function afficherClasse(index = pageClasse) {
     loadCandidates();
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('classe');
-    const state = getState();
-    const v = state.vote['classe'];
+    const { status, session } = getVoteSessionStatus('classe');
     let periode = '';
-    if (v) {
-        const deb = new Date(v.start);
-        const end = new Date(v.end);
+    if (session) {
+        const deb = new Date(session.start);
+        const end = new Date(session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
-        if (Date.now() < v.start) {
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
-            return;
-        }
-        if (Date.now() > v.end) {
-            let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
-            if (votes['classe'] && votes['classe'].active) {
-                votes['classe'].active = false;
-                localStorage.setItem('votesSessions', JSON.stringify(votes));
-            }
-            contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe est terminée.</div>`;
-            return;
-        }
     }
-    if (!isVoteActive('classe')) {
+    if (status === 'not_started') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe n'a pas encore commencé.</div>`;
+        return;
+    }
+    if (status === 'closed_recently') {
+        contenu.innerHTML = `${periode}<div class="alert">La session de vote Classe est terminée.</div>`;
+        return;
+    }
+    if (status === 'none') {
         contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
         return;
     }
