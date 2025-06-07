@@ -195,15 +195,16 @@ function afficherStats(type) {
     else if (type === 'classe') data = donneesClasse;
     else return;
 
-    // Gestion des cas d'accès
-    if (!isVoteActive(type)) {
-        document.getElementById('stats-global').innerHTML = `<p style="color:red;">Pas de vote démarré pour cette catégorie, donc pas de statistiques.</p>`;
+    // L'utilisateur doit avoir voté pour tous les postes de la catégorie
+    if (!hasVotedAll(type)) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:orange;">Vous devez voter pour tous les postes de cette catégorie pour consulter les statistiques.</p>`;
         document.getElementById('stats-graph').style.display = "none";
         document.getElementById('stats-detail').innerHTML = "";
         return;
     }
-    if (!hasVotedAll(type)) {
-        document.getElementById('stats-global').innerHTML = `<p style="color:orange;">Vote non fini pour cette catégorie.<br>Finissez tous les votes pour voir les statistiques.</p>`;
+
+    if (!data || data.length === 0) {
+        document.getElementById('stats-global').innerHTML = `<p style="color:red;">Aucune donnée disponible pour cette catégorie.</p>`;
         document.getElementById('stats-graph').style.display = "none";
         document.getElementById('stats-detail').innerHTML = "";
         return;
