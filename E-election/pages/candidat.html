@@ -28,24 +28,20 @@
       </div>
 
       <form id="newCandidature" style="display: none;">
-        <div class="form-group">
-          <label for="electionType">Type d'élection:</label>
-          <input type="text" id="electionType" readonly>
-        </div>
         
-        <div class="form-group">
-          <label for="nom">Nom:</label>
-          <input type="text" id="nom" required>
-        </div>
+          <div class="form-group">
+            <label for="nom">Nom:</label>
+            <input type="text" id="nom" name="nom" required>
+          </div>
         
-        <div class="form-group">
-          <label for="prenom">Prénom:</label>
-          <input type="text" id="prenom" required>
-        </div>
+          <div class="form-group">
+            <label for="prenom">Prénom:</label>
+            <input type="text" id="prenom" name="prenom" required>
+          </div>
         
         <div class="form-group">
           <label for="classe">Classe:</label>
-          <select id="classe" required>
+            <select id="classe" name="classe" required>
             <option value="">-- Sélectionnez une classe --</option>
             <option value="AS1">AS1</option>
             <option value="AS2">AS2</option>
@@ -55,32 +51,32 @@
 
         <div class="form-group" id="clubGroup" style="display:none;">
           <label for="clubSelect">Club:</label>
-          <select id="clubSelect">
+            <select id="clubSelect" name="club">
             <option value="">-- Sélectionnez un club --</option>
           </select>
         </div>
 
         <div class="form-group">
-          <label for="poste">Poste:</label>
-          <select id="poste" required>
+          <label for="posteSelect">Poste:</label>
+            <select id="posteSelect" name="poste" required>
             <option value="">-- Sélectionnez un poste --</option>
           </select>
         </div>
         
         <div class="form-group">
           <label for="programme">Programme électoral:</label>
-          <textarea id="programme" rows="5" required></textarea>
+            <textarea id="programme" name="programme" rows="5" required></textarea>
         </div>
         
         <div class="form-group">
           <label for="photo">Photo de profil:</label>
-          <input type="file" id="photo" accept="image/*">
+            <input type="file" id="photo" name="photo" accept="image/*">
         </div>
 
-        <div class="form-actions">
-          <button type="button" id="validerCandidatureBtn" class="primary-btn">Valider</button>
-          <a href="mes-candidatures.html" class="secondary-btn">Mes candidatures</a>
-        </div>
+          <div class="form-actions">
+            <button type="submit" id="validerCandidatureBtn" class="primary-btn">Valider</button>
+            <a href="mes-candidatures.html" class="secondary-btn">Mes candidatures</a>
+          </div>
       </form>
     </div>
   </div>
