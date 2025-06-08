@@ -42,6 +42,24 @@ function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
 
+function getVoteSessionStatus(type) {
+    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    if (!votes[type]) return { status: 'none', session: null };
+    const session = votes[type];
+    const now = Date.now();
+
+    if (session.active && now > session.end) {
+        session.active = false;
+        votes[type] = session;
+        localStorage.setItem('votesSessions', JSON.stringify(votes));
+    }
+
+    if (now < session.start) return { status: 'not_started', session };
+    if (session.active && now <= session.end) return { status: 'active', session };
+    if (now >= session.end) return { status: 'closed', session };
+    return { status: 'none', session };
+}
+
 // Compte les votes pour chaque candidat d'un poste/club/classe
 function countVotes(type, data) {
     let result = [];
@@ -133,36 +151,21 @@ function afficherResultats(type) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-function formatDuration(ms) {
-    const totalSec = Math.floor(ms / 1000);
-    const h = Math.floor(totalSec / 3600);
-    const m = Math.floor((totalSec % 3600) / 60);
-    return `${h}h ${m}m`;
-}
-
 function updateResultats(type) {
-    const info = document.getElementById('resultats');
-    const state = getState();
+    const container = document.getElementById('resultats');
+    const { status } = getVoteSessionStatus(type);
 
-    if (!state.vote.category || state.vote.category !== type) {
-        info.innerHTML = '<p>Aucune session de vote ouverte pour cette catégorie.</p>';
+    if (status === 'closed') {
+        afficherResultats(type);
         return;
     }
 
-    const now = Date.now();
-
-    if (state.vote.active && now < state.vote.endTime) {
-        const remaining = formatDuration(state.vote.endTime - now);
-        info.innerHTML = `<p>Pas de résultats pour le moment. Session ouverte (fin dans ${remaining}).</p>`;
+    if (status === 'active') {
+        container.innerHTML = '<p>Session de vote en cours.</p>';
         return;
     }
 
-    if (now > state.vote.endTime + 7 * 24 * 60 * 60 * 1000) {
-        info.innerHTML = '<p>Les résultats ne sont plus disponibles.</p>';
-        return;
-    }
-
-    afficherResultats(type);
+    container.innerHTML = '<p>Pas de résultats.</p>';
 }
 
 document.getElementById('type-result').addEventListener('change', function () {
