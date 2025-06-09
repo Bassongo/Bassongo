@@ -73,7 +73,7 @@ function totalVotes(type, data) {
 // ===============================
 // Vérifie si une session de vote est active et commencée pour une catégorie
 // ===============================
-function isVoteActive(categorie) {
+function isVoteActiveState(categorie) {
     return window.isVoteActive(categorie);
 }
 function hasVotedAll(type) {

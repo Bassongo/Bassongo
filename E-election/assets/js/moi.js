@@ -158,7 +158,7 @@ function setupModals(categories) {
     const fin = Date.parse(endVoteInput.value);
     if (!categorie) { alert('Type manquant'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-    if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+    if (isVoteActiveState(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
     const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
     const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
     if (candidats.length === 0) {
@@ -201,7 +201,7 @@ function setupModals(categories) {
     const cat = closeSessionCategory.value;
     if (!cat) { alert('Choisissez une catégorie'); return; }
     if (closeType === 'vote') {
-      if (!isVoteActive(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+      if (!isVoteActiveState(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
       window.endVote(cat);
       alert('Votes fermés pour ' + cat.toUpperCase());
     } else {
@@ -225,7 +225,7 @@ function endCandidatureSession(categorie) {
   window.endCandidature(categorie);
 }
 
-function isVoteActive(categorie) {
+function isVoteActiveState(categorie) {
   return window.isVoteActive(categorie);
 }
 
