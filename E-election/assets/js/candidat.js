@@ -46,25 +46,20 @@ function chargerPostesClub(club) {
 }
 
 // ===============================
-// Récupère l'état des sessions de candidature
+// Gestion de l'état des sessions (utilise state.js)
 // ===============================
-function getState() {
-    return {
-        candidature: JSON.parse(localStorage.getItem('candidaturesSessions') || '{}')
-    };
-}
-
-// ===============================
-// Ferme automatiquement la session si la date de fin est dépassée
-// ===============================
+// La fonction getState provient désormais de state.js. On se contente donc de
+// vérifier l'expiration et de sauvegarder le nouvel état si besoin.
 function checkAndCloseCandidatureSession(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
-        candidatures[categorie].active = false;
-        localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    const state = getState();
+    const session = categorie === 'club' ? state.candidature.club : state.candidature[categorie];
+    if (!session) return false;
+    if (session.active && Date.now() > session.endTime) {
+        session.active = false;
+        saveState(state);
         return false;
     }
-    return candidatures[categorie] && candidatures[categorie].active;
+    return session.active;
 }
 
 // ===============================

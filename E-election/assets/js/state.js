@@ -4,7 +4,11 @@ const defaultState = {
     classe: { active: false, startTime: null, endTime: null },
     club: { active: false, club: null, startTime: null, endTime: null }
   },
-  vote: { active: false, category: null, club: null, startTime: null, endTime: null }
+  vote: {
+    aes: { active: false, startTime: null, endTime: null },
+    classe: { active: false, startTime: null, endTime: null },
+    club: { active: false, club: null, startTime: null, endTime: null }
+  }
 };
 
 function loadState() {
@@ -85,7 +89,11 @@ function isVoteActive(category) {
 
 function startVote(category, startTime, endTime, club = null) {
   const state = getState();
-  state.vote = { active: true, category, club, startTime, endTime };
+  if (category === 'club') {
+    state.vote.club = { active: true, club, startTime, endTime };
+  } else if (category === 'aes' || category === 'classe') {
+    state.vote[category] = { active: true, startTime, endTime };
+  }
   saveState(state);
 }
 

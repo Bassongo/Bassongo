@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initHeader() {
   // Activation onglet courant
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function (e) {
@@ -57,12 +57,27 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleLink('a[href$="campagnes.html"]', !candidatureOn);
     toggleLink('a[href$="vote.html"]', !voteOn);
 
-    const canSeeStats = state.vote.category && userHasVoted(state.vote.category);
+    const categories = ['aes', 'classe', 'club'];
+    let canSeeStats = false;
+    let showResults = false;
+    categories.forEach(cat => {
+      const v = cat === 'club' ? state.vote.club : state.vote[cat];
+      if (!v) return;
+      if (v.active && userHasVoted(cat)) canSeeStats = true;
+      if (!v.active && v.endTime && Date.now() >= v.endTime && Date.now() <= v.endTime + 7 * 24 * 60 * 60 * 1000) {
+        showResults = true;
+      }
+    });
     toggleLink('a[href$="statistique.html"]', !canSeeStats);
-    const showResults = state.vote.category && !voteOn && state.vote.endTime && Date.now() >= state.vote.endTime && Date.now() <= state.vote.endTime + 7 * 24 * 60 * 60 * 1000;
     toggleLink('a[href$="resultat.html"]', !showResults);
   }
 
   document.addEventListener('DOMContentLoaded', updateNavVisibility);
   document.addEventListener('stateChanged', updateNavVisibility);
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHeader);
+} else {
+  initHeader();
+}
