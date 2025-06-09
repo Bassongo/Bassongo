@@ -344,22 +344,34 @@ document.addEventListener('DOMContentLoaded', () => {
       const search = document.getElementById('comiteSearch');
       const list = document.getElementById('comiteUserList');
 
+      let selected = new Set();
+
       function render(filter = '') {
         const users = getUsers();
         const filt = filter.toLowerCase();
         list.innerHTML = users
-          .filter(u => !filt || u.email.toLowerCase().includes(filt) || u.username.toLowerCase().includes(filt))
-          .map(u => `<label><input type="checkbox" value="${u.email}"> ${u.username} (${u.email})</label>`)
+          .filter(u => selected.has(u.email) || (filt && (u.email.toLowerCase().includes(filt) || u.username.toLowerCase().includes(filt))))
+          .map(u => `<label><input type="checkbox" value="${u.email}" ${selected.has(u.email) ? 'checked' : ''}> ${u.username} (${u.email})</label>`)
           .join('');
       }
 
-      render();
-      search.oninput = () => render(search.value);
+      function syncSelection() {
+        const checked = list.querySelectorAll('input:checked');
+        selected = new Set(Array.from(checked).map(c => c.value));
+      }
+
+      render('');
+      search.oninput = () => {
+        syncSelection();
+        render(search.value);
+      };
+      list.addEventListener('change', syncSelection);
 
       document.getElementById('saveComiteBtn').onclick = () => {
         const type = typeSel.value;
         if (!type) { alert('Choisissez un type'); return; }
-        const checked = Array.from(list.querySelectorAll('input:checked')).map(c => c.value);
+        syncSelection();
+        const checked = Array.from(selected);
         if (checked.length === 0) { alert('Sélectionnez au moins un utilisateur'); return; }
         const users = getUsers();
         let comites = getComites();
