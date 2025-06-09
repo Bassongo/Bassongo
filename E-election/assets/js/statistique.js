@@ -74,10 +74,7 @@ function totalVotes(type, data) {
 // Vérifie si une session de vote est active et commencée pour une catégorie
 // ===============================
 function isVoteActive(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (!votes[categorie]) return false;
-    const now = Date.now();
-    return votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end;
+    return window.isVoteActive(categorie);
 }
 function hasVotedAll(type) {
     if (type === 'aes') {

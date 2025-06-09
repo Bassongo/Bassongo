@@ -4,7 +4,11 @@ const defaultState = {
     classe: { active: false, startTime: null, endTime: null },
     club: { active: false, club: null, startTime: null, endTime: null }
   },
-  vote: { active: false, category: null, club: null, startTime: null, endTime: null }
+  vote: {
+    aes: { active: false, startTime: null, endTime: null },
+    classe: { active: false, startTime: null, endTime: null },
+    club: { active: false, club: null, startTime: null, endTime: null }
+  }
 };
 
 function loadState() {
@@ -33,9 +37,16 @@ function getState() {
     state.candidature.club.club = null;
     changed = true;
   }
-  if (state.vote.active && Date.now() > state.vote.endTime) {
-    state.vote.active = false;
-    state.vote.club = null;
+  ['aes', 'classe'].forEach(cat => {
+    const v = state.vote[cat];
+    if (v.active && Date.now() > v.endTime) {
+      v.active = false;
+      changed = true;
+    }
+  });
+  if (state.vote.club.active && Date.now() > state.vote.club.endTime) {
+    state.vote.club.active = false;
+    state.vote.club.club = null;
     changed = true;
   }
   if (changed) saveState(state);
@@ -65,14 +76,22 @@ function endCandidature(category) {
 
 function startVote(category, startTime, endTime, club = null) {
   const state = getState();
-  state.vote = { active: true, category, club, startTime, endTime };
+  if (category === 'club') {
+    state.vote.club = { active: true, club, startTime, endTime };
+  } else if (category === 'aes' || category === 'classe') {
+    state.vote[category] = { active: true, startTime, endTime };
+  }
   saveState(state);
 }
 
-function endVote() {
+function endVote(category) {
   const state = getState();
-  state.vote.active = false;
-  state.vote.club = null;
+  if (category === 'club') {
+    state.vote.club.active = false;
+    state.vote.club.club = null;
+  } else if (category === 'aes' || category === 'classe') {
+    state.vote[category].active = false;
+  }
   saveState(state);
 }
 
@@ -89,9 +108,17 @@ function isCandidatureActive(category = null) {
   });
 }
 
-function isVoteActive() {
+function isVoteActive(category = null) {
   const s = getState();
-  return s.vote.active && Date.now() >= s.vote.startTime && Date.now() < s.vote.endTime;
+  if (category) {
+    const v = category === 'club' ? s.vote.club : s.vote[category];
+    if (!v) return false;
+    return v.active && Date.now() >= v.startTime && Date.now() < v.endTime;
+  }
+  return ['aes', 'classe', 'club'].some(cat => {
+    const v = cat === 'club' ? s.vote.club : s.vote[cat];
+    return v.active && Date.now() >= v.startTime && Date.now() < v.endTime;
+  });
 }
 
 function userHasVoted(category) {
