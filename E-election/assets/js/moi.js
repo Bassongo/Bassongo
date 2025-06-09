@@ -92,15 +92,83 @@ function startVoteCat(cat) {
   const d = Date.parse(deb);
   const f = Date.parse(fin);
   if (isNaN(d) || isNaN(f) || d >= f) { alert('Dates invalides'); return; }
-  const state = getState();
-  if (state.vote.active) { alert('Une session de vote est d\u00e9j\u00e0 ouverte'); return; }
+  if (isVoteActive(cat)) { alert('Une session de vote est d\u00e9j\u00e0 ouverte pour cette cat\u00e9gorie'); return; }
+
+  const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+  const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === cat);
+  if (candidats.length === 0) {
+    alert('Impossible de d\u00e9marrer le vote : aucun candidat pour cette cat\u00e9gorie.');
+    return;
+  }
+  if (isCandidatureActive(cat)) {
+    alert('Impossible de d\u00e9marrer le vote : la session de candidature est encore ouverte.');
+    return;
+  }
   startVote(cat, d, f);
   alert('Vote ouvert pour ' + cat.toUpperCase());
 }
 
 function stopVoteCat(cat) {
-  const state = getState();
-  if (!state.vote.active || state.vote.category !== cat) { alert('Pas de vote actif pour cette cat\u00e9gorie'); return; }
-  endVote();
+  if (!isVoteActive(cat)) { alert('Pas de vote actif pour cette cat\u00e9gorie'); return; }
+  endVote(cat);
   alert('Vote stopp\u00e9 pour ' + cat.toUpperCase());
+}
+
+// ===============================
+// Fonctions de gestion des sessions (m\u00eames que l'administrateur)
+// ===============================
+
+function getState() {
+  return {
+    candidature: JSON.parse(localStorage.getItem('candidaturesSessions')) || {},
+    vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
+  };
+}
+
+function isCandidatureActive(categorie) {
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
+    candidatures[categorie].active = false;
+    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    return false;
+  }
+  return candidatures[categorie] && candidatures[categorie].active;
+}
+
+function startCandidature(categorie, debut, fin, club = null) {
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  candidatures[categorie] = { active: true, start: debut, end: fin, ...(categorie === 'club' ? { club } : {}) };
+  localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+}
+
+function endCandidature(categorie) {
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  if (candidatures[categorie]) {
+    candidatures[categorie].active = false;
+    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+  }
+}
+
+function isVoteActive(categorie) {
+  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
+    votes[categorie].active = false;
+    localStorage.setItem('votesSessions', JSON.stringify(votes));
+    return false;
+  }
+  return votes[categorie] && votes[categorie].active;
+}
+
+function startVote(categorie, debut, fin, club = null) {
+  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  votes[categorie] = { active: true, start: debut, end: fin, ...(categorie === 'club' ? { club } : {}) };
+  localStorage.setItem('votesSessions', JSON.stringify(votes));
+}
+
+function endVote(categorie) {
+  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  if (votes[categorie] && votes[categorie].active) {
+    votes[categorie].active = false;
+    localStorage.setItem('votesSessions', JSON.stringify(votes));
+  }
 }
