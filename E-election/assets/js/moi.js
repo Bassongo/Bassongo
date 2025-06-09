@@ -48,12 +48,12 @@ function showCommitteeActions(container) {
     window.resetCandModal();
     document.getElementById('startCandModal').style.display = 'flex';
   };
-  document.getElementById('stopCandBtn').onclick = () => openCloseSession('candidature');
+  document.getElementById('stopCandBtn').onclick = () => window.openCloseSession('candidature');
   document.getElementById('startVoteBtn').onclick = () => {
     window.resetVoteModal();
     document.getElementById('startVotesModal').style.display = 'flex';
   };
-  document.getElementById('stopVoteBtn').onclick = () => openCloseSession('vote');
+  document.getElementById('stopVoteBtn').onclick = () => window.openCloseSession('vote');
 }
 
 function setupModals(categories) {
