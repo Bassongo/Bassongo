@@ -1,4 +1,4 @@
-document.addEventListener('DOMContentLoaded', function() {
+function initHeader() {
   // Activation onglet courant
   document.querySelectorAll('.nav-link').forEach(link => {
     link.addEventListener('click', function (e) {
@@ -74,4 +74,10 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('DOMContentLoaded', updateNavVisibility);
   document.addEventListener('stateChanged', updateNavVisibility);
-});
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initHeader);
+} else {
+  initHeader();
+}
