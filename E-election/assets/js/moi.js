@@ -165,7 +165,7 @@ function setupModals(categories) {
       alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
       return;
     }
-    if (isCandidatureActive(categorie)) {
+    if (isCandidatureSessionActive(categorie)) {
       alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
       return;
     }
@@ -188,8 +188,8 @@ function setupModals(categories) {
     const fin = Date.parse(endCandDate.value);
     if (!categorie) { alert('Catégorie manquante'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-    if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
-    startCandidature(categorie, debut, fin);
+    if (isCandidatureSessionActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
+    startCandidatureSession(categorie, debut, fin);
     alert('Candidatures ouvertes pour ' + categorie.toUpperCase());
     startCandModal.style.display = 'none';
     resetCandModal();
@@ -205,35 +205,44 @@ function setupModals(categories) {
       endVote(cat);
       alert('Votes fermés pour ' + cat.toUpperCase());
     } else {
-      if (!isCandidatureActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
-      endCandidature(cat);
+      if (!isCandidatureSessionActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
+      endCandidatureSession(cat);
       alert('Candidatures fermées pour ' + cat.toUpperCase());
     }
     closeSessionModal.style.display = 'none';
   };
 }
 
-function isCandidatureActive(categorie) {
+function isCandidatureSessionActive(categorie) {
   let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
     candidatures[categorie].active = false;
     localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    // Mise à jour de l'état global
+    const state = getState();
+    if (state.candidature[categorie]) {
+      state.candidature[categorie].active = false;
+      saveState(state);
+    }
     return false;
   }
   return candidatures[categorie] && candidatures[categorie].active;
 }
 
-function startCandidature(categorie, debut, fin) {
+function startCandidatureSession(categorie, debut, fin) {
   let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   candidatures[categorie] = { active: true, start: debut, end: fin };
   localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+  // Synchronise avec electionState
+  startCandidature(categorie, debut, fin);
 }
 
-function endCandidature(categorie) {
+function endCandidatureSession(categorie) {
   let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   if (candidatures[categorie]) {
     candidatures[categorie].active = false;
     localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    endCandidature(categorie);
   }
 }
 

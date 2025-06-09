@@ -46,25 +46,20 @@ function chargerPostesClub(club) {
 }
 
 // ===============================
-// Récupère l'état des sessions de candidature
+// Gestion de l'état des sessions (utilise state.js)
 // ===============================
-function getState() {
-    return {
-        candidature: JSON.parse(localStorage.getItem('candidaturesSessions') || '{}')
-    };
-}
-
-// ===============================
-// Ferme automatiquement la session si la date de fin est dépassée
-// ===============================
+// La fonction getState provient désormais de state.js. On se contente donc de
+// vérifier l'expiration et de sauvegarder le nouvel état si besoin.
 function checkAndCloseCandidatureSession(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
-        candidatures[categorie].active = false;
-        localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    const state = getState();
+    const session = categorie === 'club' ? state.candidature.club : state.candidature[categorie];
+    if (!session) return false;
+    if (session.active && Date.now() > session.endTime) {
+        session.active = false;
+        saveState(state);
         return false;
     }
-    return candidatures[categorie] && candidatures[categorie].active;
+    return session.active;
 }
 
 // ===============================
@@ -110,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             // 3. Si la date de début n'est pas encore atteinte
-            if (Date.now() < c.start) {
+            if (Date.now() < c.startTime) {
                 if (info) info.innerHTML = `<span style="color:orange;">La session de candidature pour ${type.toUpperCase()} n'a pas encore commencé.</span>`;
                 if (form) form.style.display = 'none';
                 if (clubGroup) clubGroup.style.display = 'none';
@@ -119,8 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // 4. Session ouverte et période valide : afficher le formulaire
             if (info) {
-                const deb = new Date(c.start);
-                const end = new Date(c.end);
+                const deb = new Date(c.startTime);
+                const end = new Date(c.endTime);
                 info.innerHTML = `<strong>${type.toUpperCase()}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
             }
             if (form) form.style.display = 'block';
