@@ -13,3 +13,25 @@
 .profile-info p {
   margin: 0.5rem 0;
 }
+
+.profile-photo {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+  margin: 0 auto 1rem auto;
+}
+
+.committee-actions {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.committee-section {
+  margin-top: 1.5rem;
+}
+
+.committee-section button {
+  margin: 0.25rem;
+}
