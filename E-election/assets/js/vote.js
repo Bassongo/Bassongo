@@ -27,9 +27,9 @@ function groupByClub(candidats) {
 }
 function loadCandidates() {
     const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
-    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
-    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+    donneesAES = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'aes'));
+    donneesClubs = groupByClub(all.filter(c => c.type && c.type.trim().toLowerCase() === 'club'));
+    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'classe'));
 }
 
 // ===============================
@@ -543,6 +543,18 @@ function handleTypeElectionChange() {
 
 function initVotePage() {
     loadCandidates();
+    if (pageAES >= donneesAES.length) {
+        pageAES = 0;
+        localStorage.setItem('votePageAES', pageAES);
+    }
+    if (pageClub >= donneesClubs.length) {
+        pageClub = 0;
+        localStorage.setItem('votePageClub', pageClub);
+    }
+    if (pageClasse >= donneesClasse.length) {
+        pageClasse = 0;
+        localStorage.setItem('votePageClasse', pageClasse);
+    }
     const select = document.getElementById('type-election');
     select.value = currentType;
     handleTypeElectionChange();
