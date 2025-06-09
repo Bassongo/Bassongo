@@ -94,28 +94,6 @@ function getVoteSessionStatus(type) {
     }
 }
 
-// ===============================
-// Vérifie si une session de vote est active pour une catégorie
-function isVoteActive(categorie) {
-    // Utilise la fonction globale de state.js si disponible
-    if (window.isVoteActive) {
-        return window.isVoteActive(categorie);
-    }
-    // fallback localStorage (ancien code)
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (!votes[categorie]) return false;
-    const now = Date.now();
-    if (votes[categorie].active && now > votes[categorie].end) {
-        votes[categorie].active = false;
-        localStorage.setItem('votesSessions', JSON.stringify(votes));
-        return false;
-    }
-    if (votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end) {
-        return true;
-    }
-    return false;
-}
-
 // Vérifie si l'utilisateur a voté pour tous les postes/clubs d'une catégorie
 function hasVotedAll(type) {
     if (type === 'aes') {
@@ -128,17 +106,6 @@ function hasVotedAll(type) {
         return donneesClubs.length > 0 && donneesClubs.every((_, idx) => hasVoted('club', idx));
     }
     return false;
-}
-
-// Récupère l'état des sessions
-function getState() {
-    // Utilise la fonction globale de state.js si disponible
-    if (window.getState) {
-        return window.getState();
-    }
-    return {
-        vote: JSON.parse(localStorage.getItem('votesSessions') || '{}')
-    };
 }
 
 // ===============================
