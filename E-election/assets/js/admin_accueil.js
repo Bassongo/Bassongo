@@ -28,7 +28,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const endCandDate = document.getElementById('endCandDate');
 
   function loadClubs(select) {
-    const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+    const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
     if (!select) return;
     select.innerHTML = '<option value="" selected disabled>Choisir un club</option>';
     clubs.forEach(c => {
@@ -57,12 +57,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Gestion des candidatures sessions (stockage et contrôle)
   function isCandidatureActive(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
     return candidatures[categorie] && candidatures[categorie].active;
   }
 
   function startCandidature(categorie, debut, fin, club) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
     candidatures[categorie] = {
       active: true,
       start: debut,
@@ -73,7 +73,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function endCandidature(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
     if (candidatures[categorie]) {
       candidatures[categorie].active = false;
       localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
@@ -86,7 +86,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Vérifie si une session de vote est active pour une catégorie
   function isVoteActive(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     // Fermeture automatique si la date de fin est dépassée
     if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
       votes[categorie].active = false;
@@ -98,7 +98,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Démarre une session de vote pour une catégorie
   function startVote(categorie, debut, fin, club) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     votes[categorie] = {
       active: true,
       start: debut,
@@ -110,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Ferme une session de vote pour une catégorie
   function endVote(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     if (votes[categorie] && votes[categorie].active) {
       votes[categorie].active = false;
       localStorage.setItem('votesSessions', JSON.stringify(votes));
@@ -120,7 +120,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Fermeture automatique des votes et candidatures à chaque chargement
   function autoCloseSessions() {
     // Candidatures
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
     let changed = false;
     Object.keys(candidatures).forEach(cat => {
       if (candidatures[cat].active && Date.now() > candidatures[cat].end) {
@@ -131,7 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (changed) localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
 
     // Votes
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     changed = false;
     Object.keys(votes).forEach(cat => {
       if (votes[cat].active && Date.now() > votes[cat].end) {
@@ -160,7 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
 
       // Vérification de la présence de candidats
-      let candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+      let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
       let candidats;
       if (categorie === 'club') {
         candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === 'club' && c.club === club);
@@ -284,11 +284,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getUsers() {
-    return JSON.parse(localStorage.getItem('utilisateurs')) || [];
+    return JSON.parse(localStorage.getItem('utilisateurs') || '[]');
   }
 
   function getComites() {
-    return JSON.parse(localStorage.getItem('comites')) || {};
+    return JSON.parse(localStorage.getItem('comites') || '{}');
   }
 
   function saveComites(data) {
@@ -520,7 +520,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               let club = '';
               if (type === 'club') {
-                const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
                 if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
                 const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
                 const i = parseInt(idx,10);
@@ -530,7 +530,7 @@ document.addEventListener('DOMContentLoaded', () => {
               const nom = prompt('Nom du nouveau poste :');
               if (nom) {
                 if (type === 'club') {
-                  let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                  let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
                   postesByClub[club] = postesByClub[club] || [];
                   if (!postesByClub[club].includes(nom)) {
                     postesByClub[club].push(nom);
@@ -540,7 +540,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     alert('Ce poste existe déjà pour ce club.');
                   }
                 } else {
-                  let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+                  let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
                   postesByType[type] = postesByType[type] || [];
                   if (!postesByType[type].includes(nom)) {
                     postesByType[type].push(nom);
@@ -561,13 +561,13 @@ document.addEventListener('DOMContentLoaded', () => {
               const type = prompt('Type d\'élection (club, aes, classe) :').toLowerCase();
               if (!['club', 'aes', 'classe'].includes(type)) return;
               if (type === 'club') {
-                const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
                 if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
                 const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
                 const i = parseInt(idx,10);
                 if (!i || i < 1 || i > clubs.length) return;
                 const club = clubs[i-1];
-                let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
                 const arr = postesByClub[club] || [];
                 if (arr.length === 0) { alert('Aucun poste à supprimer pour ce club.'); return; }
                 const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
@@ -579,7 +579,7 @@ document.addEventListener('DOMContentLoaded', () => {
                   alert('Poste supprimé pour ' + club + ' !');
                 }
               } else {
-                let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+                let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
                 const arr = postesByType[type] || [];
                 if (arr.length === 0) { alert('Aucun poste à supprimer pour ce type.'); return; }
                 const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
@@ -600,7 +600,7 @@ document.addEventListener('DOMContentLoaded', () => {
               e.preventDefault();
               const nom = prompt('Nom du nouveau club :');
               if (nom) {
-                let clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+                let clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
                 if (!clubs.includes(nom)) {
                   clubs.push(nom);
                   localStorage.setItem('clubs', JSON.stringify(clubs));
@@ -616,14 +616,14 @@ document.addEventListener('DOMContentLoaded', () => {
           if (deleteClub) {
             deleteClub.onclick = (e) => {
               e.preventDefault();
-              let clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+              let clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
               if (clubs.length === 0) { alert('Aucun club à supprimer.'); return; }
               const idx = prompt('Quel club supprimer ?\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
               const i = parseInt(idx,10);
               if (i >=1 && i <= clubs.length) {
                 const club = clubs.splice(i-1,1)[0];
                 localStorage.setItem('clubs', JSON.stringify(clubs));
-                let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+                let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
                 delete postesByClub[club];
                 localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
                 alert('Club supprimé !');

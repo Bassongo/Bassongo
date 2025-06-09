@@ -28,7 +28,7 @@ function groupByClub(candidats) {
 }
 
 function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
     donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
     donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));

@@ -5,7 +5,7 @@ function chargerPostes(type) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    let postesByType = JSON.parse(localStorage.getItem('postesByType')) || {};
+    let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
     const postes = postesByType[type] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
@@ -19,7 +19,7 @@ function chargerClubs() {
     const select = document.getElementById('clubSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un club</option>';
-    const clubs = JSON.parse(localStorage.getItem('clubs')) || [];
+    const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
     clubs.forEach(club => {
         const opt = document.createElement('option');
         opt.value = club;
@@ -35,7 +35,7 @@ function chargerPostesClub(club) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    let postesByClub = JSON.parse(localStorage.getItem('postesByClub')) || {};
+    let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
     const postes = postesByClub[club] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
@@ -50,7 +50,7 @@ function chargerPostesClub(club) {
 // ===============================
 function getState() {
     return {
-        candidature: JSON.parse(localStorage.getItem('candidaturesSessions')) || {}
+        candidature: JSON.parse(localStorage.getItem('candidaturesSessions') || '{}')
     };
 }
 
@@ -58,7 +58,7 @@ function getState() {
 // Ferme automatiquement la session si la date de fin est dépassée
 // ===============================
 function checkAndCloseCandidatureSession(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
     if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
         candidatures[categorie].active = false;
         localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
@@ -194,7 +194,7 @@ document.addEventListener('DOMContentLoaded', () => {
             };
 
             // Ajout dans le localStorage
-            let candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+            let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
             candidatures.push(candidature);
             localStorage.setItem('candidatures', JSON.stringify(candidatures));
 

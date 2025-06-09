@@ -29,7 +29,7 @@ function groupByClub(candidats) {
 }
 
 function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
     donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
     donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
@@ -43,7 +43,7 @@ function getVoteKey(type, index) {
 }
 
 function getVoteSessionStatus(type) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     if (!votes[type]) return { status: 'none', session: null };
     const session = votes[type];
     const now = Date.now();

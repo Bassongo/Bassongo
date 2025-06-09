@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function registerUser(userData) {
-        const users = JSON.parse(localStorage.getItem('utilisateurs')) || [];
+        const users = JSON.parse(localStorage.getItem('utilisateurs') || '[]');
         
         // Vérifier si l'utilisateur existe déjà
         if (users.some(u => u.email === userData.email)) {
