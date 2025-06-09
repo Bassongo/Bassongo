@@ -148,8 +148,8 @@ function updateVoteInfo(type) {
     const info = document.getElementById('vote-info');
     if (!info) return;
     const { status, session } = getVoteSessionStatus(type);
-    if (!session) {
-        info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
+    if (!session || status === 'none') {
+        info.textContent = `Pas de session de vote ${type.toUpperCase()}.`;
         return;
     }
     const start = new Date(session.startTime || session.start);
@@ -161,7 +161,7 @@ function updateVoteInfo(type) {
     } else if (status === 'closed_recently') {
         info.textContent = `La session de vote ${type.toUpperCase()} est terminée.`;
     } else {
-        info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
+        info.textContent = `Pas de session de vote ${type.toUpperCase()}.`;
     }
 }
 
@@ -207,7 +207,7 @@ function afficherAES(index = pageAES) {
         return;
     }
     if (status === 'none') {
-        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote AES ouverte.</div>`;
+        contenu.innerHTML = `${periode}<div class="alert">Pas de session de vote AES.</div>`;
         return;
     }
     const poste = donneesAES[index];
@@ -312,7 +312,7 @@ function afficherClub(index = pageClub) {
         return;
     }
     if (status === 'none') {
-        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Club ouverte.</div>`;
+        contenu.innerHTML = `${periode}<div class="alert">Pas de session de vote Club.</div>`;
         return;
     }
     const club = donneesClubs[index];
@@ -428,7 +428,7 @@ function afficherClasse(index = pageClasse) {
         return;
     }
     if (status === 'none') {
-        contenu.innerHTML = `${periode}<div class="alert">Aucune session de vote Classe ouverte.</div>`;
+        contenu.innerHTML = `${periode}<div class="alert">Pas de session de vote Classe.</div>`;
         return;
     }
     const poste = donneesClasse[index];
