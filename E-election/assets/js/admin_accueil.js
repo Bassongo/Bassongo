@@ -283,6 +283,149 @@ document.addEventListener('DOMContentLoaded', () => {
     `;
   }
 
+  function getUsers() {
+    return JSON.parse(localStorage.getItem('utilisateurs')) || [];
+  }
+
+  function getComites() {
+    return JSON.parse(localStorage.getItem('comites')) || {};
+  }
+
+  function saveComites(data) {
+    localStorage.setItem('comites', JSON.stringify(data));
+  }
+
+  function showComitesMenu() {
+    content.innerHTML = `
+      <div class="admin-box">
+        <h2>GESTION DES COMITES D'ELECTIONS</h2>
+        <div class="admin-actions" style="margin-top:40px;">
+          <button class="admin-btn" id="nommerComiteBtn">nommer un comité</button>
+          <button class="admin-btn" id="consulterComiteBtn">consulter les comités</button>
+        </div>
+        <div class="admin-actions" style="margin-top:40px;">
+          <button class="admin-btn" id="backBtn">retour</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      document.getElementById('nommerComiteBtn').onclick = showNommerComite;
+      document.getElementById('consulterComiteBtn').onclick = showConsulterComite;
+      document.getElementById('backBtn').onclick = showWelcome;
+    }, 10);
+  }
+
+  function showNommerComite() {
+    content.innerHTML = `
+      <div class="admin-box">
+        <h2>NOMMER UN COMITE</h2>
+        <div class="form-group">
+          <label for="comiteType">Type d'élection</label>
+          <select id="comiteType">
+            <option value="" disabled selected>Choisir un type</option>
+            <option value="aes">AES</option>
+            <option value="club">Club</option>
+            <option value="classe">Classe</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="comiteSearch">Rechercher</label>
+          <input type="text" id="comiteSearch" placeholder="Email ou nom d'utilisateur">
+        </div>
+        <div id="comiteUserList" class="user-list"></div>
+        <div class="form-actions">
+          <button class="admin-btn" id="saveComiteBtn">Valider</button>
+          <button class="admin-btn" id="cancelComite">Annuler</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      const typeSel = document.getElementById('comiteType');
+      const search = document.getElementById('comiteSearch');
+      const list = document.getElementById('comiteUserList');
+
+      function render(filter = '') {
+        const users = getUsers();
+        const filt = filter.toLowerCase();
+        list.innerHTML = users
+          .filter(u => !filt || u.email.toLowerCase().includes(filt) || u.username.toLowerCase().includes(filt))
+          .map(u => `<label><input type="checkbox" value="${u.email}"> ${u.username} (${u.email})</label>`)
+          .join('');
+      }
+
+      render();
+      search.oninput = () => render(search.value);
+
+      document.getElementById('saveComiteBtn').onclick = () => {
+        const type = typeSel.value;
+        if (!type) { alert('Choisissez un type'); return; }
+        const checked = Array.from(list.querySelectorAll('input:checked')).map(c => c.value);
+        if (checked.length === 0) { alert('Sélectionnez au moins un utilisateur'); return; }
+        const users = getUsers();
+        let comites = getComites();
+        comites[type] = comites[type] || [];
+        checked.forEach(mail => {
+          const user = users.find(u => u.email === mail);
+          if (user && !comites[type].some(m => m.email === mail)) {
+            comites[type].push({ email: user.email, username: user.username });
+          }
+        });
+        saveComites(comites);
+        alert('Comité mis à jour');
+        showComitesMenu();
+      };
+      document.getElementById('cancelComite').onclick = showComitesMenu;
+    }, 10);
+  }
+
+  function showConsulterComite() {
+    content.innerHTML = `
+      <div class="admin-box">
+        <h2>LISTE DES COMITES</h2>
+        <div class="form-group">
+          <label for="consultType">Type d'élection</label>
+          <select id="consultType">
+            <option value="" disabled selected>Choisir un type</option>
+            <option value="aes">AES</option>
+            <option value="club">Club</option>
+            <option value="classe">Classe</option>
+          </select>
+        </div>
+        <div id="consultList" class="user-list"></div>
+        <div class="form-actions">
+          <button class="admin-btn danger" id="deleteComiteMember">Supprimer</button>
+          <button class="admin-btn" id="backComite">Retour</button>
+        </div>
+      </div>
+    `;
+    setTimeout(() => {
+      const typeSel = document.getElementById('consultType');
+      const list = document.getElementById('consultList');
+
+      function render() {
+        const type = typeSel.value;
+        const data = getComites();
+        const members = (data[type] || []);
+        list.innerHTML = members.length === 0
+          ? '<p>Aucun membre</p>'
+          : members.map(m => `<label><input type="checkbox" value="${m.email}"> ${m.username} (${m.email})</label>`).join('');
+      }
+
+      typeSel.onchange = render;
+
+      document.getElementById('deleteComiteMember').onclick = () => {
+        const type = typeSel.value;
+        if (!type) { alert('Choisissez un type'); return; }
+        let comites = getComites();
+        const selected = Array.from(list.querySelectorAll('input:checked')).map(c => c.value);
+        comites[type] = (comites[type] || []).filter(m => !selected.includes(m.email));
+        saveComites(comites);
+        render();
+      };
+      document.getElementById('backComite').onclick = showComitesMenu;
+    }, 10);
+  }
+
   sidebarBtns.forEach(btn => {
     btn.addEventListener('click', function() {
       autoCloseSessions();
@@ -511,23 +654,7 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('backBtn').onclick = showWelcome;
         }, 10);
       } else if (this.id === 'btn-gestion-comites') {
-        content.innerHTML = `
-          <div class="admin-box">
-            <h2>GESTION DES COMITES D'ELECTIONS</h2>
-            <div class="admin-actions" style="margin-top:40px;">
-              <button class="admin-btn" id="nommerComiteBtn">nommer un comité</button>
-              <button class="admin-btn" id="consulterComiteBtn">consulter les comités</button>
-            </div>
-            <div class="admin-actions" style="margin-top:40px;">
-              <button class="admin-btn" id="backBtn">retour</button>
-            </div>
-          </div>
-        `;
-        setTimeout(() => {
-          document.getElementById('nommerComiteBtn').onclick = () => alert('Nommer un comité');
-          document.getElementById('consulterComiteBtn').onclick = () => alert('Consulter les comités');
-          document.getElementById('backBtn').onclick = showWelcome;
-        }, 10);
+        showComitesMenu();
       } else if (this.id === 'btn-param-admin') {
         content.innerHTML = `
           <div class="admin-box">

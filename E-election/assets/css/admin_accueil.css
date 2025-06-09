@@ -278,3 +278,8 @@ body {
   justify-content: flex-end;
   gap: 10px;
 }
+
+.user-list label {
+  display: block;
+  margin: 4px 0;
+}
