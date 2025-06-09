@@ -45,15 +45,15 @@ function showCommitteeActions(container) {
   `;
 
   document.getElementById('startCandBtn').onclick = () => {
-    resetCandModal();
+    window.resetCandModal();
     document.getElementById('startCandModal').style.display = 'flex';
   };
-  document.getElementById('stopCandBtn').onclick = () => closeSession('candidature');
+  document.getElementById('stopCandBtn').onclick = () => openCloseSession('candidature');
   document.getElementById('startVoteBtn').onclick = () => {
-    resetVoteModal();
+    window.resetVoteModal();
     document.getElementById('startVotesModal').style.display = 'flex';
   };
-  document.getElementById('stopVoteBtn').onclick = () => closeSession('vote');
+  document.getElementById('stopVoteBtn').onclick = () => openCloseSession('vote');
 }
 
 function setupModals(categories) {
@@ -79,6 +79,13 @@ function setupModals(categories) {
   const startCandDate = document.getElementById('startCandDate');
   const endCandDate = document.getElementById('endCandDate');
 
+  const closeSessionModal = document.getElementById('closeSessionModal');
+  const closeCloseSession = document.getElementById('closeCloseSession');
+  const closeSessionCategory = document.getElementById('closeSessionCategory');
+  const cancelCloseSession = document.getElementById('cancelCloseSession');
+  const validateCloseSession = document.getElementById('validateCloseSession');
+  let closeType = null;
+
   function fillCategories(select) {
     select.innerHTML = '<option value="" selected disabled>Choisir un type</option>';
     categories.forEach(c => {
@@ -91,6 +98,32 @@ function setupModals(categories) {
 
   fillCategories(voteType);
   fillCategories(candType);
+
+  function fillCloseOptions(type) {
+    closeSessionCategory.innerHTML = '<option value="" selected disabled>Choisir une catégorie</option>';
+    const sessions = JSON.parse(localStorage.getItem(type === 'vote' ? 'votesSessions' : 'candidaturesSessions')) || {};
+    categories.forEach(c => {
+      if (sessions[c] && sessions[c].active) {
+        const opt = document.createElement('option');
+        opt.value = c;
+        opt.textContent = c.toUpperCase();
+        closeSessionCategory.appendChild(opt);
+      }
+    });
+  }
+
+  function openCloseSession(type) {
+    closeType = type;
+    fillCloseOptions(type);
+    if (closeSessionCategory.children.length === 1) { // only placeholder
+      alert('Aucune session ouverte à fermer.');
+      return;
+    }
+    closeSessionCategory.value = '';
+    closeSessionModal.style.display = 'flex';
+  }
+
+  window.openCloseSession = openCloseSession;
 
   function resetVoteModal() {
     step1.style.display = 'block';
@@ -160,21 +193,23 @@ function setupModals(categories) {
     startCandModal.style.display = 'none';
     resetCandModal();
   };
-}
 
-function closeSession(type) {
-  const categories = Object.keys(JSON.parse(localStorage.getItem(type === 'vote' ? 'votesSessions' : 'candidaturesSessions')) || {});
-  const cat = prompt('Catégorie à fermer (' + categories.join(', ') + ') :');
-  if (!cat || !categories.includes(cat.toLowerCase())) return;
-  if (type === 'vote') {
-    if (!isVoteActive(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
-    endVote(cat);
-    alert('Votes fermés pour ' + cat.toUpperCase());
-  } else {
-    if (!isCandidatureActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
-    endCandidature(cat);
-    alert('Candidatures fermées pour ' + cat.toUpperCase());
-  }
+  closeCloseSession.onclick = () => { closeSessionModal.style.display = 'none'; };
+  cancelCloseSession.onclick = () => { closeSessionModal.style.display = 'none'; };
+  validateCloseSession.onclick = () => {
+    const cat = closeSessionCategory.value;
+    if (!cat) { alert('Choisissez une catégorie'); return; }
+    if (closeType === 'vote') {
+      if (!isVoteActive(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+      endVote(cat);
+      alert('Votes fermés pour ' + cat.toUpperCase());
+    } else {
+      if (!isCandidatureActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
+      endCandidature(cat);
+      alert('Candidatures fermées pour ' + cat.toUpperCase());
+    }
+    closeSessionModal.style.display = 'none';
+  };
 }
 
 function isCandidatureActive(categorie) {
