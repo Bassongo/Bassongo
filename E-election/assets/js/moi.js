@@ -29,12 +29,12 @@ document.addEventListener('DOMContentLoaded', () => {
   );
 
   if (categories.length > 0) {
-    showCommitteeActions(actionsContainer);
+    showCommitteeActions(actionsContainer, categories);
     setupModals(categories);
   }
 });
 
-function showCommitteeActions(container) {
+function showCommitteeActions(container, categories) {
   container.innerHTML = `
     <div class="committee-section">
       <button class="admin-btn" id="startCandBtn">Démarrer les candidatures</button>
@@ -46,13 +46,38 @@ function showCommitteeActions(container) {
 
   document.getElementById('startCandBtn').onclick = () => {
     window.resetCandModal();
+    const candType = document.getElementById('candType');
+    const candStep1 = document.getElementById('candStep1');
+    const candStep2 = document.getElementById('candStep2');
+    if (categories.length === 1 && candType && candStep1 && candStep2) {
+      candType.value = categories[0];
+      candStep1.style.display = 'none';
+      candStep2.style.display = 'block';
+    } else {
+      candStep1.style.display = 'block';
+      candStep2.style.display = 'none';
+    }
     document.getElementById('startCandModal').style.display = 'flex';
   };
+
   document.getElementById('stopCandBtn').onclick = () => window.openCloseSession('candidature');
+
   document.getElementById('startVoteBtn').onclick = () => {
     window.resetVoteModal();
+    const voteType = document.getElementById('voteType');
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    if (categories.length === 1 && voteType && step1 && step2) {
+      voteType.value = categories[0];
+      step1.style.display = 'none';
+      step2.style.display = 'block';
+    } else {
+      step1.style.display = 'block';
+      step2.style.display = 'none';
+    }
     document.getElementById('startVotesModal').style.display = 'flex';
   };
+
   document.getElementById('stopVoteBtn').onclick = () => window.openCloseSession('vote');
 }
 
@@ -152,33 +177,32 @@ function setupModals(categories) {
     step1.style.display = 'none';
     step2.style.display = 'block';
   };
- validateVoteModal.onclick = () => {
-  const categorie = voteType.value;
-  const debut = Date.parse(startVoteInput.value);
-  const fin = Date.parse(endVoteInput.value);
-  if (!categorie) { alert('Type manquant'); return; }
-  if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-  if (window.isVoteActive && window.isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
-  const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
-  const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
-  if (candidats.length === 0) {
-    alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
-    return;
-  }
-  if (window.isCandidatureActive && window.isCandidatureActive(categorie)) {
-    alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
-    return;
-  }
-  if (window.startVote) {
-    window.startVote(categorie, debut, fin);
-    alert('Votes démarrés pour ' + categorie.toUpperCase());
-    startVotesModal.style.display = 'none';
-    resetVoteModal();
-  } else {
-    alert("Fonction de démarrage de vote non disponible.");
-  }
-};
-
+  validateVoteModal.onclick = () => {
+    const categorie = voteType.value;
+    const debut = Date.parse(startVoteInput.value);
+    const fin = Date.parse(endVoteInput.value);
+    if (!categorie) { alert('Type manquant'); return; }
+    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    if (window.isVoteActive && window.isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+    const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
+    const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
+    if (candidats.length === 0) {
+      alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
+      return;
+    }
+    if (window.isCandidatureActive && window.isCandidatureActive(categorie)) {
+      alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
+      return;
+    }
+    if (window.startVote) {
+      window.startVote(categorie, debut, fin);
+      alert('Votes démarrés pour ' + categorie.toUpperCase());
+      startVotesModal.style.display = 'none';
+      resetVoteModal();
+    } else {
+      alert("Fonction de démarrage de vote non disponible.");
+    }
+  };
 
   closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
   cancelCandModal.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
@@ -233,6 +257,3 @@ function endCandidatureSession(categorie) {
 function isVoteActive(categorie) {
   return window.isVoteActive(categorie);
 }
-
-
-
