@@ -152,28 +152,33 @@ function setupModals(categories) {
     step1.style.display = 'none';
     step2.style.display = 'block';
   };
-  validateVoteModal.onclick = () => {
-    const categorie = voteType.value;
-    const debut = Date.parse(startVoteInput.value);
-    const fin = Date.parse(endVoteInput.value);
-    if (!categorie) { alert('Type manquant'); return; }
-    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-    if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
-    const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
-    if (candidats.length === 0) {
-      alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
-      return;
-    }
-    if (isCandidatureSessionActive(categorie)) {
-      alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
-      return;
-    }
+ validateVoteModal.onclick = () => {
+  const categorie = voteType.value;
+  const debut = Date.parse(startVoteInput.value);
+  const fin = Date.parse(endVoteInput.value);
+  if (!categorie) { alert('Type manquant'); return; }
+  if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+  if (window.isVoteActive && window.isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+  const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
+  const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
+  if (candidats.length === 0) {
+    alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
+    return;
+  }
+  if (window.isCandidatureActive && window.isCandidatureActive(categorie)) {
+    alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
+    return;
+  }
+  if (window.startVote) {
     window.startVote(categorie, debut, fin);
     alert('Votes démarrés pour ' + categorie.toUpperCase());
     startVotesModal.style.display = 'none';
     resetVoteModal();
-  };
+  } else {
+    alert("Fonction de démarrage de vote non disponible.");
+  }
+};
+
 
   closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
   cancelCandModal.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
