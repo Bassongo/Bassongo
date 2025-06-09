@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('profileContainer');
   const actionsContainer = document.getElementById('committeeActions');
 
-  const userData = JSON.parse(localStorage.getItem('currentUser'));
+  const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
   if (!userData) {
     container.innerHTML = '<p>Aucun utilisateur connecté.</p>';
     return;
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   `;
 
-  const comites = JSON.parse(localStorage.getItem('comites')) || {};
+  const comites = JSON.parse(localStorage.getItem('comites') || '{}');
   const categories = Object.keys(comites).filter(cat =>
     (comites[cat] || []).some(m => m.email === userData.email)
   );
@@ -101,7 +101,8 @@ function setupModals(categories) {
 
   function fillCloseOptions(type) {
     closeSessionCategory.innerHTML = '<option value="" selected disabled>Choisir une catégorie</option>';
-    const sessions = JSON.parse(localStorage.getItem(type === 'vote' ? 'votesSessions' : 'candidaturesSessions')) || {};
+    const key = type === 'vote' ? 'votesSessions' : 'candidaturesSessions';
+    const sessions = JSON.parse(localStorage.getItem(key) || '{}');
     categories.forEach(c => {
       if (sessions[c] && sessions[c].active) {
         const opt = document.createElement('option');
@@ -158,7 +159,7 @@ function setupModals(categories) {
     if (!categorie) { alert('Type manquant'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
     if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
-    const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
     const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
     if (candidats.length === 0) {
       alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
@@ -213,7 +214,7 @@ function setupModals(categories) {
 }
 
 function isCandidatureActive(categorie) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
     candidatures[categorie].active = false;
     localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
@@ -223,13 +224,13 @@ function isCandidatureActive(categorie) {
 }
 
 function startCandidature(categorie, debut, fin) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   candidatures[categorie] = { active: true, start: debut, end: fin };
   localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
 }
 
 function endCandidature(categorie) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
+  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
   if (candidatures[categorie]) {
     candidatures[categorie].active = false;
     localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
@@ -237,7 +238,7 @@ function endCandidature(categorie) {
 }
 
 function isVoteActive(categorie) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
   if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
     votes[categorie].active = false;
     localStorage.setItem('votesSessions', JSON.stringify(votes));
@@ -247,13 +248,13 @@ function isVoteActive(categorie) {
 }
 
 function startVote(categorie, debut, fin) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
   votes[categorie] = { active: true, start: debut, end: fin };
   localStorage.setItem('votesSessions', JSON.stringify(votes));
 }
 
 function endVote(categorie) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
   if (votes[categorie] && votes[categorie].active) {
     votes[categorie].active = false;
     localStorage.setItem('votesSessions', JSON.stringify(votes));

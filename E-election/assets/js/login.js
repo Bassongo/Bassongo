@@ -1,5 +1,5 @@
 // Stockage des candidatures (simulation d'une base de données)
-let candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
 
 document.addEventListener("DOMContentLoaded", function () {
   // Éléments de la page
@@ -278,7 +278,7 @@ document.addEventListener('DOMContentLoaded', function() {
       const password = document.getElementById('login-password').value;
 
       // Vérifie les utilisateurs enregistrés
-      const users = JSON.parse(localStorage.getItem('utilisateurs')) || [];
+      const users = JSON.parse(localStorage.getItem('utilisateurs') || '[]');
       const user = users.find(u => u.email === email && atob(u.password) === password);
 
       if (user) {

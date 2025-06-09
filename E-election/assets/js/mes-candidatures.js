@@ -1,6 +1,6 @@
 document.addEventListener('DOMContentLoaded', () => {
   const list = document.getElementById('candidaturesList');
-  const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+  const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
 
   if (candidatures.length === 0) {
     list.innerHTML = '<p>Aucune candidature trouvée</p>';

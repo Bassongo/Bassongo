@@ -26,7 +26,7 @@ function groupByClub(candidats) {
     return Object.values(map);
 }
 function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
     donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
     donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
     donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
@@ -56,7 +56,7 @@ function setUserVoted(type) {}
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 function getVoteSessionStatus(type) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     if (!votes[type]) return { status: 'none', session: null };
     const session = votes[type];
     const now = Date.now();
@@ -77,7 +77,7 @@ function getVoteSessionStatus(type) {
 // ===============================
 // Vérifie si une session de vote est active pour une catégorie
 function isVoteActive(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
+    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     if (!votes[categorie]) return false;
     const now = Date.now();
     // Fermeture automatique si la date de fin est dépassée
@@ -110,7 +110,7 @@ function hasVotedAll(type) {
 // Récupère l'état des sessions
 function getState() {
     return {
-        vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
+        vote: JSON.parse(localStorage.getItem('votesSessions') || '{}')
     };
 }
 

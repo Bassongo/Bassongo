@@ -65,3 +65,4 @@ document.addEventListener('DOMContentLoaded', function() {
 
   document.addEventListener('DOMContentLoaded', updateNavVisibility);
   document.addEventListener('stateChanged', updateNavVisibility);
+});
