@@ -1,6 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('profileContainer');
   const actionsContainer = document.getElementById('committeeActions');
+
   const userData = JSON.parse(localStorage.getItem('currentUser'));
   if (!userData) {
     container.innerHTML = '<p>Aucun utilisateur connecté.</p>';
@@ -22,107 +23,158 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
   `;
 
-  showCommitteeActions(userData, actionsContainer);
-});
-
-function showCommitteeActions(user, container) {
   const comites = JSON.parse(localStorage.getItem('comites')) || {};
   const categories = Object.keys(comites).filter(cat =>
-    (comites[cat] || []).some(m => m.email === user.email)
+    (comites[cat] || []).some(m => m.email === userData.email)
   );
-  if (categories.length === 0) return;
 
-  categories.forEach(cat => {
-    const section = document.createElement('div');
-    section.className = 'committee-section';
-    section.innerHTML = `
-      <h3>${cat.toUpperCase()}</h3>
-      <button class="admin-btn" data-action="startCand" data-cat="${cat}">Démarrer candidature</button>
-      <button class="admin-btn danger" data-action="stopCand" data-cat="${cat}">Arrêter candidature</button>
-      <button class="admin-btn" data-action="startVote" data-cat="${cat}">Démarrer vote</button>
-      <button class="admin-btn danger" data-action="stopVote" data-cat="${cat}">Arrêter vote</button>
-    `;
-    container.appendChild(section);
-  });
-
-  container.addEventListener('click', ev => {
-    const btn = ev.target;
-    const action = btn.dataset.action;
-    const cat = btn.dataset.cat;
-    if (!action || !cat) return;
-    switch (action) {
-      case 'startCand':
-        startCand(cat);
-        break;
-      case 'stopCand':
-        stopCand(cat);
-        break;
-      case 'startVote':
-        startVoteCat(cat);
-        break;
-      case 'stopVote':
-        stopVoteCat(cat);
-        break;
-    }
-  });
-}
-
-function startCand(cat) {
-  const deb = prompt('Date de d\u00e9but (YYYY-MM-DD HH:MM)');
-  const fin = prompt('Date de fin (YYYY-MM-DD HH:MM)');
-  if (!deb || !fin) return;
-  const d = Date.parse(deb);
-  const f = Date.parse(fin);
-  if (isNaN(d) || isNaN(f) || d >= f) { alert('Dates invalides'); return; }
-  if (isCandidatureActive(cat)) { alert('Une session est d\u00e9j\u00e0 ouverte'); return; }
-  startCandidature(cat, d, f);
-  alert('Candidature ouverte pour ' + cat.toUpperCase());
-}
-
-function stopCand(cat) {
-  if (!isCandidatureActive(cat)) { alert('Aucune session active'); return; }
-  endCandidature(cat);
-  alert('Candidature stopp\u00e9e pour ' + cat.toUpperCase());
-}
-
-function startVoteCat(cat) {
-  const deb = prompt('Date de d\u00e9but (YYYY-MM-DD HH:MM)');
-  const fin = prompt('Date de fin (YYYY-MM-DD HH:MM)');
-  if (!deb || !fin) return;
-  const d = Date.parse(deb);
-  const f = Date.parse(fin);
-  if (isNaN(d) || isNaN(f) || d >= f) { alert('Dates invalides'); return; }
-  if (isVoteActive(cat)) { alert('Une session de vote est d\u00e9j\u00e0 ouverte pour cette cat\u00e9gorie'); return; }
-
-  const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
-  const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === cat);
-  if (candidats.length === 0) {
-    alert('Impossible de d\u00e9marrer le vote : aucun candidat pour cette cat\u00e9gorie.');
-    return;
+  if (categories.length > 0) {
+    showCommitteeActions(actionsContainer);
+    setupModals(categories);
   }
-  if (isCandidatureActive(cat)) {
-    alert('Impossible de d\u00e9marrer le vote : la session de candidature est encore ouverte.');
-    return;
-  }
-  startVote(cat, d, f);
-  alert('Vote ouvert pour ' + cat.toUpperCase());
-}
+});
 
-function stopVoteCat(cat) {
-  if (!isVoteActive(cat)) { alert('Pas de vote actif pour cette cat\u00e9gorie'); return; }
-  endVote(cat);
-  alert('Vote stopp\u00e9 pour ' + cat.toUpperCase());
-}
+function showCommitteeActions(container) {
+  container.innerHTML = `
+    <div class="committee-section">
+      <button class="admin-btn" id="startCandBtn">Démarrer les candidatures</button>
+      <button class="admin-btn danger" id="stopCandBtn">Fermer les candidatures</button>
+      <button class="admin-btn" id="startVoteBtn">Démarrer les votes</button>
+      <button class="admin-btn danger" id="stopVoteBtn">Fermer les votes</button>
+    </div>
+  `;
 
-// ===============================
-// Fonctions de gestion des sessions (m\u00eames que l'administrateur)
-// ===============================
-
-function getState() {
-  return {
-    candidature: JSON.parse(localStorage.getItem('candidaturesSessions')) || {},
-    vote: JSON.parse(localStorage.getItem('votesSessions')) || {}
+  document.getElementById('startCandBtn').onclick = () => {
+    resetCandModal();
+    document.getElementById('startCandModal').style.display = 'flex';
   };
+  document.getElementById('stopCandBtn').onclick = () => closeSession('candidature');
+  document.getElementById('startVoteBtn').onclick = () => {
+    resetVoteModal();
+    document.getElementById('startVotesModal').style.display = 'flex';
+  };
+  document.getElementById('stopVoteBtn').onclick = () => closeSession('vote');
+}
+
+function setupModals(categories) {
+  const startVotesModal = document.getElementById('startVotesModal');
+  const closeStartVotes = document.getElementById('closeStartVotes');
+  const nextToDates = document.getElementById('nextToDates');
+  const validateVoteModal = document.getElementById('validateVoteModal');
+  const cancelVoteModal = document.getElementById('cancelVoteModal');
+  const step1 = document.getElementById('step1');
+  const step2 = document.getElementById('step2');
+  const voteType = document.getElementById('voteType');
+  const startVoteInput = document.getElementById('startVote');
+  const endVoteInput = document.getElementById('endVote');
+
+  const startCandModal = document.getElementById('startCandModal');
+  const closeStartCand = document.getElementById('closeStartCand');
+  const candNextToDate = document.getElementById('candNextToDate');
+  const validateCandModal = document.getElementById('validateCandModal');
+  const cancelCandModal = document.getElementById('cancelCandModal');
+  const candStep1 = document.getElementById('candStep1');
+  const candStep2 = document.getElementById('candStep2');
+  const candType = document.getElementById('candType');
+  const startCandDate = document.getElementById('startCandDate');
+  const endCandDate = document.getElementById('endCandDate');
+
+  function fillCategories(select) {
+    select.innerHTML = '<option value="" selected disabled>Choisir un type</option>';
+    categories.forEach(c => {
+      const opt = document.createElement('option');
+      opt.value = c;
+      opt.textContent = c.toUpperCase();
+      select.appendChild(opt);
+    });
+  }
+
+  fillCategories(voteType);
+  fillCategories(candType);
+
+  function resetVoteModal() {
+    step1.style.display = 'block';
+    step2.style.display = 'none';
+    voteType.value = '';
+    startVoteInput.value = '';
+    endVoteInput.value = '';
+  }
+
+  function resetCandModal() {
+    candStep1.style.display = 'block';
+    candStep2.style.display = 'none';
+    candType.value = '';
+    startCandDate.value = '';
+    endCandDate.value = '';
+  }
+
+  window.resetVoteModal = resetVoteModal;
+  window.resetCandModal = resetCandModal;
+
+  closeStartVotes.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
+  cancelVoteModal.onclick = () => { startVotesModal.style.display = 'none'; resetVoteModal(); };
+  nextToDates.onclick = () => {
+    if (!voteType.value) { alert('Choisissez un type'); return; }
+    step1.style.display = 'none';
+    step2.style.display = 'block';
+  };
+  validateVoteModal.onclick = () => {
+    const categorie = voteType.value;
+    const debut = Date.parse(startVoteInput.value);
+    const fin = Date.parse(endVoteInput.value);
+    if (!categorie) { alert('Type manquant'); return; }
+    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+    const candidatures = JSON.parse(localStorage.getItem('candidatures')) || [];
+    const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
+    if (candidats.length === 0) {
+      alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
+      return;
+    }
+    if (isCandidatureActive(categorie)) {
+      alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
+      return;
+    }
+    startVote(categorie, debut, fin);
+    alert('Votes démarrés pour ' + categorie.toUpperCase());
+    startVotesModal.style.display = 'none';
+    resetVoteModal();
+  };
+
+  closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
+  cancelCandModal.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
+  candNextToDate.onclick = () => {
+    if (!candType.value) { alert('Choisissez une catégorie'); return; }
+    candStep1.style.display = 'none';
+    candStep2.style.display = 'block';
+  };
+  validateCandModal.onclick = () => {
+    const categorie = candType.value;
+    const debut = Date.parse(startCandDate.value);
+    const fin = Date.parse(endCandDate.value);
+    if (!categorie) { alert('Catégorie manquante'); return; }
+    if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
+    if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
+    startCandidature(categorie, debut, fin);
+    alert('Candidatures ouvertes pour ' + categorie.toUpperCase());
+    startCandModal.style.display = 'none';
+    resetCandModal();
+  };
+}
+
+function closeSession(type) {
+  const categories = Object.keys(JSON.parse(localStorage.getItem(type === 'vote' ? 'votesSessions' : 'candidaturesSessions')) || {});
+  const cat = prompt('Catégorie à fermer (' + categories.join(', ') + ') :');
+  if (!cat || !categories.includes(cat.toLowerCase())) return;
+  if (type === 'vote') {
+    if (!isVoteActive(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+    endVote(cat);
+    alert('Votes fermés pour ' + cat.toUpperCase());
+  } else {
+    if (!isCandidatureActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
+    endCandidature(cat);
+    alert('Candidatures fermées pour ' + cat.toUpperCase());
+  }
 }
 
 function isCandidatureActive(categorie) {
@@ -135,9 +187,9 @@ function isCandidatureActive(categorie) {
   return candidatures[categorie] && candidatures[categorie].active;
 }
 
-function startCandidature(categorie, debut, fin, club = null) {
+function startCandidature(categorie, debut, fin) {
   let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions')) || {};
-  candidatures[categorie] = { active: true, start: debut, end: fin, ...(categorie === 'club' ? { club } : {}) };
+  candidatures[categorie] = { active: true, start: debut, end: fin };
   localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
 }
 
@@ -159,9 +211,9 @@ function isVoteActive(categorie) {
   return votes[categorie] && votes[categorie].active;
 }
 
-function startVote(categorie, debut, fin, club = null) {
+function startVote(categorie, debut, fin) {
   let votes = JSON.parse(localStorage.getItem('votesSessions')) || {};
-  votes[categorie] = { active: true, start: debut, end: fin, ...(categorie === 'club' ? { club } : {}) };
+  votes[categorie] = { active: true, start: debut, end: fin };
   localStorage.setItem('votesSessions', JSON.stringify(votes));
 }
 
@@ -172,3 +224,4 @@ function endVote(categorie) {
     localStorage.setItem('votesSessions', JSON.stringify(votes));
   }
 }
+
