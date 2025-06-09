@@ -43,20 +43,19 @@ function getVoteKey(type, index) {
 }
 
 function getVoteSessionStatus(type) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (!votes[type]) return { status: 'none', session: null };
-    const session = votes[type];
+    const state = getState();
+    const session = type === 'club' ? state.vote.club : state.vote[type];
+    if (!session) return { status: 'none', session: null };
     const now = Date.now();
 
-    if (session.active && now > session.end) {
+    if (session.active && now > session.endTime) {
         session.active = false;
-        votes[type] = session;
-        localStorage.setItem('votesSessions', JSON.stringify(votes));
+        saveState(state);
     }
 
-    if (now < session.start) return { status: 'not_started', session };
-    if (session.active && now <= session.end) return { status: 'active', session };
-    if (now >= session.end) return { status: 'closed', session };
+    if (now < session.startTime) return { status: 'not_started', session };
+    if (session.active && now <= session.endTime) return { status: 'active', session };
+    if (now >= session.endTime) return { status: 'closed', session };
     return { status: 'none', session };
 }
 

@@ -101,10 +101,10 @@ function setupModals(categories) {
 
   function fillCloseOptions(type) {
     closeSessionCategory.innerHTML = '<option value="" selected disabled>Choisir une catégorie</option>';
-    const key = type === 'vote' ? 'votesSessions' : 'candidaturesSessions';
-    const sessions = JSON.parse(localStorage.getItem(key) || '{}');
+    const state = getState();
     categories.forEach(c => {
-      if (sessions[c] && sessions[c].active) {
+      const sess = type === 'vote' ? (c === 'club' ? state.vote.club : state.vote[c]) : (c === 'club' ? state.candidature.club : state.candidature[c]);
+      if (sess && sess.active) {
         const opt = document.createElement('option');
         opt.value = c;
         opt.textContent = c.toUpperCase();
@@ -169,7 +169,7 @@ function setupModals(categories) {
       alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
       return;
     }
-    startVote(categorie, debut, fin);
+    window.startVote(categorie, debut, fin);
     alert('Votes démarrés pour ' + categorie.toUpperCase());
     startVotesModal.style.display = 'none';
     resetVoteModal();
@@ -189,7 +189,7 @@ function setupModals(categories) {
     if (!categorie) { alert('Catégorie manquante'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
     if (isCandidatureSessionActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
-    startCandidatureSession(categorie, debut, fin);
+    window.startCandidature(categorie, debut, fin);
     alert('Candidatures ouvertes pour ' + categorie.toUpperCase());
     startCandModal.style.display = 'none';
     resetCandModal();
@@ -202,7 +202,7 @@ function setupModals(categories) {
     if (!cat) { alert('Choisissez une catégorie'); return; }
     if (closeType === 'vote') {
       if (!isVoteActive(cat)) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
-      endVote(cat);
+      window.endVote(cat);
       alert('Votes fermés pour ' + cat.toUpperCase());
     } else {
       if (!isCandidatureSessionActive(cat)) { alert('Pas de session ouverte pour cette catégorie'); return; }
@@ -214,59 +214,20 @@ function setupModals(categories) {
 }
 
 function isCandidatureSessionActive(categorie) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-  if (candidatures[categorie] && candidatures[categorie].active && Date.now() > candidatures[categorie].end) {
-    candidatures[categorie].active = false;
-    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-    // Mise à jour de l'état global
-    const state = getState();
-    if (state.candidature[categorie]) {
-      state.candidature[categorie].active = false;
-      saveState(state);
-    }
-    return false;
-  }
-  return candidatures[categorie] && candidatures[categorie].active;
+  return window.isCandidatureActive(categorie);
 }
 
 function startCandidatureSession(categorie, debut, fin) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-  candidatures[categorie] = { active: true, start: debut, end: fin };
-  localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-  // Synchronise avec electionState
-  startCandidature(categorie, debut, fin);
+  window.startCandidature(categorie, debut, fin);
 }
 
 function endCandidatureSession(categorie) {
-  let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-  if (candidatures[categorie]) {
-    candidatures[categorie].active = false;
-    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-    endCandidature(categorie);
-  }
+  window.endCandidature(categorie);
 }
 
 function isVoteActive(categorie) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-  if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
-    votes[categorie].active = false;
-    localStorage.setItem('votesSessions', JSON.stringify(votes));
-    return false;
-  }
-  return votes[categorie] && votes[categorie].active;
+  return window.isVoteActive(categorie);
 }
 
-function startVote(categorie, debut, fin) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-  votes[categorie] = { active: true, start: debut, end: fin };
-  localStorage.setItem('votesSessions', JSON.stringify(votes));
-}
 
-function endVote(categorie) {
-  let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-  if (votes[categorie] && votes[categorie].active) {
-    votes[categorie].active = false;
-    localStorage.setItem('votesSessions', JSON.stringify(votes));
-  }
-}
 

@@ -57,27 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Gestion des candidatures sessions (stockage et contrôle)
   function isCandidatureActive(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    return candidatures[categorie] && candidatures[categorie].active;
+    return window.isCandidatureActive(categorie);
   }
 
   function startCandidature(categorie, debut, fin, club) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    candidatures[categorie] = {
-      active: true,
-      start: debut,
-      end: fin,
-      ...(categorie === 'club' ? { club } : {})
-    };
-    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
+    window.startCandidature(categorie, debut, fin, club);
   }
 
   function endCandidature(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    if (candidatures[categorie]) {
-      candidatures[categorie].active = false;
-      localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-    }
+    window.endCandidature(categorie);
   }
 
   // ===============================
@@ -86,60 +74,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Vérifie si une session de vote est active pour une catégorie
   function isVoteActive(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    // Fermeture automatique si la date de fin est dépassée
-    if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
-      votes[categorie].active = false;
-      localStorage.setItem('votesSessions', JSON.stringify(votes));
-      return false;
-    }
-    return votes[categorie] && votes[categorie].active;
+    return window.isVoteActive(categorie);
   }
 
   // Démarre une session de vote pour une catégorie
   function startVote(categorie, debut, fin, club) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    votes[categorie] = {
-      active: true,
-      start: debut,
-      end: fin,
-      ...(categorie === 'club' ? { club } : {})
-    };
-    localStorage.setItem('votesSessions', JSON.stringify(votes));
+    window.startVote(categorie, debut, fin, club);
   }
 
   // Ferme une session de vote pour une catégorie
   function endVote(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (votes[categorie] && votes[categorie].active) {
-      votes[categorie].active = false;
-      localStorage.setItem('votesSessions', JSON.stringify(votes));
-    }
+    window.endVote(categorie);
   }
 
   // Fermeture automatique des votes et candidatures à chaque chargement
   function autoCloseSessions() {
-    // Candidatures
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    let changed = false;
-    Object.keys(candidatures).forEach(cat => {
-      if (candidatures[cat].active && Date.now() > candidatures[cat].end) {
-        candidatures[cat].active = false;
-        changed = true;
-      }
-    });
-    if (changed) localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-
-    // Votes
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    changed = false;
-    Object.keys(votes).forEach(cat => {
-      if (votes[cat].active && Date.now() > votes[cat].end) {
-        votes[cat].active = false;
-        changed = true;
-      }
-    });
-    if (changed) localStorage.setItem('votesSessions', JSON.stringify(votes));
+    getState(); // déclenche la vérification et la fermeture automatique via state.js
   }
   autoCloseSessions();
 
