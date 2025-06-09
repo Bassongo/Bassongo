@@ -56,37 +56,60 @@ function setUserVoted(type) {}
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
 function getVoteSessionStatus(type) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (!votes[type]) return { status: 'none', session: null };
-    const session = votes[type];
-    const now = Date.now();
-    if (session.active && now > session.end) {
-        session.active = false;
-        votes[type] = session;
-        localStorage.setItem('votesSessions', JSON.stringify(votes));
-    }
-    if (!session.active) {
-        if (now - session.end <= ONE_DAY) return { status: 'closed_recently', session };
+    // Utilise la fonction globale de state.js si disponible
+    if (window.getState) {
+        const state = window.getState();
+        const session = state.vote && state.vote[type];
+        if (!session) return { status: 'none', session: null };
+        const now = Date.now();
+        if (session.active && now > session.endTime) {
+            session.active = false;
+            window.saveState && window.saveState(state);
+        }
+        if (!session.active) {
+            if (now - session.endTime <= ONE_DAY) return { status: 'closed_recently', session };
+            return { status: 'none', session };
+        }
+        if (now < session.startTime) return { status: 'not_started', session };
+        if (now >= session.startTime && now <= session.endTime) return { status: 'active', session };
+        return { status: 'none', session };
+    } else {
+        // fallback localStorage (ancien code)
+        let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
+        if (!votes[type]) return { status: 'none', session: null };
+        const session = votes[type];
+        const now = Date.now();
+        if (session.active && now > session.end) {
+            session.active = false;
+            votes[type] = session;
+            localStorage.setItem('votesSessions', JSON.stringify(votes));
+        }
+        if (!session.active) {
+            if (now - session.end <= ONE_DAY) return { status: 'closed_recently', session };
+            return { status: 'none', session };
+        }
+        if (now < session.start) return { status: 'not_started', session };
+        if (now >= session.start && now <= session.end) return { status: 'active', session };
         return { status: 'none', session };
     }
-    if (now < session.start) return { status: 'not_started', session };
-    if (now >= session.start && now <= session.end) return { status: 'active', session };
-    return { status: 'none', session };
 }
 
 // ===============================
 // Vérifie si une session de vote est active pour une catégorie
 function isVoteActive(categorie) {
+    // Utilise la fonction globale de state.js si disponible
+    if (window.isVoteActive) {
+        return window.isVoteActive(categorie);
+    }
+    // fallback localStorage (ancien code)
     let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
     if (!votes[categorie]) return false;
     const now = Date.now();
-    // Fermeture automatique si la date de fin est dépassée
     if (votes[categorie].active && now > votes[categorie].end) {
         votes[categorie].active = false;
         localStorage.setItem('votesSessions', JSON.stringify(votes));
         return false;
     }
-    // N'est actif que si la date de début est atteinte
     if (votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end) {
         return true;
     }
@@ -109,6 +132,10 @@ function hasVotedAll(type) {
 
 // Récupère l'état des sessions
 function getState() {
+    // Utilise la fonction globale de state.js si disponible
+    if (window.getState) {
+        return window.getState();
+    }
     return {
         vote: JSON.parse(localStorage.getItem('votesSessions') || '{}')
     };
@@ -125,8 +152,8 @@ function updateVoteInfo(type) {
         info.textContent = `Aucune session de vote ${type.toUpperCase()} ouverte.`;
         return;
     }
-    const start = new Date(session.start);
-    const end = new Date(session.end);
+    const start = new Date(session.startTime || session.start);
+    const end = new Date(session.endTime || session.end);
     if (status === 'not_started') {
         info.textContent = `La session de vote ${type.toUpperCase()} commencera le ${start.toLocaleString()}.`;
     } else if (status === 'active') {
@@ -167,8 +194,8 @@ function afficherAES(index = pageAES) {
     const { status, session } = getVoteSessionStatus('aes');
     let periode = '';
     if (session) {
-        const deb = new Date(session.start);
-        const end = new Date(session.end);
+        const deb = new Date(session.startTime || session.start);
+        const end = new Date(session.endTime || session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
     }
     if (status === 'not_started') {
@@ -272,8 +299,8 @@ function afficherClub(index = pageClub) {
     const { status, session } = getVoteSessionStatus('club');
     let periode = '';
     if (session) {
-        const deb = new Date(session.start);
-        const end = new Date(session.end);
+        const deb = new Date(session.startTime || session.start);
+        const end = new Date(session.endTime || session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
     }
     if (status === 'not_started') {
@@ -388,8 +415,8 @@ function afficherClasse(index = pageClasse) {
     const { status, session } = getVoteSessionStatus('classe');
     let periode = '';
     if (session) {
-        const deb = new Date(session.start);
-        const end = new Date(session.end);
+        const deb = new Date(session.startTime || session.start);
+        const end = new Date(session.endTime || session.end);
         periode = `<div class="periode">Vote du ${deb.toLocaleString()} au ${end.toLocaleString()}</div>`;
     }
     if (status === 'not_started') {

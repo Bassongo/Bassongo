@@ -55,94 +55,8 @@ document.addEventListener('DOMContentLoaded', () => {
     endCandDate.value = '';
   }
 
-  // Gestion des candidatures sessions (stockage et contrôle)
-  function isCandidatureActive(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    return candidatures[categorie] && candidatures[categorie].active;
-  }
-
-  function startCandidature(categorie, debut, fin, club) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    candidatures[categorie] = {
-      active: true,
-      start: debut,
-      end: fin,
-      ...(categorie === 'club' ? { club } : {})
-    };
-    localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-  }
-
-  function endCandidature(categorie) {
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    if (candidatures[categorie]) {
-      candidatures[categorie].active = false;
-      localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-    }
-  }
-
-  // ===============================
-  //  GESTION DES VOTES (COMPLET)
-  // ===============================
-
-  // Vérifie si une session de vote est active pour une catégorie
-  function isVoteActive(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    // Fermeture automatique si la date de fin est dépassée
-    if (votes[categorie] && votes[categorie].active && Date.now() > votes[categorie].end) {
-      votes[categorie].active = false;
-      localStorage.setItem('votesSessions', JSON.stringify(votes));
-      return false;
-    }
-    return votes[categorie] && votes[categorie].active;
-  }
-
-  // Démarre une session de vote pour une catégorie
-  function startVote(categorie, debut, fin, club) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    votes[categorie] = {
-      active: true,
-      start: debut,
-      end: fin,
-      ...(categorie === 'club' ? { club } : {})
-    };
-    localStorage.setItem('votesSessions', JSON.stringify(votes));
-  }
-
-  // Ferme une session de vote pour une catégorie
-  function endVote(categorie) {
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    if (votes[categorie] && votes[categorie].active) {
-      votes[categorie].active = false;
-      localStorage.setItem('votesSessions', JSON.stringify(votes));
-    }
-  }
-
-  // Fermeture automatique des votes et candidatures à chaque chargement
-  function autoCloseSessions() {
-    // Candidatures
-    let candidatures = JSON.parse(localStorage.getItem('candidaturesSessions') || '{}');
-    let changed = false;
-    Object.keys(candidatures).forEach(cat => {
-      if (candidatures[cat].active && Date.now() > candidatures[cat].end) {
-        candidatures[cat].active = false;
-        changed = true;
-      }
-    });
-    if (changed) localStorage.setItem('candidaturesSessions', JSON.stringify(candidatures));
-
-    // Votes
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
-    changed = false;
-    Object.keys(votes).forEach(cat => {
-      if (votes[cat].active && Date.now() > votes[cat].end) {
-        votes[cat].active = false;
-        changed = true;
-      }
-    });
-    if (changed) localStorage.setItem('votesSessions', JSON.stringify(votes));
-  }
-  autoCloseSessions();
-
+  //
+  
   // ===============================
   //  MODAL DE DEMARRAGE DES VOTES
   // ===============================
@@ -157,7 +71,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (!categorie) { alert('Type manquant'); return; }
       if (categorie === 'club' && !club) { alert('Sélectionnez un club'); return; }
       if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-      if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
+      if (window.isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
 
       // Vérification de la présence de candidats
       let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
@@ -172,13 +86,13 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
       }
 
-      if (isCandidatureActive(categorie)) {
+      if (window.isCandidatureActive(categorie)) {
         alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
         return;
       }
 
       // Stockage de la session de vote
-      startVote(categorie, debut, fin, club);
+      window.startVote(categorie, debut, fin, club);
       alert('Votes démarrés pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
 
       // Demander si on veut démarrer une autre session de vote
@@ -199,8 +113,8 @@ document.addEventListener('DOMContentLoaded', () => {
     stopVotesBtn.onclick = () => {
       const cat = prompt('Catégorie à fermer (aes, club, classe) :');
       if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
-      if (!isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
-      endVote(cat.toLowerCase());
+      if (!window.isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+      window.endVote(cat.toLowerCase());
       alert('Votes fermés pour ' + cat.toUpperCase());
     };
   }
@@ -231,8 +145,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const fin = Date.parse(endCandDate.value);
     if (!categorie) { alert('Catégorie manquante'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-    if (isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
-    startCandidature(categorie, debut, fin, club);
+    if (window.isCandidatureActive(categorie)) { alert('Cette catégorie possède déjà une session active'); return; }
+    window.startCandidature(categorie, debut, fin, club);
     alert('Candidatures ouvertes pour ' + (categorie === 'club' ? club : categorie).toUpperCase());
     // Demander si on veut démarrer une autre session
     if (confirm('Voulez-vous démarrer une autre session de candidature ?')) {
@@ -440,7 +354,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   sidebarBtns.forEach(btn => {
     btn.addEventListener('click', function() {
-      autoCloseSessions();
+      window.autoCloseSessions();
       sidebarBtns.forEach(b => b.classList.remove('active'));
       this.classList.add('active');
       if (this.id === 'btn-gestion-elections') {
@@ -448,14 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
           <div class="admin-box">
             <h2>GESTION DES ELECTIONS</h2>
             <div class="admin-actions-col">
-              <div>
-                <span style="color:#7ed957;font-weight:700;">Date de debut</span>
-                <input type="date" id="dateDebut" value="">
-              </div>
-              <div>
-                <span style="color:#e53935;font-weight:700;">Date de fin</span>
-                <input type="date" id="dateFin" value="">
-              </div>
+              
               <div class="admin-link" style="margin:18px 0;">
                 <a href="#" id="addPoste" style="color:#fff;text-decoration:underline;">Ajouter un nouveau poste</a>
               </div>
@@ -503,8 +410,8 @@ document.addEventListener('DOMContentLoaded', () => {
             stopVotesBtn.onclick = () => {
               const cat = prompt('Catégorie à fermer (aes, club, classe) :');
               if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
-              if (!isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
-              endVote(cat.toLowerCase());
+              if (!window.isVoteActive(cat.toLowerCase())) { alert('Pas de session de vote ouverte pour cette catégorie'); return; }
+              window.endVote(cat.toLowerCase());
               alert('Votes fermés pour ' + cat.toUpperCase());
             };
           }
@@ -654,8 +561,8 @@ document.addEventListener('DOMContentLoaded', () => {
           document.getElementById('closeBtn').onclick = () => {
             const cat = prompt('Catégorie à fermer (aes, club, classe) :');
             if (!cat || !['aes','club','classe'].includes(cat.toLowerCase())) return;
-            if (!isCandidatureActive(cat.toLowerCase())) { alert('Pas de session ouverte pour cette catégorie'); return; }
-            endCandidature(cat.toLowerCase());
+            if (!window.isCandidatureActive(cat.toLowerCase())) { alert('Pas de session ouverte pour cette catégorie'); return; }
+            window.endCandidature(cat.toLowerCase());
             alert('Candidatures fermées pour ' + cat.toUpperCase());
           };
           document.getElementById('statsBtn').onclick = () => alert('Statistiques des candidats');

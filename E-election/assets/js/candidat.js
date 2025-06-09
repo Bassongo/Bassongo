@@ -78,55 +78,35 @@ document.addEventListener('DOMContentLoaded', () => {
     const clubSelect = document.getElementById('clubSelect');
     const posteSelect = document.getElementById('posteSelect');
 
-    // Par défaut, masquer le formulaire et les groupes spécifiques
     if (form) form.style.display = 'none';
     if (clubGroup) clubGroup.style.display = 'none';
 
-    // Stocke le type sélectionné pour la soumission
     let currentType = null;
 
-    // Lorsqu'on clique sur un bouton de type (AES, Club, Classe)
     electionButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             const type = btn.dataset.type;
             currentType = type;
-            const state = getState();
+
+            // Utilisation de la fonction globale pour vérifier la session
+            if (!window.isCandidatureActive(type)) {
+                if (info) info.innerHTML = `<span style="color:red;">Session non ouverte ou terminée pour ${type.toUpperCase()}.</span>`;
+                if (form) form.style.display = 'none';
+                if (clubGroup) clubGroup.style.display = 'none';
+                return;
+            }
+
+            // Affichage des dates de session
+            const state = window.getState();
             const c = type === 'club' ? state.candidature.club : state.candidature[type];
-
-            // 1. Ferme la session si la date de fin est dépassée
-            if (!checkAndCloseCandidatureSession(type)) {
-                if (info) info.innerHTML = `<span style="color:red;">Session terminée ou non ouverte pour ${type.toUpperCase()}.</span>`;
-                if (form) form.style.display = 'none';
-                if (clubGroup) clubGroup.style.display = 'none';
-                return;
-            }
-
-            // 2. Si session non ouverte (pas active)
-            if (!c || !c.active) {
-                if (info) info.innerHTML = `<span style="color:red;">Session non ouverte pour ${type.toUpperCase()}.</span>`;
-                if (form) form.style.display = 'none';
-                if (clubGroup) clubGroup.style.display = 'none';
-                return;
-            }
-
-            // 3. Si la date de début n'est pas encore atteinte
-            if (Date.now() < c.start) {
-                if (info) info.innerHTML = `<span style="color:orange;">La session de candidature pour ${type.toUpperCase()} n'a pas encore commencé.</span>`;
-                if (form) form.style.display = 'none';
-                if (clubGroup) clubGroup.style.display = 'none';
-                return;
-            }
-
-            // 4. Session ouverte et période valide : afficher le formulaire
-            if (info) {
-                const deb = new Date(c.start);
-                const end = new Date(c.end);
+            if (info && c) {
+                const deb = new Date(c.startTime);
+                const end = new Date(c.endTime);
                 info.innerHTML = `<strong>${type.toUpperCase()}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
             }
             if (form) form.style.display = 'block';
             localStorage.setItem('lastCandidatureType', type);
 
-            // Affichage spécifique club ou autre
             if (type === 'club') {
                 if (clubGroup) clubGroup.style.display = 'block';
                 chargerClubs();
@@ -143,6 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
+
 
     // Gestion de la soumission du formulaire de candidature
     if (form) {
