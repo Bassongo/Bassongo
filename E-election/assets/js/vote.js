@@ -35,9 +35,10 @@ function loadCandidates() {
 // ===============================
 // Variables de pagination
 // ===============================
-let pageAES = 0;
-let pageClub = 0;
-let pageClasse = 0;
+let pageAES = parseInt(localStorage.getItem('votePageAES')) || 0;
+let pageClub = parseInt(localStorage.getItem('votePageClub')) || 0;
+let pageClasse = parseInt(localStorage.getItem('votePageClasse')) || 0;
+let currentType = localStorage.getItem('voteType') || 'aes';
 
 // ===============================
 // Gestion du vote (localStorage)
@@ -189,6 +190,8 @@ function afficherPhotoGrand(url, nom, infos = "") {
 // ===============================
 function afficherAES(index = pageAES) {
     loadCandidates();
+    pageAES = index;
+    localStorage.setItem('votePageAES', pageAES);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('aes');
     const { status, session } = getVoteSessionStatus('aes');
@@ -256,12 +259,14 @@ function afficherAES(index = pageAES) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageAES = index - 1;
+            localStorage.setItem('votePageAES', pageAES);
             afficherAES(pageAES);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesAES.length - 1) {
             pageAES = index + 1;
+            localStorage.setItem('votePageAES', pageAES);
             afficherAES(pageAES);
         }
     });
@@ -294,6 +299,8 @@ function afficherAES(index = pageAES) {
 // ===============================
 function afficherClub(index = pageClub) {
     loadCandidates();
+    pageClub = index;
+    localStorage.setItem('votePageClub', pageClub);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('club');
     const { status, session } = getVoteSessionStatus('club');
@@ -364,12 +371,14 @@ function afficherClub(index = pageClub) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageClub = index - 1;
+            localStorage.setItem('votePageClub', pageClub);
             afficherClub(pageClub);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesClubs.length - 1) {
             pageClub = index + 1;
+            localStorage.setItem('votePageClub', pageClub);
             afficherClub(pageClub);
         }
     });
@@ -410,6 +419,8 @@ function afficherClub(index = pageClub) {
 // ===============================
 function afficherClasse(index = pageClasse) {
     loadCandidates();
+    pageClasse = index;
+    localStorage.setItem('votePageClasse', pageClasse);
     const contenu = document.getElementById('contenu-vote');
     updateVoteInfo('classe');
     const { status, session } = getVoteSessionStatus('classe');
@@ -477,12 +488,14 @@ function afficherClasse(index = pageClasse) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageClasse = index - 1;
+            localStorage.setItem('votePageClasse', pageClasse);
             afficherClasse(pageClasse);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesClasse.length - 1) {
             pageClasse = index + 1;
+            localStorage.setItem('votePageClasse', pageClasse);
             afficherClasse(pageClasse);
         }
     });
@@ -513,28 +526,32 @@ function afficherClasse(index = pageClasse) {
 // ===============================
 // Gestion du selecteur de type d'élection
 // ===============================
-document.addEventListener('DOMContentLoaded', function() {
+function handleTypeElectionChange() {
+    const select = document.getElementById('type-election');
+    const selection = select.value;
+    currentType = selection;
+    localStorage.setItem('voteType', currentType);
+    updateVoteInfo(selection);
+    if (selection === 'aes') {
+        afficherAES(pageAES);
+    } else if (selection === 'club') {
+        afficherClub(pageClub);
+    } else if (selection === 'classe') {
+        afficherClasse(pageClasse);
+    }
+}
+
+function initVotePage() {
     loadCandidates();
     const select = document.getElementById('type-election');
-    select.value = 'aes';
-    updateVoteInfo('aes');
-    pageAES = 0;
-    pageClub = 0;
-    pageClasse = 0;
-    afficherAES(pageAES);
+    select.value = currentType;
+    handleTypeElectionChange();
+    select.removeEventListener('change', handleTypeElectionChange);
+    select.addEventListener('change', handleTypeElectionChange);
+}
 
-    select.addEventListener('change', function () {
-        const selection = this.value;
-        updateVoteInfo(selection);
-        pageAES = 0;
-        pageClub = 0;
-        pageClasse = 0;
-        if (selection === 'aes') {
-            afficherAES(pageAES);
-        } else if (selection === 'club') {
-            afficherClub(pageClub);
-        } else if (selection === 'classe') {
-            afficherClasse(pageClasse);
-        }
-    });
-});
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initVotePage);
+} else {
+    initVotePage();
+}
