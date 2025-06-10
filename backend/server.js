@@ -5,6 +5,46 @@ const crypto = require('crypto');
 
 const PORT = process.env.PORT || 3000;
 const dataDir = path.join(__dirname, 'data');
+const publicDir = path.join(__dirname, '..', 'E-election');
+
+function getContentType(filePath) {
+  const ext = path.extname(filePath).toLowerCase();
+  switch (ext) {
+    case '.html':
+      return 'text/html';
+    case '.css':
+      return 'text/css';
+    case '.js':
+      return 'application/javascript';
+    case '.png':
+    case '.jpg':
+    case '.jpeg':
+    case '.gif':
+    case '.svg':
+      return 'image/' + ext.substring(1);
+    default:
+      return 'application/octet-stream';
+  }
+}
+
+function serveStatic(req, res) {
+  let filePath = decodeURI(req.url.split('?')[0]);
+  if (filePath === '/' || filePath === '') {
+    filePath = '/Home.html';
+  }
+  const resolvedPath = path.join(publicDir, filePath);
+  if (!resolvedPath.startsWith(publicDir)) {
+    send(res, 403, { error: 'Forbidden' });
+    return true;
+  }
+  if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
+    const content = fs.readFileSync(resolvedPath);
+    res.writeHead(200, { 'Content-Type': getContentType(resolvedPath) });
+    res.end(content);
+    return true;
+  }
+  return false;
+}
 
 function readJSON(file) {
   const p = path.join(dataDir, file);
@@ -44,6 +84,9 @@ function hashPassword(pw) {
 }
 
 const server = http.createServer((req, res) => {
+  if (req.method === 'GET' && !req.url.startsWith('/api/')) {
+    if (serveStatic(req, res)) return;
+  }
   if (req.method === 'GET' && req.url === '/api/elections') {
     const elections = readJSON('elections.json');
     send(res, 200, elections);
