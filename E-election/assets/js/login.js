@@ -272,18 +272,20 @@ document.addEventListener('DOMContentLoaded', function() {
   const loginForm = document.getElementById('loginForm');
   // Vérifie qu'on est bien sur la page login.html
   if (loginForm) {
-    loginForm.addEventListener('submit', function(e) {
+    loginForm.addEventListener('submit', async function(e) {
       e.preventDefault();
       const email = document.getElementById('login-identifiant').value.trim();
       const password = document.getElementById('login-password').value;
 
-      // Vérifie les utilisateurs enregistrés
-      const users = JSON.parse(localStorage.getItem('utilisateurs') || '[]');
-      const user = users.find(u => u.email === email && atob(u.password) === password);
+      const resp = await fetch('/api/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
 
-      if (user) {
-        // Connexion réussie, sauvegarde de l'utilisateur actif et redirection
-        localStorage.setItem('currentUser', JSON.stringify(user));
+      if (resp.ok) {
+        const data = await resp.json();
+        sessionStorage.setItem('token', data.token);
         window.location.href = 'accueil.html';
       } else {
         alert('Identifiants invalides');

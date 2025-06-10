@@ -82,3 +82,11 @@ npm start
 Le site sera accessible sur [http://localhost:3000](http://localhost:3000).
 
 
+
+## Nouveautés
+
+- Le backend gère désormais l'authentification via un jeton renvoyé lors de la connexion.
+- Les pages d'inscription et de connexion communiquent avec l'API et n'utilisent plus `localStorage` pour stocker les utilisateurs.
+- Des sessions sont sauvegardées dans `backend/data/sessions.json`.
+
+Pour accéder aux endpoints sécurisés (création de candidature, vote...), le jeton doit être envoyé dans l'en-tête `Authorization: Bearer <token>`.

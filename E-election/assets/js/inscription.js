@@ -14,12 +14,14 @@ document.addEventListener('DOMContentLoaded', () => {
         };
 
         if (validateForm(userData)) {
-            if (registerUser(userData)) {
-                showSuccess('Inscription réussie ! Redirection...');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 2000);
-            }
+            registerUser(userData).then(ok => {
+                if (ok) {
+                    showSuccess('Inscription réussie ! Redirection...');
+                    setTimeout(() => {
+                        window.location.href = 'login.html';
+                    }, 2000);
+                }
+            });
         }
     });
 
@@ -47,21 +49,23 @@ document.addEventListener('DOMContentLoaded', () => {
         return true;
     }
 
-    function registerUser(userData) {
-        const users = JSON.parse(localStorage.getItem('utilisateurs') || '[]');
-        
-        // Vérifier si l'utilisateur existe déjà
-        if (users.some(u => u.email === userData.email)) {
-            showError('Cet email est déjà enregistré');
+    async function registerUser(userData) {
+        try {
+            const resp = await fetch('/api/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(userData)
+            });
+            if (resp.ok) {
+                return true;
+            }
+            const data = await resp.json();
+            showError(data.error || 'Erreur serveur');
+            return false;
+        } catch (e) {
+            showError('Erreur réseau');
             return false;
         }
-
-        // Hasher le mot de passe (version simplifiée)
-        userData.password = btoa(userData.password); // À remplacer par bcrypt en production
-        users.push(userData);
-        localStorage.setItem('utilisateurs', JSON.stringify(users));
-        
-        return true;
     }
 
     function showError(message) {
