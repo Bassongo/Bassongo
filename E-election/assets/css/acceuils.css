@@ -3,7 +3,8 @@ body {
     font-family: 'Montserrat', sans-serif;
     background: url("../img/OIP.jpeg") no-repeat center center fixed;
     background-size: cover;
-    color: var(--white);
+    /* Texte lisible sur fond clair */
+    color: var(--text);
     text-align: center;
     position: relative;
 }
