@@ -613,8 +613,8 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   document.getElementById('logoutBtn').onclick = () => {
-    alert('Déconnexion');
-    // window.location.href = 'login.html';
+    sessionStorage.removeItem('token');
+    window.location.href = '../login.html';
   };
 
   showWelcome();
