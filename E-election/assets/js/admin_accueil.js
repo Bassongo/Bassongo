@@ -13,6 +13,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const startVoteInput = document.getElementById('startVote');
   const endVoteInput = document.getElementById('endVote');
 
+  let usersCache = [];
+  fetch('/api/users')
+    .then(r => r.ok ? r.json() : [])
+    .then(data => { usersCache = data; });
+
   // Elements du modal de démarrage des candidatures
   const startCandModal = document.getElementById('startCandModal');
   const closeStartCand = document.getElementById('closeStartCand');
@@ -198,7 +203,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getUsers() {
-    return JSON.parse(localStorage.getItem('utilisateurs') || '[]');
+    return usersCache;
   }
 
   function getComites() {
