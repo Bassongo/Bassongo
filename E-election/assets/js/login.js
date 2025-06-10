@@ -1,5 +1,5 @@
-// Stockage des candidatures (simulation d'une base de données)
-let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
+let candidatures = [];
+fetch('/api/candidatures').then(r => r.ok ? r.json() : []).then(data => { candidatures = data; });
 
 document.addEventListener("DOMContentLoaded", function () {
   // Éléments de la page
@@ -161,8 +161,11 @@ document.addEventListener("DOMContentLoaded", function () {
       date: new Date().toLocaleDateString()
     };
 
-    candidatures.push(newCandidature);
-    localStorage.setItem('candidatures', JSON.stringify(candidatures));
+    fetch('/api/candidatures', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newCandidature)
+    }).then(() => candidatures.push(newCandidature));
   }
 
   // Fonction pour réinitialiser le formulaire

@@ -11,16 +11,31 @@ const defaultState = {
   }
 };
 
+let currentState = JSON.parse(JSON.stringify(defaultState));
+
 function loadState() {
-  const data = localStorage.getItem('electionState');
-  return data ? JSON.parse(data) : JSON.parse(JSON.stringify(defaultState));
+  return currentState;
 }
 
 function saveState(state) {
-  localStorage.setItem('electionState', JSON.stringify(state));
-  // Notifie les autres scripts qu'un changement a été effectué
-  document.dispatchEvent(new Event('stateChanged'));
+  currentState = state;
+  fetch('/api/state', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(state)
+  }).finally(() => {
+    document.dispatchEvent(new Event('stateChanged'));
+  });
 }
+
+// Chargement initial de l\'état depuis le backend
+fetch('/api/state')
+  .then(r => r.ok ? r.json() : defaultState)
+  .then(s => {
+    currentState = Object.assign(JSON.parse(JSON.stringify(defaultState)), s);
+    document.dispatchEvent(new Event('stateChanged'));
+  })
+  .catch(() => {});
 function getState() {
   const state = loadState();
   let changed = false;

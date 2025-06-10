@@ -2,11 +2,42 @@ document.addEventListener('DOMContentLoaded', () => {
   const container = document.getElementById('profileContainer');
   const actionsContainer = document.getElementById('committeeActions');
 
-  const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  if (!userData) {
+  const token = sessionStorage.getItem('token');
+  if (!token) {
     container.innerHTML = '<p>Aucun utilisateur connecté.</p>';
     return;
   }
+
+  fetch('/api/me', { headers: { 'Authorization': 'Bearer ' + token } })
+    .then(r => r.ok ? r.json() : null)
+    .then(userData => {
+      if (!userData) {
+        container.innerHTML = '<p>Aucun utilisateur connecté.</p>';
+        return;
+      }
+
+      const inscription = userData.inscritDepuis ? new Date(userData.inscritDepuis).toLocaleDateString() : '';
+      container.innerHTML = `
+        <h2>Mon profil</h2>
+        <div class="profile-info">
+          ${userData.photo ? `<img src="${userData.photo}" class="profile-photo" alt="photo">` : ''}
+          ${userData.nom ? `<p><strong>Nom:</strong> ${userData.nom}</p>` : ''}
+          ${userData.prenom ? `<p><strong>Prénom:</strong> ${userData.prenom}</p>` : ''}
+          <p><strong>Nom d'utilisateur:</strong> ${userData.username}</p>
+          <p><strong>Email:</strong> ${userData.email}</p>
+          ${userData.classe ? `<p><strong>Classe:</strong> ${userData.classe}</p>` : ''}
+          ${userData.nationalite ? `<p><strong>Nationalité:</strong> ${userData.nationalite}</p>` : ''}
+          <p><strong>Inscrit depuis:</strong> ${inscription}</p>
+        </div>
+      `;
+
+      const comites = {};
+      const categories = Object.keys(comites).filter(cat => (comites[cat] || []).some(m => m.email === userData.email));
+      if (categories.length > 0) {
+        showCommitteeActions(actionsContainer);
+        setupModals(categories);
+      }
+    });
 
   const inscription = userData.inscritDepuis ? new Date(userData.inscritDepuis).toLocaleDateString() : '';
   container.innerHTML = `
@@ -22,16 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
       <p><strong>Inscrit depuis:</strong> ${inscription}</p>
     </div>
   `;
-
-  const comites = JSON.parse(localStorage.getItem('comites') || '{}');
-  const categories = Object.keys(comites).filter(cat =>
-    (comites[cat] || []).some(m => m.email === userData.email)
-  );
-
-  if (categories.length > 0) {
-    showCommitteeActions(actionsContainer);
-    setupModals(categories);
-  }
 });
 
 function showCommitteeActions(container) {
@@ -159,20 +180,23 @@ function setupModals(categories) {
     if (!categorie) { alert('Type manquant'); return; }
     if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
     if (isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
-    const candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
-    if (candidats.length === 0) {
-      alert('Impossible de démarrer le vote : aucun candidat pour cette catégorie.');
-      return;
-    }
-    if (isCandidatureSessionActive(categorie)) {
-      alert('Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.');
-      return;
-    }
-    window.startVote(categorie, debut, fin);
-    alert('Votes démarrés pour ' + categorie.toUpperCase());
-    startVotesModal.style.display = 'none';
-    resetVoteModal();
+    fetch("/api/candidatures")
+      .then(r => r.ok ? r.json() : [])
+      .then(candidatures => {
+        const candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === categorie);
+        if (candidats.length === 0) {
+          alert("Impossible de démarrer le vote : aucun candidat pour cette catégorie.");
+          return;
+        }
+        if (isCandidatureSessionActive(categorie)) {
+          alert("Impossible de démarrer le vote : la session de candidature pour cette catégorie est encore ouverte.");
+          return;
+        }
+        window.startVote(categorie, debut, fin);
+        alert("Votes démarrés pour " + categorie.toUpperCase());
+        startVotesModal.style.display = "none";
+        resetVoteModal();
+      });
   };
 
   closeStartCand.onclick = () => { startCandModal.style.display = 'none'; resetCandModal(); };
