@@ -28,11 +28,18 @@ function groupByClub(candidats) {
     return Object.values(map);
 }
 
-function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
-    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
-    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+async function loadCandidates() {
+    try {
+        const resp = await fetch('/api/candidatures');
+        const all = resp.ok ? await resp.json() : [];
+        donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
+        donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
+        donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+    } catch {
+        donneesAES = [];
+        donneesClubs = [];
+        donneesClasse = [];
+    }
 }
 
 // ===============================
@@ -66,12 +73,6 @@ function countVotes(type, data) {
         const poste = data[i];
         let candidats = poste.candidats || poste.candidats;
         let counts = candidats.map(c => ({ ...c, votes: 0 }));
-        const vote = localStorage.getItem(getVoteKey(type, i));
-        if (vote) {
-            const v = JSON.parse(vote);
-            const idx = candidats.findIndex(c => c.nom === v.nom && c.prenom === v.prenom);
-            if (idx !== -1) counts[idx].votes = 1; // 1 vote par navigateur
-        }
         result.push({ poste: poste.poste || poste.nomClub, candidats: counts });
     }
     return result;

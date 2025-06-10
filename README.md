@@ -4,7 +4,7 @@
 Bienvenue dans le dépôt GitHub de notre projet réalisé dans le cadre du **Hackathon 2025** organisé par le **Club Informatique de l’ENSAE**.
 
 ![Hackathon ENSAE](https://img.shields.io/badge/Hackathon-ENSAE%202025-blue)  
-![Statut](https://img.shields.io/badge/Statut-En%20développement-yellow)  
+![Statut](https://img.shields.io/badge/Statut-D%C3%A9velopp%C3%A9-yellow)  
 ![Licence](https://img.shields.io/badge/Licence-MIT-green)
 
 ---

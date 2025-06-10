@@ -25,11 +25,18 @@ function groupByClub(candidats) {
     });
     return Object.values(map);
 }
-function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    donneesAES = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'aes'));
-    donneesClubs = groupByClub(all.filter(c => c.type && c.type.trim().toLowerCase() === 'club'));
-    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'classe'));
+async function loadCandidates() {
+    try {
+        const resp = await fetch('/api/candidatures');
+        const all = resp.ok ? await resp.json() : [];
+        donneesAES = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'aes'));
+        donneesClubs = groupByClub(all.filter(c => c.type && c.type.trim().toLowerCase() === 'club'));
+        donneesClasse = groupByPoste(all.filter(c => c.type && c.type.trim().toLowerCase() === 'classe'));
+    } catch {
+        donneesAES = [];
+        donneesClubs = [];
+        donneesClasse = [];
+    }
 }
 
 // ===============================
@@ -46,11 +53,17 @@ let currentType = 'aes';
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
-function hasVoted(type, index) {
-    return !!localStorage.getItem(getVoteKey(type, index));
+function hasVoted() {
+    return false;
 }
 function setVote(type, index, candidat) {
-    localStorage.setItem(getVoteKey(type, index), JSON.stringify(candidat));
+    const token = sessionStorage.getItem('token');
+    if (!token) return;
+    fetch('/api/vote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+        body: JSON.stringify({ electionId: type + '_' + index, candidateId: candidat.id })
+    });
 }
 function setUserVoted(type) {}
 
@@ -75,16 +88,14 @@ function getVoteSessionStatus(type) {
         return { status: 'none', session };
     } else {
         // fallback localStorage (ancien code)
-        let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
+        let votes = JSON.parse('{}' || '{}');
         if (!votes[type]) return { status: 'none', session: null };
         const session = votes[type];
         const now = Date.now();
         if (session.active && now > session.end) {
             session.active = false;
             votes[type] = session;
-            localStorage.setItem('votesSessions', JSON.stringify(votes));
         }
-        if (!session.active) {
             if (now - session.end <= ONE_DAY) return { status: 'closed_recently', session };
             return { status: 'none', session };
         }
@@ -100,12 +111,11 @@ function isVoteActive(categorie) {
     if (window.isVoteActive) {
         return window.isVoteActive(categorie);
     }
-    let votes = JSON.parse(localStorage.getItem('votesSessions') || '{}');
+    let votes = JSON.parse('{}' || '{}');
     if (!votes[categorie]) return false;
     const now = Date.now();
     if (votes[categorie].active && now > votes[categorie].end) {
         votes[categorie].active = false;
-        localStorage.setItem('votesSessions', JSON.stringify(votes));
         return false;
     }
     if (votes[categorie].active && now >= votes[categorie].start && now <= votes[categorie].end) {
@@ -209,13 +219,12 @@ function afficherAES(index = 0) {
 
     // Génère le HTML des candidats avec bouton de vote
     const candidatsHTML = poste.candidats.map((c, i) => {
-        const voted = dejaVote && JSON.parse(localStorage.getItem(voteKey)).nom === c.nom && JSON.parse(localStorage.getItem(voteKey)).prenom === c.prenom;
+        const voted = false;
         return `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots}"</em></p>
             <button class="vote-btn${voted ? ' selected' : ''}" data-index="${i}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
         </div>
@@ -259,7 +268,7 @@ function afficherAES(index = 0) {
                 setVote('aes', pageAES, poste.candidats[idx]);
                 setUserVoted('aes');
                 if (hasVotedAll('aes')) {
-                    localStorage.setItem('canSeeStats', 'aes');
+                    
                 }
                 afficherAES(pageAES);
             });
@@ -312,15 +321,14 @@ function afficherClub(index = 0) {
 
     // Génère le HTML pour chaque candidat à la présidence du club
     const candidatsHTML = club.candidats.map((candidat, idx) => {
-        const voted = dejaVote && JSON.parse(localStorage.getItem(voteKey)).nom === candidat.nom && JSON.parse(localStorage.getItem(voteKey)).prenom === candidat.prenom;
+        const voted = false;
         return `
         <div class="candidat">
             <img src="${candidat.photo}" alt="${candidat.prenom} ${candidat.nom}" class="photo-candidat"
                 data-nom="${candidat.prenom} ${candidat.nom}"
-                data-infos="<strong>Classe :</strong> ${candidat.classe}<br><strong>Nationalité :</strong> ${candidat.nationalite}">
+                data-infos="<strong>Classe :</strong> ${candidat.classe}">
             <h4>${candidat.prenom} ${candidat.nom}</h4>
             <p><strong>Classe :</strong> ${candidat.classe}</p>
-            <p><strong>Nationalité :</strong> ${candidat.nationalite}</p>
             <div class="actions">
                 ${candidat.programme ? `<a href="${candidat.programme}" target="_blank" class="btn" download>Voir Programme</a>` : `<button class="btn" disabled>Programme non disponible</button>`}
                 <button class="vote-btn${voted ? ' selected' : ''}" data-index="${idx}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
@@ -365,7 +373,7 @@ function afficherClub(index = 0) {
                 setVote('club', pageClub, club.candidats[idx]);
                 setUserVoted('club');
                 if (hasVotedAll('club')) {
-                    localStorage.setItem('canSeeStats', 'club');
+                    
                 }
                 afficherClub(pageClub);
             });
@@ -426,13 +434,12 @@ function afficherClasse(index = 0) {
 
     // Génère le HTML des candidats
     const candidatsHTML = poste.candidats.map((c, i) => {
-        const voted = dejaVote && JSON.parse(localStorage.getItem(voteKey)).nom === c.nom && JSON.parse(localStorage.getItem(voteKey)).prenom === c.prenom;
+        const voted = false;
         return `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots || ''}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots || ''}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots || ''}"</em></p>
             <button class="vote-btn${voted ? ' selected' : ''}" data-index="${i}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
         </div>
@@ -476,7 +483,7 @@ function afficherClasse(index = 0) {
                 setVote('classe', pageClasse, poste.candidats[idx]);
                 setUserVoted('classe');
                 if (hasVotedAll('classe')) {
-                    localStorage.setItem('canSeeStats', 'classe');
+                    
                 }
                 afficherClasse(pageClasse);
             });

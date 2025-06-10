@@ -5,8 +5,7 @@ function chargerPostes(type) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
-    const postes = postesByType[type] || [];
+    const postes = (window.postesByType || {})[type] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
         opt.value = poste;
@@ -19,7 +18,7 @@ function chargerClubs() {
     const select = document.getElementById('clubSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un club</option>';
-    const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
+    const clubs = window.clubsList || [];
     clubs.forEach(club => {
         const opt = document.createElement('option');
         opt.value = club;
@@ -35,8 +34,7 @@ function chargerPostesClub(club) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
-    const postes = postesByClub[club] || [];
+    const postes = (window.postesByClub || {})[club] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
         opt.value = poste;
@@ -100,7 +98,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 info.innerHTML = `<strong>${type.toUpperCase()}</strong> : du ${deb.toLocaleString()} au ${end.toLocaleString()}`;
             }
             if (form) form.style.display = 'block';
-            localStorage.setItem('lastCandidatureType', type);
 
             if (type === 'club') {
                 if (clubGroup) clubGroup.style.display = 'block';
@@ -126,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             e.preventDefault();
 
             // Vérifie le type sélectionné
-            const type = currentType || localStorage.getItem('lastCandidatureType');
+            const type = currentType;
             if (!type) {
                 alert("Veuillez d'abord choisir un type de candidature.");
                 return;
@@ -168,13 +165,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 prenom
             };
 
-            // Ajout dans le localStorage
-            let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
-            candidatures.push(candidature);
-            localStorage.setItem('candidatures', JSON.stringify(candidatures));
-
-            // Redirection vers la page de mes candidatures
-            window.location.href = "mes-candidatures.html";
+            fetch('/api/candidatures', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(candidature)
+            }).then(() => {
+                window.location.href = "mes-candidatures.html";
+            });
         };
     }
 
@@ -184,6 +181,5 @@ document.addEventListener('DOMContentLoaded', () => {
         chargerPostes('classe');
         if (form) form.style.display = 'block';
         currentType = 'classe';
-        localStorage.setItem('lastCandidatureType', 'classe');
     }
 });

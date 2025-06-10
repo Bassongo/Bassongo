@@ -171,7 +171,7 @@ function afficherStatsDetail(type, data) {
                         <img src="${c.photo}" alt="${c.prenom} ${c.nom}">
                         <div class="candidat-info">
                             <div class="candidat-nom">${c.prenom} ${c.nom}</div>
-                            <div class="candidat-desc">${c.classe ? c.classe : ''} ${c.nationalite ? ' - ' + c.nationalite : ''}</div>
+                            <div class="candidat-desc">${c.classe ? c.classe : ''}</div>
                         </div>
                         <div class="candidat-votes">${c.votes} vote${c.votes > 1 ? 's' : ''}</div>
                     </div>

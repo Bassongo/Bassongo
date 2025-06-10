@@ -53,11 +53,10 @@ body {
 .auth-form input,
 .auth-form select {
     padding: 0.8rem;
-    border: none;
-    border-bottom: 2px solid #fff;
+    border: 1px solid #dadce0;
     border-radius: 4px;
-    background: #223344;
-    color: #fff;
+    background: #fff;
+    color: #000;
     font-size: 1rem;
     transition: border-color 0.3s;
 }

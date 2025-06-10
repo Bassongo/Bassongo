@@ -84,10 +84,9 @@ function afficherAES(index = pageAES) {
     // Génère le HTML des candidats
     const candidatsHTML = poste.candidats.map(c => `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots}"</em></p>
         </div>
     `).join('');
@@ -145,10 +144,9 @@ function afficherClub(index = pageClub) {
         <div class="candidat">
             <img src="${candidat.photo}" alt="${candidat.prenom} ${candidat.nom}" class="photo-candidat"
                 data-nom="${candidat.prenom} ${candidat.nom}"
-                data-infos="<strong>Classe :</strong> ${candidat.classe}<br><strong>Nationalité :</strong> ${candidat.nationalite}">
+                data-infos="<strong>Classe :</strong> ${candidat.classe}">
             <h4>${candidat.prenom} ${candidat.nom}</h4>
             <p><strong>Classe :</strong> ${candidat.classe}</p>
-            <p><strong>Nationalité :</strong> ${candidat.nationalite}</p>
             <div class="actions">
                 ${candidat.programme ? `<a href="${candidat.programme}" target="_blank" class="btn" download>Voir Programme</a>` : `<button class="btn" disabled>Programme non disponible</button>`}
                 <button class="btn btn-membres" data-candidat="${idx}">Membres de l’équipe</button>
@@ -214,10 +212,9 @@ function afficherMembresClub(indexClub, indexCandidat) {
         <div class="membre">
             <img src="${m.photo}" alt="${m.prenom} ${m.nom}" class="photo-candidat"
                 data-nom="${m.prenom} ${m.nom}"
-                data-infos="<strong>Classe :</strong> ${m.classe}<br><strong>Nationalité :</strong> ${m.nationalite}">
+                data-infos="<strong>Classe :</strong> ${m.classe}">
             <h4>${m.prenom} ${m.nom}</h4>
             <p><strong>Classe :</strong> ${m.classe}</p>
-            <p><strong>Nationalité :</strong> ${m.nationalite}</p>
         </div>
     `).join('');
 
@@ -250,10 +247,9 @@ function afficherClasse(index = pageClasse) {
     // Génère le HTML des candidats
     const candidatsHTML = poste.candidats.map(c => `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots || ''}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots || ''}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots || ''}"</em></p>
         </div>
     `).join('');

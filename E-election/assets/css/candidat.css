@@ -71,6 +71,8 @@
   border-radius: 6px;
   padding: 0.5rem;
   font-size: 1rem;
+  background: var(--white);
+  color: var(--text);
 }
 
 .form-actions {
