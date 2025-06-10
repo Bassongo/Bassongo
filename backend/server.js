@@ -61,6 +61,16 @@ function writeJSON(file, data) {
   fs.writeFileSync(p, JSON.stringify(data, null, 2));
 }
 
+const defaultConfig = { clubs: [], postesByType: {}, postesByClub: {}, comites: {} };
+
+function readConfig() {
+  return readJSON('config.json', defaultConfig);
+}
+
+function writeConfig(cfg) {
+  writeJSON('config.json', cfg);
+}
+
 function parseBody(req, cb) {
   let body = '';
   req.on('data', chunk => (body += chunk));
@@ -256,6 +266,27 @@ function requestHandler(req, res) {
       tally[v.candidateId] = (tally[v.candidateId] || 0) + 1;
     });
     return send(res, 200, tally);
+  }
+
+  if (req.method === 'GET' && req.url === '/api/config') {
+    const cfg = readConfig();
+    return send(res, 200, cfg);
+  }
+
+  if (req.method === 'POST' && req.url === '/api/config') {
+    parseBody(req, body => {
+      writeConfig(body || defaultConfig);
+      send(res, 200, { ok: true });
+    });
+    return;
+  }
+
+  if (req.method === 'GET' && req.url === '/api/myvotes') {
+    const userId = authenticate(req);
+    if (!userId) return send(res, 401, { error: 'auth required' });
+    const votes = readJSON('votes.json').filter(v => v.userId === userId);
+    const ids = votes.map(v => String(v.electionId));
+    return send(res, 200, ids);
   }
 
   send(res, 404, { error: 'Not found' });

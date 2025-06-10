@@ -5,6 +5,19 @@
 let donneesAES = [];
 let donneesClubs = [];
 let donneesClasse = [];
+let userVotes = [];
+
+async function loadMyVotes() {
+    const token = sessionStorage.getItem('token');
+    if (!token) return [];
+    try {
+        const resp = await fetch('/api/myvotes', { headers: { 'Authorization': 'Bearer ' + token } });
+        userVotes = resp.ok ? await resp.json() : [];
+    } catch {
+        userVotes = [];
+    }
+    return userVotes;
+}
 
 // Groupement des candidats
 function groupByPoste(candidats) {
@@ -53,8 +66,8 @@ let currentType = 'aes';
 function getVoteKey(type, index) {
     return `vote_${type}_${index}`;
 }
-function hasVoted() {
-    return false;
+function hasVoted(type, index) {
+    return userVotes.includes(`${type}_${index}`);
 }
 function setVote(type, index, candidat) {
     const token = sessionStorage.getItem('token');
@@ -65,7 +78,10 @@ function setVote(type, index, candidat) {
         body: JSON.stringify({ electionId: type + '_' + index, candidateId: candidat.id })
     });
 }
-function setUserVoted(type) {}
+function setUserVoted(type, index) {
+    const id = `${type}_${index}`;
+    if (!userVotes.includes(id)) userVotes.push(id);
+}
 
 const ONE_DAY = 24 * 60 * 60 * 1000;
 
@@ -266,7 +282,7 @@ function afficherAES(index = 0) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('aes', pageAES, poste.candidats[idx]);
-                setUserVoted('aes');
+                setUserVoted('aes', pageAES);
                 if (hasVotedAll('aes')) {
                     
                 }
@@ -371,7 +387,7 @@ function afficherClub(index = 0) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('club', pageClub, club.candidats[idx]);
-                setUserVoted('club');
+                setUserVoted('club', pageClub);
                 if (hasVotedAll('club')) {
                     
                 }
@@ -481,7 +497,7 @@ function afficherClasse(index = 0) {
             btn.addEventListener('click', function() {
                 const idx = parseInt(this.getAttribute('data-index'));
                 setVote('classe', pageClasse, poste.candidats[idx]);
-                setUserVoted('classe');
+                setUserVoted('classe', pageClasse);
                 if (hasVotedAll('classe')) {
                     
                 }
@@ -517,8 +533,8 @@ function handleTypeElectionChange() {
     }
 }
 
-function initVotePage() {
-    loadCandidates();
+async function initVotePage() {
+    await Promise.all([loadCandidates(), loadMyVotes()]);
     const select = document.getElementById('type-election');
     select.value = currentType;
     handleTypeElectionChange();

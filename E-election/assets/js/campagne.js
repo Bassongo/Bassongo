@@ -27,11 +27,18 @@ function groupByClub(candidats) {
     return Object.values(map);
 }
 
-function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
-    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
-    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+async function loadCandidates() {
+    try {
+        const resp = await fetch('/api/candidatures');
+        const all = resp.ok ? await resp.json() : [];
+        donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
+        donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
+        donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+    } catch {
+        donneesAES = [];
+        donneesClubs = [];
+        donneesClasse = [];
+    }
 }
 
 function hasCandidates(cat) {
@@ -45,9 +52,9 @@ function hasCandidates(cat) {
 // ===============================
 // Variables de pagination
 // ===============================
-let pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
-let pageClub = parseInt(localStorage.getItem('pageClubs')) || 0;
-let pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
+let pageAES = 0;
+let pageClub = 0;
+let pageClasse = 0;
 
 // ===============================
 // Affichage d'une photo en grand (modale)
@@ -112,14 +119,12 @@ function afficherAES(index = pageAES) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageAES = index - 1;
-            localStorage.setItem('pageAES', pageAES);
             afficherAES(pageAES);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesAES.length - 1) {
             pageAES = index + 1;
-            localStorage.setItem('pageAES', pageAES);
             afficherAES(pageAES);
         }
     });
@@ -172,14 +177,12 @@ function afficherClub(index = pageClub) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageClub = index - 1;
-            localStorage.setItem('pageClubs', pageClub);
             afficherClub(pageClub);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesClubs.length - 1) {
             pageClub = index + 1;
-            localStorage.setItem('pageClubs', pageClub);
             afficherClub(pageClub);
         }
     });
@@ -274,14 +277,12 @@ function afficherClasse(index = pageClasse) {
     contenu.querySelector('.page-prev')?.addEventListener('click', () => {
         if (index > 0) {
             pageClasse = index - 1;
-            localStorage.setItem('pageClasse', pageClasse);
             afficherClasse(pageClasse);
         }
     });
     contenu.querySelector('.page-next')?.addEventListener('click', () => {
         if (index < donneesClasse.length - 1) {
             pageClasse = index + 1;
-            localStorage.setItem('pageClasse', pageClasse);
             afficherClasse(pageClasse);
         }
     });
@@ -294,8 +295,8 @@ function afficherClasse(index = pageClasse) {
     });
 }
 
-function afficherCategorie(cat) {
-    loadCandidates();
+async function afficherCategorie(cat) {
+    await loadCandidates();
     const info = document.getElementById('campagne-info');
     const contenu = document.getElementById('contenu-election');
     if (!hasCandidates(cat)) {
@@ -305,13 +306,10 @@ function afficherCategorie(cat) {
     }
     if (info) info.textContent = 'Candidats ' + cat.toUpperCase();
     if (cat === 'aes') {
-        pageAES = parseInt(localStorage.getItem('pageAES')) || 0;
         afficherAES(pageAES);
     } else if (cat === 'club') {
-        pageClub = parseInt(localStorage.getItem('pageClubs')) || 0;
         afficherClub(pageClub);
     } else if (cat === 'classe') {
-        pageClasse = parseInt(localStorage.getItem('pageClasse')) || 0;
         afficherClasse(pageClasse);
     }
 }
@@ -326,8 +324,8 @@ document.getElementById('type-election').addEventListener('change', function () 
 // ===============================
 // Affichage initial à l'ouverture de la page
 // ===============================
-window.addEventListener('DOMContentLoaded', function() {
-    loadCandidates();
+window.addEventListener('DOMContentLoaded', async function() {
+    await loadCandidates();
     const select = document.getElementById('type-election');
     afficherCategorie(select.value);
 });

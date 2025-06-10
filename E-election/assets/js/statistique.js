@@ -1,6 +1,19 @@
 let donneesAES = [];
 let donneesClubs = [];
 let donneesClasse = [];
+let userVotes = [];
+
+async function loadMyVotes() {
+    const token = sessionStorage.getItem('token');
+    if (!token) return [];
+    try {
+        const resp = await fetch('/api/myvotes', { headers: { 'Authorization': 'Bearer ' + token } });
+        userVotes = resp.ok ? await resp.json() : [];
+    } catch {
+        userVotes = [];
+    }
+    return userVotes;
+}
 
 // ===============================
 // Chargement des données
@@ -23,50 +36,45 @@ function groupByClub(candidats) {
     });
     return Object.values(map);
 }
-function loadCandidates() {
-    const all = JSON.parse(localStorage.getItem('candidatures') || '[]');
-    donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
-    donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
-    donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+async function loadCandidates() {
+    try {
+        const resp = await fetch('/api/candidatures');
+        const all = resp.ok ? await resp.json() : [];
+        donneesAES = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'aes'));
+        donneesClubs = groupByClub(all.filter(c => c.type && c.type.toLowerCase() === 'club'));
+        donneesClasse = groupByPoste(all.filter(c => c.type && c.type.toLowerCase() === 'classe'));
+    } catch {
+        donneesAES = [];
+        donneesClubs = [];
+        donneesClasse = [];
+    }
 }
 
 // ===============================
 // Fonctions utilitaires pour les votes
 // ===============================
 function getVoteKey(type, index) {
-    return `vote_${type}_${index}`;
+    return `${type}_${index}`;
 }
-function countVotes(type, data) {
-    let result = [];
+async function countVotes(type, data) {
+    const result = [];
     for (let i = 0; i < data.length; i++) {
         const poste = data[i];
-        let candidats = poste.candidats;
-        let counts = candidats.map(c => ({ ...c, votes: 0 }));
-        const vote = localStorage.getItem(getVoteKey(type, i));
-        if (vote) {
-            try {
-                const v = JSON.parse(vote);
-                // Recherche tolérante (trim et insensible à la casse)
-                const idx = candidats.findIndex(c =>
-                    c.nom && v.nom &&
-                    c.prenom && v.prenom &&
-                    c.nom.trim().toLowerCase() === v.nom.trim().toLowerCase() &&
-                    c.prenom.trim().toLowerCase() === v.prenom.trim().toLowerCase()
-                );
-                if (idx !== -1) counts[idx].votes = 1; // 1 vote par navigateur
-            } catch (e) {
-                // Erreur de parsing, ignorer
-            }
-        }
+        let counts = poste.candidats.map(c => ({ ...c, votes: 0 }));
+        try {
+            const resp = await fetch(`/api/results?electionId=${encodeURIComponent(getVoteKey(type, i))}`);
+            const res = resp.ok ? await resp.json() : {};
+            counts = poste.candidats.map(c => ({ ...c, votes: res[c.id] || 0 }));
+        } catch {}
         result.push({ poste: poste.poste || poste.nomClub, candidats: counts });
     }
     return result;
 }
-function totalVotes(type, data) {
+function totalVotes(stats) {
     let count = 0;
-    for (let i = 0; i < data.length; i++) {
-        if (localStorage.getItem(getVoteKey(type, i))) count++;
-    }
+    stats.forEach(p => {
+        p.candidats.forEach(c => { count += c.votes; });
+    });
     return count;
 }
 
@@ -78,13 +86,13 @@ function isVoteActive(categorie) {
 }
 function hasVotedAll(type) {
     if (type === 'aes') {
-        return donneesAES.length > 0 && donneesAES.every((_, idx) => !!localStorage.getItem(getVoteKey('aes', idx)));
+        return donneesAES.length > 0 && donneesAES.every((_, idx) => userVotes.includes(getVoteKey('aes', idx)));
     }
     if (type === 'classe') {
-        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => !!localStorage.getItem(getVoteKey('classe', idx)));
+        return donneesClasse.length > 0 && donneesClasse.every((_, idx) => userVotes.includes(getVoteKey('classe', idx)));
     }
     if (type === 'club') {
-        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => !!localStorage.getItem(getVoteKey('club', idx)));
+        return donneesClubs.length > 0 && donneesClubs.every((_, idx) => userVotes.includes(getVoteKey('club', idx)));
     }
     return false;
 }
@@ -94,7 +102,7 @@ function hasVotedAll(type) {
 // ===============================
 function afficherStatsGlobal(type, data) {
     const nbPostes = data.length;
-    const nbVotes = totalVotes(type, data);
+    const nbVotes = totalVotes(data);
     const taux = nbPostes === 0 ? 0 : Math.round((nbVotes / nbPostes) * 100);
 
     document.getElementById('stats-global').innerHTML = `
@@ -117,8 +125,8 @@ function afficherStatsGlobal(type, data) {
 // Affichage du graphique principal (barres)
 // ===============================
 let statsChart = null;
-function afficherStatsGraph(type, data) {
-    const stats = countVotes(type, data);
+async function afficherStatsGraph(type, data) {
+    const stats = await countVotes(type, data);
     const poste = stats.find(p => p.candidats.some(c => c.votes > 0)) || stats[0];
     if (!poste) {
         document.getElementById('stats-graph').style.display = "none";
@@ -160,8 +168,8 @@ function afficherStatsGraph(type, data) {
 // ===============================
 // Affichage du détail par poste/club/classe
 // ===============================
-function afficherStatsDetail(type, data) {
-    const stats = countVotes(type, data);
+async function afficherStatsDetail(type, data) {
+    const stats = await countVotes(type, data);
     document.getElementById('stats-detail').innerHTML = stats.map(poste => `
         <div class="stats-poste">
             <h3>${poste.poste}</h3>
@@ -184,8 +192,8 @@ function afficherStatsDetail(type, data) {
 // ===============================
 // Gestion du selecteur de type d'élection et affichage principal
 // ===============================
-function afficherStats(type) {
-    loadCandidates();
+async function afficherStats(type) {
+    await loadCandidates();
     let data;
     if (type === 'aes') data = donneesAES;
     else if (type === 'club') data = donneesClubs;
@@ -207,13 +215,14 @@ function afficherStats(type) {
         return;
     }
 
-    afficherStatsGlobal(type, data);
-    afficherStatsGraph(type, data);
-    afficherStatsDetail(type, data);
+    const stats = await countVotes(type, data);
+    afficherStatsGlobal(type, stats);
+    await afficherStatsGraph(type, data);
+    await afficherStatsDetail(type, data);
 }
 
-window.addEventListener('DOMContentLoaded', function() {
-    loadCandidates();
+window.addEventListener('DOMContentLoaded', async function() {
+    await Promise.all([loadCandidates(), loadMyVotes()]);
     const select = document.getElementById('type-stats');
     if (!select) return;
     select.value = 'aes';
