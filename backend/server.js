@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { createToken, getUserId } = require('./auth');
 
 const PORT = process.env.PORT || 3000;
 const dataDir = path.join(__dirname, 'data');
@@ -29,31 +30,29 @@ function getContentType(filePath) {
 
 function serveStatic(req, res) {
   let filePath = decodeURI(req.url.split('?')[0]);
-  if (filePath === '/' || filePath === '') {
-    filePath = '/Home.html';
-  }
-  const resolvedPath = path.join(publicDir, filePath);
-  if (!resolvedPath.startsWith(publicDir)) {
+  if (filePath === '/' || filePath === '') filePath = '/Home.html';
+  const resolved = path.join(publicDir, filePath);
+  if (!resolved.startsWith(publicDir)) {
     send(res, 403, { error: 'Forbidden' });
     return true;
   }
-  if (fs.existsSync(resolvedPath) && fs.statSync(resolvedPath).isFile()) {
-    const content = fs.readFileSync(resolvedPath);
-    res.writeHead(200, { 'Content-Type': getContentType(resolvedPath) });
+  if (fs.existsSync(resolved) && fs.statSync(resolved).isFile()) {
+    const content = fs.readFileSync(resolved);
+    res.writeHead(200, { 'Content-Type': getContentType(resolved) });
     res.end(content);
     return true;
   }
   return false;
 }
 
-function readJSON(file) {
+function readJSON(file, fallback = []) {
   const p = path.join(dataDir, file);
-  if (!fs.existsSync(p)) return [];
+  if (!fs.existsSync(p)) return fallback;
   const content = fs.readFileSync(p, 'utf8');
   try {
-    return JSON.parse(content || '[]');
-  } catch (e) {
-    return [];
+    return JSON.parse(content || JSON.stringify(fallback));
+  } catch {
+    return fallback;
   }
 }
 
@@ -68,7 +67,7 @@ function parseBody(req, cb) {
   req.on('end', () => {
     try {
       cb(JSON.parse(body || '{}'));
-    } catch (e) {
+    } catch {
       cb({});
     }
   });
@@ -83,14 +82,23 @@ function hashPassword(pw) {
   return crypto.createHash('sha256').update(pw).digest('hex');
 }
 
+function authenticate(req) {
+  const auth = req.headers['authorization'];
+  if (auth && auth.startsWith('Bearer ')) {
+    const token = auth.slice(7);
+    return getUserId(token);
+  }
+  return null;
+}
+
 const server = http.createServer((req, res) => {
   if (req.method === 'GET' && !req.url.startsWith('/api/')) {
     if (serveStatic(req, res)) return;
   }
+
   if (req.method === 'GET' && req.url === '/api/elections') {
     const elections = readJSON('elections.json');
-    send(res, 200, elections);
-    return;
+    return send(res, 200, elections);
   }
 
   if (req.method === 'POST' && req.url === '/api/elections') {
@@ -107,14 +115,14 @@ const server = http.createServer((req, res) => {
 
   if (req.method === 'POST' && req.url === '/api/register') {
     parseBody(req, body => {
-      const { email, password } = body;
+      const { email, password, username, classe } = body;
       if (!email || !password) return send(res, 400, { error: 'email and password required' });
       const users = readJSON('users.json');
       if (users.find(u => u.email === email)) return send(res, 400, { error: 'user exists' });
       const id = users.length + 1;
-      users.push({ id, email, passwordHash: hashPassword(password) });
+      users.push({ id, email, username, classe, passwordHash: hashPassword(password) });
       writeJSON('users.json', users);
-      send(res, 201, { id, email });
+      send(res, 201, { id, email, username, classe });
     });
     return;
   }
@@ -125,18 +133,21 @@ const server = http.createServer((req, res) => {
       const users = readJSON('users.json');
       const user = users.find(u => u.email === email && u.passwordHash === hashPassword(password));
       if (!user) return send(res, 401, { error: 'invalid credentials' });
-      send(res, 200, { id: user.id, email: user.email });
+      const token = createToken(user.id);
+      send(res, 200, { token, email: user.email, username: user.username });
     });
     return;
   }
 
   if (req.method === 'POST' && req.url === '/api/candidates') {
+    const userId = authenticate(req);
+    if (!userId) return send(res, 401, { error: 'auth required' });
     parseBody(req, body => {
       const { electionId, name } = body;
       if (!electionId || !name) return send(res, 400, { error: 'electionId and name required' });
       const candidates = readJSON('candidates.json');
       const id = candidates.length + 1;
-      candidates.push({ id, electionId, name });
+      candidates.push({ id, electionId, name, createdBy: userId });
       writeJSON('candidates.json', candidates);
       send(res, 201, { id, electionId, name });
     });
@@ -147,16 +158,15 @@ const server = http.createServer((req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const electionId = url.searchParams.get('electionId');
     const candidates = readJSON('candidates.json').filter(c => !electionId || String(c.electionId) === String(electionId));
-    send(res, 200, candidates);
-    return;
+    return send(res, 200, candidates);
   }
 
   if (req.method === 'POST' && req.url === '/api/vote') {
+    const userId = authenticate(req);
+    if (!userId) return send(res, 401, { error: 'auth required' });
     parseBody(req, body => {
-      const { userId, electionId, candidateId } = body;
-      if (!userId || !electionId || !candidateId) {
-        return send(res, 400, { error: 'userId, electionId and candidateId required' });
-      }
+      const { electionId, candidateId } = body;
+      if (!electionId || !candidateId) return send(res, 400, { error: 'electionId and candidateId required' });
       const votes = readJSON('votes.json');
       if (votes.find(v => v.userId === userId && v.electionId === electionId)) {
         return send(res, 400, { error: 'user already voted' });
@@ -164,7 +174,7 @@ const server = http.createServer((req, res) => {
       const id = votes.length + 1;
       votes.push({ id, userId, electionId, candidateId });
       writeJSON('votes.json', votes);
-      send(res, 201, { id, userId, electionId, candidateId });
+      send(res, 201, { id });
     });
     return;
   }
@@ -178,8 +188,7 @@ const server = http.createServer((req, res) => {
     votes.forEach(v => {
       tally[v.candidateId] = (tally[v.candidateId] || 0) + 1;
     });
-    send(res, 200, tally);
-    return;
+    return send(res, 200, tally);
   }
 
   send(res, 404, { error: 'Not found' });
