@@ -34,3 +34,12 @@ Les fichiers JSON contiennent des tableaux d'objets simples :
 - `elections.json` : `{id, name}`
 - `candidates.json` : `{id, electionId, name}`
 - `votes.json` : `{id, userId, electionId, candidateId}`
+
+## Tests
+
+Des tests automatisés valident les principaux endpoints à l'aide de Mocha et Supertest.
+Pour exécuter la suite :
+
+```bash
+npm test
+```
