@@ -34,11 +34,11 @@ Créer une **application sécurisée, simple et intuitive** permettant d'organis
 
 ## 💻 Technologies utilisées
 
-- ⚙️ **Frontend** : a préciser
-- 🛠️ **Backend** : a préciser
-- 🗃️ **Base de données** : a préciser
-- 🔐 **Authentification** : Jeton sécurisé ou OTP (a préciser)
-- 📊 **Reporting** : PDF/Excel, graphiques avec Chart.js (a préciser)
+- ⚙️ **Frontend** : HTML, CSS et JavaScript
+- 🛠️ **Backend** : Node.js avec stockage JSON
+- 🗃️ **Base de données** : fichiers JSON
+- 🔐 **Authentification** : Jeton sécurisé ou OTP (à préciser)
+- 📊 **Reporting** : PDF/Excel, graphiques avec Chart.js (à préciser)
 - **Autres**
 
 ---
@@ -64,5 +64,15 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 ---
 
 ## 📂 Structure du projet
+
+- `E-election/` : Interface utilisateur (HTML/JS)
+- `page candidature/` : Maquettes et ressources
+- `backend/` : Serveur Node.js
+
+### Lancer le backend
+
+```bash
+cd backend && node server.js
+```
 
 
