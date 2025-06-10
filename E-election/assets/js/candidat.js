@@ -166,7 +166,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 club,
                 nom,
                 prenom
-                // ...autres champs...
             };
 
             // Ajout dans le localStorage
