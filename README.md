@@ -90,3 +90,14 @@ Le site sera accessible sur [http://localhost:3000](http://localhost:3000).
 - Des sessions sont sauvegardées dans `backend/data/sessions.json`.
 
 Pour accéder aux endpoints sécurisés (création de candidature, vote...), le jeton doit être envoyé dans l'en-tête `Authorization: Bearer <token>`.
+
+## Tests backend
+
+Une suite de tests automatisés vérifie les principaux endpoints du serveur. Pour les lancer :
+
+```bash
+cd backend
+npm test
+```
+
+Les tests démarrent le serveur en mémoire et s'assurent du bon fonctionnement de l'inscription, de la connexion et de la protection des routes nécessitant une authentification.
