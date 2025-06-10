@@ -69,10 +69,16 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 - `page candidature/` : Maquettes et ressources
 - `backend/` : Serveur Node.js
 
-### Lancer le backend
+### Lancer le backend et le frontend
+
+Le dossier `E-election/` contenant l'interface utilisateur est désormais servi de
+puis le serveur Node.js. Pour démarrer l'application complète :
 
 ```bash
-cd backend && node server.js
+cd backend
+npm start
 ```
+
+Le site sera accessible sur [http://localhost:3000](http://localhost:3000).
 
 
