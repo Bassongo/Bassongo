@@ -101,6 +101,19 @@ function requestHandler(req, res) {
     return send(res, 200, elections);
   }
 
+  if (req.method === 'GET' && req.url === '/api/state') {
+    const state = readJSON('state.json', {});
+    return send(res, 200, state);
+  }
+
+  if (req.method === 'POST' && req.url === '/api/state') {
+    parseBody(req, body => {
+      writeJSON('state.json', body || {});
+      send(res, 200, { ok: true });
+    });
+    return;
+  }
+
   if (req.method === 'POST' && req.url === '/api/elections') {
     parseBody(req, body => {
       if (!body.name) return send(res, 400, { error: 'name required' });
@@ -139,6 +152,15 @@ function requestHandler(req, res) {
     return;
   }
 
+  if (req.method === 'GET' && req.url === '/api/me') {
+    const userId = authenticate(req);
+    if (!userId) return send(res, 401, { error: 'auth required' });
+    const users = readJSON('users.json');
+    const user = users.find(u => u.id === userId);
+    if (!user) return send(res, 404, { error: 'not found' });
+    return send(res, 200, { id: user.id, email: user.email, username: user.username, classe: user.classe });
+  }
+
   if (req.method === 'POST' && req.url === '/api/candidates') {
     const userId = authenticate(req);
     if (!userId) return send(res, 401, { error: 'auth required' });
@@ -159,6 +181,23 @@ function requestHandler(req, res) {
     const electionId = url.searchParams.get('electionId');
     const candidates = readJSON('candidates.json').filter(c => !electionId || String(c.electionId) === String(electionId));
     return send(res, 200, candidates);
+  }
+
+  if (req.method === 'GET' && req.url === '/api/candidatures') {
+    const data = readJSON('candidatures.json');
+    return send(res, 200, data);
+  }
+
+  if (req.method === 'POST' && req.url === '/api/candidatures') {
+    const candidatures = readJSON('candidatures.json');
+    parseBody(req, body => {
+      const id = candidatures.length + 1;
+      const record = Object.assign({ id }, body);
+      candidatures.push(record);
+      writeJSON('candidatures.json', candidatures);
+      send(res, 201, record);
+    });
+    return;
   }
 
   if (req.method === 'POST' && req.url === '/api/vote') {
