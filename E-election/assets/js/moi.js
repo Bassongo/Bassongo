@@ -26,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
           <p><strong>Nom d'utilisateur:</strong> ${userData.username}</p>
           <p><strong>Email:</strong> ${userData.email}</p>
           ${userData.classe ? `<p><strong>Classe:</strong> ${userData.classe}</p>` : ''}
-          ${userData.nationalite ? `<p><strong>Nationalité:</strong> ${userData.nationalite}</p>` : ''}
           <p><strong>Inscrit depuis:</strong> ${inscription}</p>
         </div>
       `;
@@ -48,11 +47,10 @@ document.addEventListener('DOMContentLoaded', () => {
       ${userData.prenom ? `<p><strong>Prénom:</strong> ${userData.prenom}</p>` : ''}
       <p><strong>Nom d'utilisateur:</strong> ${userData.username}</p>
       <p><strong>Email:</strong> ${userData.email}</p>
-      ${userData.classe ? `<p><strong>Classe:</strong> ${userData.classe}</p>` : ''}
-      ${userData.nationalite ? `<p><strong>Nationalité:</strong> ${userData.nationalite}</p>` : ''}
-      <p><strong>Inscrit depuis:</strong> ${inscription}</p>
-    </div>
-  `;
+          ${userData.classe ? `<p><strong>Classe:</strong> ${userData.classe}</p>` : ''}
+          <p><strong>Inscrit depuis:</strong> ${inscription}</p>
+        </div>
+      `;
 });
 
 function showCommitteeActions(container) {

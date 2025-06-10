@@ -222,10 +222,9 @@ function afficherAES(index = 0) {
         const voted = false;
         return `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots}"</em></p>
             <button class="vote-btn${voted ? ' selected' : ''}" data-index="${i}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
         </div>
@@ -327,10 +326,9 @@ function afficherClub(index = 0) {
         <div class="candidat">
             <img src="${candidat.photo}" alt="${candidat.prenom} ${candidat.nom}" class="photo-candidat"
                 data-nom="${candidat.prenom} ${candidat.nom}"
-                data-infos="<strong>Classe :</strong> ${candidat.classe}<br><strong>Nationalité :</strong> ${candidat.nationalite}">
+                data-infos="<strong>Classe :</strong> ${candidat.classe}">
             <h4>${candidat.prenom} ${candidat.nom}</h4>
             <p><strong>Classe :</strong> ${candidat.classe}</p>
-            <p><strong>Nationalité :</strong> ${candidat.nationalite}</p>
             <div class="actions">
                 ${candidat.programme ? `<a href="${candidat.programme}" target="_blank" class="btn" download>Voir Programme</a>` : `<button class="btn" disabled>Programme non disponible</button>`}
                 <button class="vote-btn${voted ? ' selected' : ''}" data-index="${idx}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
@@ -439,10 +437,9 @@ function afficherClasse(index = 0) {
         const voted = false;
         return `
         <div class="candidat">
-            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><strong>Nationalité :</strong> ${c.nationalite}<br><em>${c.mots || ''}</em>">
+            <img src="${c.photo}" alt="${c.prenom} ${c.nom}" class="photo-candidat" data-nom="${c.prenom} ${c.nom}" data-infos="<strong>Classe :</strong> ${c.classe}<br><em>${c.mots || ''}</em>">
             <h4>${c.prenom} ${c.nom}</h4>
             <p><strong>Classe :</strong> ${c.classe}</p>
-            <p><strong>Nationalité :</strong> ${c.nationalite}</p>
             <p><em>"${c.mots || ''}"</em></p>
             <button class="vote-btn${voted ? ' selected' : ''}" data-index="${i}" ${dejaVote ? 'disabled' : ''}>${voted ? 'Votre vote' : 'Voter'}</button>
         </div>
