@@ -30,6 +30,13 @@ function initHeader() {
       parent.classList.toggle('show');
     });
   });
+
+  // Gestion du lien de déconnexion
+  document.querySelectorAll('.logout-link').forEach(link => {
+    link.addEventListener('click', () => {
+      sessionStorage.removeItem('token');
+    });
+  });
   document.addEventListener('click', function (e) {
     document.querySelectorAll('.dropdown').forEach(dropdown => {
       if (!dropdown.contains(e.target)) {
