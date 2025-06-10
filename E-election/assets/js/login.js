@@ -260,11 +260,14 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  document.getElementById("loginForm").addEventListener("submit", function(e) {
-    e.preventDefault();
-    alert("Connexion réussie!");
-    loginModal.style.display = "none";
-  });
+  const modalLoginForm = document.getElementById("loginForm");
+  if (loginModal && modalLoginForm) {
+    modalLoginForm.addEventListener("submit", function(e) {
+      e.preventDefault();
+      alert("Connexion réussie!");
+      loginModal.style.display = "none";
+    });
+  }
 
   // Initialiser la page d'accueil au chargement
   showPage("accueil");
