@@ -5,7 +5,8 @@ function chargerPostes(type) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    const postes = (window.postesByType || {})[type] || [];
+    const cfg = getConfig();
+    const postes = (cfg.postesByType || {})[type] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
         opt.value = poste;
@@ -18,7 +19,8 @@ function chargerClubs() {
     const select = document.getElementById('clubSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un club</option>';
-    const clubs = window.clubsList || [];
+    const cfg = getConfig();
+    const clubs = cfg.clubs || [];
     clubs.forEach(club => {
         const opt = document.createElement('option');
         opt.value = club;
@@ -34,7 +36,8 @@ function chargerPostesClub(club) {
     const select = document.getElementById('posteSelect');
     if (!select) return;
     select.innerHTML = '<option value="" disabled selected>Choisir un poste</option>';
-    const postes = (window.postesByClub || {})[club] || [];
+    const cfg = getConfig();
+    const postes = (cfg.postesByClub || {})[club] || [];
     postes.forEach(poste => {
         const opt = document.createElement('option');
         opt.value = poste;
@@ -63,7 +66,8 @@ function checkAndCloseCandidatureSession(categorie) {
 // ===============================
 // Gestion de l'affichage du formulaire de candidature selon la session
 // ===============================
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+    await loadConfig();
     const electionButtons = document.querySelectorAll('.election-btn');
     const info = document.getElementById('candidature-info');
     const form = document.getElementById('newCandidature');

@@ -1,4 +1,9 @@
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  await loadConfig();
+  let candidaturesCache = [];
+  fetch('/api/candidatures')
+    .then(r => r.ok ? r.json() : [])
+    .then(data => { candidaturesCache = data; });
   // Elements du modal de démarrage des votes
   const startVotesModal = document.getElementById('startVotesModal');
   const closeStartVotes = document.getElementById('closeStartVotes');
@@ -33,7 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
   const endCandDate = document.getElementById('endCandDate');
 
   function loadClubs(select) {
-    const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
+    const cfg = getConfig();
+    const clubs = cfg.clubs || [];
     if (!select) return;
     select.innerHTML = '<option value="" selected disabled>Choisir un club</option>';
     clubs.forEach(c => {
@@ -79,7 +85,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (window.isVoteActive(categorie)) { alert('Une session de vote est déjà ouverte pour cette catégorie'); return; }
 
       // Vérification de la présence de candidats
-      let candidatures = JSON.parse(localStorage.getItem('candidatures') || '[]');
+      let candidatures = candidaturesCache;
       let candidats;
       if (categorie === 'club') {
         candidats = candidatures.filter(c => c.type && c.type.toLowerCase() === 'club' && c.club === club);
@@ -207,11 +213,14 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   function getComites() {
-    return JSON.parse(localStorage.getItem('comites') || '{}');
+    const cfg = getConfig();
+    return cfg.comites || {};
   }
 
   function saveComites(data) {
-    localStorage.setItem('comites', JSON.stringify(data));
+    const cfg = getConfig();
+    cfg.comites = data;
+    saveConfig();
   }
 
   function showComitesMenu() {
@@ -432,7 +441,7 @@ document.addEventListener('DOMContentLoaded', () => {
               }
               let club = '';
               if (type === 'club') {
-                const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
+                const clubs = (getConfig().clubs || []);
                 if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
                 const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
                 const i = parseInt(idx,10);
@@ -442,21 +451,23 @@ document.addEventListener('DOMContentLoaded', () => {
               const nom = prompt('Nom du nouveau poste :');
               if (nom) {
                 if (type === 'club') {
-                  let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
-                  postesByClub[club] = postesByClub[club] || [];
-                  if (!postesByClub[club].includes(nom)) {
-                    postesByClub[club].push(nom);
-                    localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                  let cfg = getConfig();
+                  cfg.postesByClub = cfg.postesByClub || {};
+                  cfg.postesByClub[club] = cfg.postesByClub[club] || [];
+                  if (!cfg.postesByClub[club].includes(nom)) {
+                    cfg.postesByClub[club].push(nom);
+                    saveConfig();
                     alert('Poste ajouté pour ' + club + ' !');
                   } else {
                     alert('Ce poste existe déjà pour ce club.');
                   }
                 } else {
-                  let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
-                  postesByType[type] = postesByType[type] || [];
-                  if (!postesByType[type].includes(nom)) {
-                    postesByType[type].push(nom);
-                    localStorage.setItem('postesByType', JSON.stringify(postesByType));
+                  let cfg = getConfig();
+                  cfg.postesByType = cfg.postesByType || {};
+                  cfg.postesByType[type] = cfg.postesByType[type] || [];
+                  if (!cfg.postesByType[type].includes(nom)) {
+                    cfg.postesByType[type].push(nom);
+                    saveConfig();
                     alert('Poste ajouté pour ' + type + ' !');
                   } else {
                     alert('Ce poste existe déjà pour ce type.');
@@ -473,33 +484,35 @@ document.addEventListener('DOMContentLoaded', () => {
               const type = prompt('Type d\'élection (club, aes, classe) :').toLowerCase();
               if (!['club', 'aes', 'classe'].includes(type)) return;
               if (type === 'club') {
-                const clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
+                const clubs = (getConfig().clubs || []);
                 if (clubs.length === 0) { alert('Aucun club disponible.'); return; }
                 const idx = prompt('Choisissez le club :\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
                 const i = parseInt(idx,10);
                 if (!i || i < 1 || i > clubs.length) return;
                 const club = clubs[i-1];
-                let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
-                const arr = postesByClub[club] || [];
+                let cfg = getConfig();
+                cfg.postesByClub = cfg.postesByClub || {};
+                const arr = cfg.postesByClub[club] || [];
                 if (arr.length === 0) { alert('Aucun poste à supprimer pour ce club.'); return; }
                 const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
                 const j = parseInt(posIdx,10);
                 if (j >=1 && j <= arr.length) {
                   arr.splice(j-1,1);
-                  postesByClub[club] = arr;
-                  localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                  cfg.postesByClub[club] = arr;
+                  saveConfig();
                   alert('Poste supprimé pour ' + club + ' !');
                 }
               } else {
-                let postesByType = JSON.parse(localStorage.getItem('postesByType') || '{}');
-                const arr = postesByType[type] || [];
+                let cfg = getConfig();
+                cfg.postesByType = cfg.postesByType || {};
+                const arr = cfg.postesByType[type] || [];
                 if (arr.length === 0) { alert('Aucun poste à supprimer pour ce type.'); return; }
                 const posIdx = prompt('Choisissez le poste :\n' + arr.map((p,j)=>`${j+1}. ${p}`).join('\n'));
                 const j = parseInt(posIdx,10);
                 if (j >=1 && j <= arr.length) {
                   arr.splice(j-1,1);
-                  postesByType[type] = arr;
-                  localStorage.setItem('postesByType', JSON.stringify(postesByType));
+                  cfg.postesByType[type] = arr;
+                  saveConfig();
                   alert('Poste supprimé pour ' + type + ' !');
                 }
               }
@@ -512,10 +525,11 @@ document.addEventListener('DOMContentLoaded', () => {
               e.preventDefault();
               const nom = prompt('Nom du nouveau club :');
               if (nom) {
-                let clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
-                if (!clubs.includes(nom)) {
-                  clubs.push(nom);
-                  localStorage.setItem('clubs', JSON.stringify(clubs));
+                let cfg = getConfig();
+                cfg.clubs = cfg.clubs || [];
+                if (!cfg.clubs.includes(nom)) {
+                  cfg.clubs.push(nom);
+                  saveConfig();
                   alert('Club ajouté !');
                 } else {
                   alert('Ce club existe déjà.');
@@ -528,16 +542,17 @@ document.addEventListener('DOMContentLoaded', () => {
           if (deleteClub) {
             deleteClub.onclick = (e) => {
               e.preventDefault();
-              let clubs = JSON.parse(localStorage.getItem('clubs') || '[]');
+              let cfg = getConfig();
+              let clubs = cfg.clubs || [];
               if (clubs.length === 0) { alert('Aucun club à supprimer.'); return; }
               const idx = prompt('Quel club supprimer ?\n' + clubs.map((c,i)=>`${i+1}. ${c}`).join('\n'));
               const i = parseInt(idx,10);
               if (i >=1 && i <= clubs.length) {
                 const club = clubs.splice(i-1,1)[0];
-                localStorage.setItem('clubs', JSON.stringify(clubs));
-                let postesByClub = JSON.parse(localStorage.getItem('postesByClub') || '{}');
-                delete postesByClub[club];
-                localStorage.setItem('postesByClub', JSON.stringify(postesByClub));
+                cfg.clubs = clubs;
+                cfg.postesByClub = cfg.postesByClub || {};
+                delete cfg.postesByClub[club];
+                saveConfig();
                 alert('Club supprimé !');
               }
             };
