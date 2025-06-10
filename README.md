@@ -88,6 +88,7 @@ Le site sera accessible sur [http://localhost:3000](http://localhost:3000).
 - Le backend gère désormais l'authentification via un jeton renvoyé lors de la connexion.
 - Les pages d'inscription et de connexion communiquent avec l'API et n'utilisent plus `localStorage` pour stocker les utilisateurs.
 - Des sessions sont sauvegardées dans `backend/data/sessions.json`.
+- Un endpoint `GET /api/users` permet de récupérer la liste des inscrits (sans mots de passe) pour l'administration.
 
 Pour accéder aux endpoints sécurisés (création de candidature, vote...), le jeton doit être envoyé dans l'en-tête `Authorization: Bearer <token>`.
 

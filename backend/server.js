@@ -128,12 +128,20 @@ function requestHandler(req, res) {
 
   if (req.method === 'POST' && req.url === '/api/register') {
     parseBody(req, body => {
-      const { email, password, username, classe } = body;
+      const { email, password, username, classe, role, inscritDepuis } = body;
       if (!email || !password) return send(res, 400, { error: 'email and password required' });
       const users = readJSON('users.json');
       if (users.find(u => u.email === email)) return send(res, 400, { error: 'user exists' });
       const id = users.length + 1;
-      users.push({ id, email, username, classe, passwordHash: hashPassword(password) });
+      users.push({
+        id,
+        email,
+        username,
+        classe,
+        role: role || 'electeur',
+        inscritDepuis: inscritDepuis || new Date().toISOString(),
+        passwordHash: hashPassword(password)
+      });
       writeJSON('users.json', users);
       send(res, 201, { id, email, username, classe });
     });
@@ -158,7 +166,27 @@ function requestHandler(req, res) {
     const users = readJSON('users.json');
     const user = users.find(u => u.id === userId);
     if (!user) return send(res, 404, { error: 'not found' });
-    return send(res, 200, { id: user.id, email: user.email, username: user.username, classe: user.classe });
+    return send(res, 200, {
+      id: user.id,
+      email: user.email,
+      username: user.username,
+      classe: user.classe,
+      role: user.role,
+      inscritDepuis: user.inscritDepuis
+    });
+  }
+
+  if (req.method === 'GET' && req.url === '/api/users') {
+    const users = readJSON('users.json');
+    const sanitized = users.map(u => ({
+      id: u.id,
+      email: u.email,
+      username: u.username,
+      classe: u.classe,
+      role: u.role,
+      inscritDepuis: u.inscritDepuis
+    }));
+    return send(res, 200, sanitized);
   }
 
   if (req.method === 'POST' && req.url === '/api/candidates') {

@@ -40,6 +40,12 @@ describe('API endpoints', function () {
     if (!res.body.token) throw new Error('Token manquant');
   });
 
+  it('GET /api/users returns registered users', async function () {
+    const res = await agent.get('/api/users').expect(200);
+    if (!Array.isArray(res.body) || res.body.length !== 1) throw new Error('Liste incorrecte');
+    if (res.body[0].email !== 'test@example.com') throw new Error('Utilisateur manquant');
+  });
+
   it('POST /api/candidates requires authentication', async function () {
     await agent
       .post('/api/candidates')
