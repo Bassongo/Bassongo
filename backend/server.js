@@ -91,7 +91,7 @@ function authenticate(req) {
   return null;
 }
 
-const server = http.createServer((req, res) => {
+function requestHandler(req, res) {
   if (req.method === 'GET' && !req.url.startsWith('/api/')) {
     if (serveStatic(req, res)) return;
   }
@@ -192,8 +192,16 @@ const server = http.createServer((req, res) => {
   }
 
   send(res, 404, { error: 'Not found' });
-});
+}
 
-server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
-});
+function createServer() {
+  return http.createServer(requestHandler);
+}
+
+if (require.main === module) {
+  createServer().listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
+  });
+}
+
+module.exports = { createServer };

@@ -4,10 +4,15 @@
   "description": "Simple Node.js backend for E-Vote ENSAE",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "node server.js",
+    "test": "mocha"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "type": "commonjs"
+  "type": "commonjs",
+  "devDependencies": {
+    "mocha": "^10.0.0",
+    "supertest": "^6.0.0"
+  }
 }
