@@ -5,66 +5,64 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Accueil - Vote ENSAE</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
-  
-  <link rel="stylesheet" href="../assets/css/styles.css">
-  <link rel="stylesheet" href="../assets/css/acceuils.css">
-  
+  <style>
+    body{margin:0;font-family:'Montserrat',sans-serif;background:#F3F4F6;color:#1F2937;}
+    header{display:flex;justify-content:space-between;align-items:center;width:100%;padding:1rem;}
+    #carousel{position:relative;width:100%;height:60vh;overflow:hidden;}
+    .carousel-slide{position:absolute;inset:0;background-size:cover;background-position:center;filter:blur(4px);opacity:0;transition:opacity .5s;}
+    .carousel-slide.active{opacity:1;}
+    .carousel-slide::after{content:"";position:absolute;inset:0;background:rgba(0,0,0,0.3);}
+    .carousel-slide h2{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);color:#fff;z-index:1;text-align:center;font-size:2rem;}
+    #carousel-controls{position:absolute;bottom:1rem;right:1rem;z-index:2;}
+    #carousel-controls button{background:#3B82F6;color:#fff;border:none;padding:.4rem .6rem;margin-left:.3rem;cursor:pointer;border-radius:4px;}
+    @media(min-width:640px){#carousel{height:70vh;} .carousel-slide h2{font-size:2.5rem;}}
+    @media(min-width:1024px){#carousel{height:80vh;} .carousel-slide h2{font-size:3rem;}}
+  </style>
 </head>
 <body>
-
-  <!-- Header dynamique -->
   <div id="header"></div>
-
-
-  <div class="container">
-    
-
-    <div id="intro">
-      <h1>Le Choix des Élèves</h1>
-      <img src="../assets/img/OIP.jpeg" alt="ENSAE Building" class="intro-img">
-      <div class="slogan">EXPRIMEZ VOUS FAITES LA DIFFERENCE</div>
-      <div class="slogan2">L'ENSAE vote, ENSAE avance</div>
+  <section id="carousel">
+    <div id="carousel-controls">
+      <button id="prev">Précédent</button>
+      <button id="next">Suivant</button>
     </div>
-
-    <div id="accueil">
-      <h1>Bienvenue sur la plateforme de vote de l'ENSAE !!</h1>
-      <h2>Un outil moderne sécurisé et transparent</h2>
-
-      <div class="content">
-        <div class="section">
-          <h3>🎯 Objectifs</h3>
-          <ul>
-            <li>Inscription en ligne des candidats</li>
-            <li>Gestion des électeurs</li>
-            <li>Votes anonymes et sécurisés</li>
-            <li>Résultats en temps réel</li>
-          </ul>
-        </div>
-
-        <div class="section">
-          <h3>🗳️ Processus électoral</h3>
-          <ul>
-            <li>Phase d'inscription</li>
-            <li>Campagne électorale</li>
-            <li>Vote en ligne</li>
-            <li>Publication des résultats</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
-
-
-  
-    <!-- Footer dynamique -->
-    <div id="footer"></div>
-
-    <!-- Inclusion dynamique du header/footer -->
-    <script src="../assets/js/include.js"></script>
-    <script>
-        includeComponent('#header', '../components/header.html');
-        includeComponent('#footer', '../components/footer.html');
-    </script>
-
+  </section>
+  <script src="../assets/js/include.js"></script>
+  <script>
+    includeComponent('#header','../components/header.html');
+    (async function(){
+      const folder='../assets/img/';
+      let files=[];
+      try{
+        const res=await fetch(folder);
+        const text=await res.text();
+        const doc=new DOMParser().parseFromString(text,'text/html');
+        files=[...doc.querySelectorAll('a')].map(a=>a.getAttribute('href')).filter(h=>/\.(jpg|png)$/i.test(h));
+      }catch(e){
+        files=['OIP.jpeg'];
+      }
+      const carousel=document.getElementById('carousel');
+      files=files.map(f=>folder+f);
+      files.forEach((src,i)=>{
+        const slide=document.createElement('div');
+        slide.className='carousel-slide'+(i===0?' active':'');
+        slide.style.backgroundImage=`url('${src}')`;
+        const h=document.createElement('h2');
+        h.textContent='Votre voix compte';
+        slide.appendChild(h);
+        carousel.appendChild(slide);
+      });
+      let index=0;
+      const slides=()=>Array.from(document.querySelectorAll('.carousel-slide'));
+      function show(i){
+        slides()[index].classList.remove('active');
+        index=(i+slides().length)%slides().length;
+        slides()[index].classList.add('active');
+      }
+      document.getElementById('prev').addEventListener('click',()=>show(index-1));
+      document.getElementById('next').addEventListener('click',()=>show(index+1));
+      setInterval(()=>show(index+1),5000);
+    })();
+  </script>
 </body>
 </html>
