@@ -11,56 +11,35 @@
 </head>
 <body>
 
-  <!-- En-tête du site -->
-  <style>
-    @import "./assets/css/header.css";
-  </style>
-
   <header>
-    <div class="header-container">
-      <!-- Logo -->
-      <div class="logo">
+    <nav class="main-nav">
+      <div class="brand">
         <img src="./assets/img/logo_ensae.png" alt="Logo ENSAE" class="logo-img">
-        <div class="logo-text">
-          <h1>E-election</h1>
-          <h2>ENSAE Dakar</h2>
-        </div>
+        <span class="title">E-élection</span>
       </div>
-
-      <!-- Menu Toggle for Mobile -->
-      <button class="menu-toggle" aria-label="Ouvrir le menu">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <!-- Navigation -->
-      <nav class="main-nav">
-        <ul class="nav-menu">
-          <li><a href="./accueil.html" class="nav-link"><span>Accueil</span></a></li>
-          <li><a href="./pages/admin_accueil.html" class="nav-link"><span>Admin</span></a></li>
-          <li><a href="./pages/vote.html" class="nav-link"><span>Voter</span></a></li>
-          <li><a href="./pages/campagnes.html" class="nav-link"><span>Voir Campagne</span></a></li>
-          <li class="dropdown">
-            <a href="#" class="nav-link dropdown-toggle"><span>Statistiques &amp; Résultats ▼</span></a>
-            <ul class="dropdown-menu">
-              <li><a href="./pages/statistique.html" class="nav-link"><span>Statistiques</span></a></li>
-              <li><a href="./pages/resultat.html" class="nav-link"><span>Résultats</span></a></li>
-            </ul>
-          </li>
-          <li class="dropdown">
-            <a href="#" class="nav-link dropdown-toggle"><span>Profil ▼</span></a>
-            <ul class="dropdown-menu">
-              <li><a href="./pages/moi.html" class="nav-link"><span>Moi</span></a></li>
-              <li><a href="./Home.html" class="nav-link"><span>Se déconnecter</span></a></li>
-            </ul>
-          </li>
-        </ul>
-      </nav>
-    </div>
+      <ul class="nav-menu">
+        <li><a href="./accueil.html" class="nav-link">Accueil</a></li>
+        <li><a href="./pages/admin_accueil.html" class="nav-link">Admin</a></li>
+        <li><a href="./pages/vote.html" class="nav-link">Voter</a></li>
+        <li><a href="./pages/campagnes.html" class="nav-link">Voir campagne</a></li>
+        <li class="dropdown">
+          <a href="#" class="nav-link dropdown-toggle">Statistiques &amp; Résultats ▼</a>
+          <ul class="dropdown-menu">
+            <li><a href="./pages/statistique.html" class="nav-link">Statistiques</a></li>
+            <li><a href="./pages/resultat.html" class="nav-link">Résultats</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="nav-link dropdown-toggle">Profil ▼</a>
+          <ul class="dropdown-menu">
+            <li><a href="./pages/moi.html" class="nav-link">Moi</a></li>
+            <li><a href="./Home.html" class="nav-link">Se déconnecter</a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
   </header>
 
-  <script src="./assets/js/header.js"></script>
 
 
   <div class="container">
@@ -75,15 +54,15 @@
 
     <div class="slider">
       <div class="slide active">
-        <img src="../images/urne.jpg" alt="Urne de vote">
+        <img src="images/urne.jpg" alt="Urne de vote">
         <div class="overlay">Votez pour faire entendre votre voix</div>
       </div>
       <div class="slide">
-        <img src="../images/voteapp.jpg" alt="Application de vote">
+        <img src="images/voteapp.jpg" alt="Application de vote">
         <div class="overlay">Un scrutin simple et sécurisé</div>
       </div>
       <div class="slide">
-        <img src="../images/lets_vote.png" alt="Ensemble votons">
+        <img src="images/lets_vote.png" alt="Ensemble votons">
         <div class="overlay">Chaque vote compte</div>
       </div>
     </div>
@@ -167,7 +146,7 @@
       </div>
   </footer>
 
-  <script src="./assets/js/slider.js"></script>
+  <script src="./assets/js/carousel.js"></script>
 
  </body>
  </html>
