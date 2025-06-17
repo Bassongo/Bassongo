@@ -17,6 +17,7 @@ header {
   max-width: 1200px;
   margin: 0 auto;
   flex-wrap: wrap;
+  justify-content: space-between;
 }
 
 /* Logo */
@@ -49,6 +50,7 @@ header {
 /* Navigation */
 .main-nav {
   flex-grow: 1;
+  margin-left: auto;
 }
 
 /* Menu Toggle */
