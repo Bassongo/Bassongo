@@ -4,15 +4,15 @@
    Variables globales
    ========================= */
 :root {
-    --primary: #224870;
-    --primary-light: #e7eff6;
-    --secondary: #2a9d8f;
-    --accent: #f4a261;
-    --background: #f8f9fa;
-    --white: #fff;
-    --text: #1e293b;
-    --gray: #64748b;
-    --border: #e5e7eb;
+    --primary: #6b8ba4;            /* Bleu-gris doux */
+    --primary-light: #f2f4f7;      /* Blanc cassé */
+    --secondary: #9ec1c9;          /* Ton pastel complémentaire */
+    --accent: #e5b9a8;             /* Accent pastel */
+    --background: #f9fafb;         /* Fond clair */
+    --white: #ffffff;
+    --text: #374151;               /* Gris foncé mais doux */
+    --gray: #9aa4b0;               /* Gris clair */
+    --border: #d1d5db;             /* Bordure claire */
     --radius: 18px;
     --transition: 0.18s cubic-bezier(.4,0,.2,1);
 }
@@ -27,6 +27,39 @@ body {
     color: var(--text);
     background: var(--background);
     line-height: 1.6;
+}
+
+/* Navigation principale */
+.main-nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 2rem;
+}
+
+/* Carousel */
+.slide img {
+    filter: blur(4px);
+}
+
+.overlay {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: rgba(255,255,255,0.9);
+    text-align: center;
+    font-size: 2rem;
+    font-weight: bold;
+}
+
+.separator {
+    border: 0;
+    height: 2px;
+    background: var(--primary);
+    opacity: 0.4;
+    margin: 2rem auto;
+    width: 80%;
 }
 
 /* =========================

@@ -65,10 +65,10 @@ body {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: blur(2px);
+    filter: blur(4px);
 }
 
-.slide .caption {
+.slide .overlay {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -80,7 +80,7 @@ body {
     text-align: center;
 }
 
-.divider {
+.separator {
     border: 0;
     height: 2px;
     background: var(--primary);
