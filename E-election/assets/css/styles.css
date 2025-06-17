@@ -4,14 +4,14 @@
    Variables globales
    ========================= */
 :root {
-    --primary: #6b8ba4;            /* Bleu-gris doux */
-    --primary-light: #f2f4f7;      /* Blanc cassé */
-    --secondary: #9ec1c9;          /* Ton pastel complémentaire */
-    --accent: #e5b9a8;             /* Accent pastel */
-    --background: #f9fafb;         /* Fond clair */
+    --primary: #8faebd;            /* Bleu-gris doux */
+    --primary-light: #f6f8f9;      /* Blanc cassé */
+    --secondary: #bcd0d6;          /* Ton pastel complémentaire */
+    --accent: #d3b7a7;             /* Accent pastel */
+    --background: #fdfdfd;         /* Fond clair */
     --white: #ffffff;
-    --text: #374151;               /* Gris foncé mais doux */
-    --gray: #9aa4b0;               /* Gris clair */
+    --text: #354454;               /* Gris foncé mais doux */
+    --gray: #a5afb8;               /* Gris clair */
     --border: #d1d5db;             /* Bordure claire */
     --radius: 18px;
     --transition: 0.18s cubic-bezier(.4,0,.2,1);
@@ -36,8 +36,21 @@ body {
     align-items: center;
     padding: 0.5rem 2rem;
 }
+.main-nav .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+.main-nav .brand .title {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary);
+}
 
 /* Carousel */
+.slide {
+    position: relative;
+}
 .slide img {
     filter: blur(4px);
 }
