@@ -14,7 +14,25 @@
 
   <!-- Header dynamique -->
   <div id="header"></div>
-  <div class="slideshow"></div>
+
+  <div class="carousel-container">
+    <div class="carousel-slides">
+      <div class="carousel-slide">
+        <img src="../../images/pexels-tara-winstead-8849361.jpg" alt="Vote électronique">
+        <div class="carousel-text">Vote électronique facile</div>
+      </div>
+      <div class="carousel-slide">
+        <img src="../../images/secured-vote-box-blue-background-3d-render_975254-980.jpg" alt="Sécurité du vote">
+        <div class="carousel-text">Sécurité garantie</div>
+      </div>
+      <div class="carousel-slide">
+        <img src="../../images/top-view-voting-checked-box_23-2148265547.jpg" alt="Transparence">
+        <div class="carousel-text">Transparence assurée</div>
+      </div>
+    </div>
+    <button class="carousel-btn prev">&#10094;</button>
+    <button class="carousel-btn next">&#10095;</button>
+  </div>
 
   <div class="container">
 
@@ -53,6 +71,7 @@
 
     <!-- Inclusion dynamique du header/footer -->
     <script src="../assets/js/include.js"></script>
+    <script src="../assets/js/carousel.js"></script>
     <script>
         includeComponent('#header', '../components/header.html');
         includeComponent('#footer', '../components/footer.html');
