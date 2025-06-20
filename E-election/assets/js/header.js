@@ -76,7 +76,7 @@ function initHeader() {
   document.addEventListener('stateChanged', updateNavVisibility);
 
   const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-  if (user && user.role === 'admin') {
+  if (user) {
     showAdminSidebar();
   }
 }
