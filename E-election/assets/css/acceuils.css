@@ -1,5 +1,6 @@
 body {
     margin: 0;
+    padding: 0;
     font-family: 'Montserrat', sans-serif;
     color: var(--white);
     text-align: center;
@@ -319,54 +320,77 @@ body {
         margin-bottom: 15px;
     }
 }
+
+
 /* Carousel Styles */
 .carousel-container {
     position: relative;
     overflow: hidden;
-    margin: 60px auto 40px;
-    max-width: 1000px;
-    border-radius: 12px;
+    margin: 0; /* Collé en haut */
+    width: 100vw; /* Prend toute la largeur de la fenêtre */
+    max-width: 100vw;
+    border-radius: 0; /* Pas d'arrondi sur les bords */
+    padding: 0;
+    margin-top: 0 !important;
+    padding-top: 0 !important;
 }
+
 .carousel-slides {
     display: flex;
     transition: transform 0.5s ease-in-out;
-    height: 400px;
+    height: 75vh; /* Hauteur adaptée, modifiable selon préférence */
+    min-height: 400;
+    max-height: 700px;
 }
+
 .carousel-slide {
-    min-width: 100%;
+    min-width: 100vw;
     position: relative;
 }
+
 .carousel-slide img {
-    width: 100%;
+    width: 100vw;
     height: 100%;
     object-fit: cover;
-    border-radius: 12px;
+    border-radius: 0;
+    display: block;
 }
+
 .carousel-text {
     position: absolute;
-    bottom: 20px;
-    left: 20px;
-    background: rgba(0, 0, 0, 0.5);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: #fff;
-    padding: 10px 20px;
-    border-radius: 8px;
-    font-size: 1.2em;
+    font-size: 2.2em;
+    font-weight: bold;
+    background: none; /* Pas de fond */
+    padding: 0;
+    border-radius: 0;
+    text-shadow: 2px 2px 8px #000; /* Pour la lisibilité */
+    box-shadow: none;
 }
+
 .carousel-btn {
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
-    background: rgba(255, 255, 255, 0.3);
+    background: rgba(0, 0, 0, 0.10); /* Plus transparent */
     border: none;
     color: #fff;
-    font-size: 2rem;
+    font-size: 2.5rem;
     cursor: pointer;
-    padding: 5px 12px;
+    padding: 8px 16px;
     border-radius: 50%;
     z-index: 10;
+    opacity: 0.5; /* Plus transparent */
+    transition: background 0.2s, opacity 0.2s;
 }
 .carousel-btn:hover {
-    background: rgba(255, 255, 255, 0.6);
+    background: rgba(0, 0, 0, 0.25); /* Un peu plus visible au survol */
+    opacity: 0.9;
 }
-.carousel-btn.prev { left: 15px; }
-.carousel-btn.next { right: 15px; }
+
+.carousel-btn.prev { left: 20px; }
+.carousel-btn.next { right: 20px; }
+

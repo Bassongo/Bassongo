@@ -8,12 +8,14 @@
     --primary-light: #e0f2fe;
     --secondary: #38bdf8;
     --accent: #fbbf24;
-    --background: #f8fafc;
-    --white: #fff;
+    --background: #ffffff;
+    --white: #ffffff;
     --text: #1e293b;
     --gray: #64748b;
     --border: #e5e7eb;
+    --header : #34559d;
     --radius: 18px;
+    
     --transition: 0.18s cubic-bezier(.4,0,.2,1);
 }
 

@@ -1,13 +1,25 @@
-
+/* =========================
+   Suppression des barres de défilement
+   ========================= */
+html, body {
+  overflow: hidden;              /* Désactive le scroll */
+  scrollbar-width: none;         /* Firefox : cache la barre */
+}
+body::-webkit-scrollbar,
+html::-webkit-scrollbar {
+  display: none;                 /* Chrome, Safari, Opera : cache la barre */
+}
 
 /* =========================
    Header Styles
    ========================= */
 header {
-  background: var(--primary-light);
+  background: var(--header);
   box-shadow: 0 2px 12px #2563eb11;
   border-radius: 0 0 var(--radius) var(--radius);
-  margin-bottom: 2rem;
+  /* margin-bottom: 2rem;*/
+  margin: 0;
+  padding: 0;
 }
 
 .header-container {
@@ -33,15 +45,15 @@ header {
 }
 
 .logo-text h1 {
-  color: var(--primary);
-  font-size: 1.2rem;
+  color: var(--white);
+  font-size: 1rem;
   font-weight: 700;
   margin: 0;
 }
 
 .logo-text h2 {
-  color: var(--secondary);
-  font-size: 0.95rem;
+  color: var(--white);
+  font-size: 0.80rem;
   font-weight: 400;
   margin: 0;
 }
@@ -98,24 +110,24 @@ header {
 
 /* Nav Links */
 .nav-link {
-  color: var(--primary);
+  color: var(--white);
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.80rem;
   text-decoration: none;
-  padding: 0.4rem 0.9rem;
+  padding: 0.4rem 0.5rem;
   border-radius: 8px;
   display: inline-block;
   transition: background var(--transition), color var(--transition);
 }
 
 .nav-link:hover {
-  background: var(--accent);
+  background: var(--gray);
   color: var(--white);
 }
 
 /* Onglet actif (courant) */
 .nav-link.active {
-  background: var(--accent);
+  background: var(--gray);
   color: var(--white);
 }
 
@@ -133,7 +145,7 @@ header {
   background: var(--white);
   box-shadow: 0 2px 12px #2563eb22;
   border-radius: 10px;
-  min-width: 170px;
+  min-width: 100px;
   z-index: 100;
   padding: 0.5rem 0;
   list-style: none;
@@ -150,11 +162,11 @@ header {
 
 .dropdown-menu a {
   display: block;
-  padding: 0.6rem 1rem;
-  color: var(--primary);
+  padding: 0.2rem 0.2rem;
+  color: var(--header);
   text-decoration: none;
-  font-weight: 500;
-  font-size: 0.95rem;
+  font-weight: 300;
+  font-size: 0.8rem;
   transition: background var(--transition), color var(--transition);
   text-align: center;
 }
@@ -162,10 +174,8 @@ header {
 .dropdown-menu a:hover,
 .dropdown-menu a.highlight {
   background: var(--primary-light);
-  color: var(--accent);
+  color: var(--gray);
 }
-
-
 
 @media (max-width: 900px) {
   .header-container {
@@ -258,10 +268,4 @@ header {
 .side-panel-bg {
   position: fixed;
   top: 0; left: 0; right: 0; bottom: 0;
-  background: rgba(0,0,0,0.3);
-  z-index: 9998;
-  display: none;
-}
-.side-panel-bg.open {
-  display: block;
-}
+  background:
