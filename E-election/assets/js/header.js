@@ -74,6 +74,34 @@ function initHeader() {
 
   document.addEventListener('DOMContentLoaded', updateNavVisibility);
   document.addEventListener('stateChanged', updateNavVisibility);
+
+  const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+  if (user && user.role === 'admin') {
+    showAdminSidebar();
+  }
+}
+
+function showAdminSidebar() {
+  if (document.getElementById('adminSidebarContainer')) return;
+  const container = document.createElement('div');
+  container.id = 'adminSidebarContainer';
+  document.body.prepend(container);
+
+  const prefix = location.pathname.includes('/pages/') ? '../' : './';
+  const link = document.createElement('link');
+  link.rel = 'stylesheet';
+  link.href = prefix + 'assets/css/admin_sidebar.css';
+  document.head.appendChild(link);
+
+  fetch(prefix + 'components/admin_sidebar.html')
+    .then(r => r.text())
+    .then(html => {
+      container.innerHTML = html;
+      const script = document.createElement('script');
+      script.src = prefix + 'assets/js/admin_accueil.js';
+      document.body.appendChild(script);
+    })
+    .catch(err => console.error('Erreur chargement admin sidebar:', err));
 }
 
 if (document.readyState === 'loading') {
