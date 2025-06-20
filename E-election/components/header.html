@@ -59,16 +59,25 @@
           </ul>
         </li>
 
-        <li class="dropdown">
-          <a href="#" class="nav-link dropdown-toggle"><span>Profil ▼</span></a>
-          <ul class="dropdown-menu">
-            <li><a href="../pages/moi.html" class="nav-link"><span>Moi</span></a></li>
-            <li><a href="../Home.html" class="nav-link"><span>Déconnexion</span></a></li>
-          </ul>
-        </li>
-      </ul>
-    </nav>
-  </div>
+          <li class="dropdown">
+            <a href="#" class="nav-link dropdown-toggle"><span>Profil ▼</span></a>
+            <ul class="dropdown-menu">
+              <li><a href="#" id="profileBtn" class="nav-link"><span>Moi</span></a></li>
+              <li><a href="../Home.html" class="nav-link"><span>Déconnexion</span></a></li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+    </div>
+
+  <div id="profilePanelBg" class="side-panel-bg"></div>
+  <aside id="profilePanel" class="side-panel">
+    <button class="close-panel" id="closeProfilePanel">&times;</button>
+    <div id="profilePanelInfo" class="profile-info"></div>
+    <div id="panelActions"></div>
+    <div id="panelCreationDate" class="creation-date"></div>
+  </aside>
+</header>
 
 <script src="../assets/js/state.js"></script>
 <script src="../assets/js/header.js"></script>
