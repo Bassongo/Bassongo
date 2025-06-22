@@ -145,11 +145,17 @@ function initHeader() {
             candStep2.style.display = 'none';
           }
           const modal = document.getElementById('startCandModal');
-          if (modal) modal.style.display = 'flex';
+          if (modal) {
+            closePanel();
+            modal.style.display = 'flex';
+          }
         };
       
         document.getElementById('stopCandPanel').onclick = () => {
-          if (window.openCloseSession) window.openCloseSession('candidature');
+          if (window.openCloseSession) {
+            closePanel();
+            window.openCloseSession('candidature');
+          }
         };
       
         document.getElementById('startVotePanel').onclick = () => {
@@ -166,11 +172,17 @@ function initHeader() {
             step2.style.display = 'none';
           }
           const modal = document.getElementById('startVotesModal');
-          if (modal) modal.style.display = 'flex';
+          if (modal) {
+            closePanel();
+            modal.style.display = 'flex';
+          }
         };
       
         document.getElementById('stopVotePanel').onclick = () => {
-          if (window.openCloseSession) window.openCloseSession('vote');
+          if (window.openCloseSession) {
+            closePanel();
+            window.openCloseSession('vote');
+          }
         };
       }
       
