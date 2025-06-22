@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>{{ election.name }}</h2>
+<p>Start: {{ election.start_time }} | End: {{ election.end_time }}</p>
+
+{% if voted %}
+<p>Thank you for voting!</p>
+{% else %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Vote</button>
+</form>
+{% endif %}
+
+<a href="{% url 'election:results' election.pk %}">View Results</a>
+{% endblock %}

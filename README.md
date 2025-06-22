@@ -69,6 +69,8 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 
 La partie frontend se trouve dans le dossier `E-election`. Le backend a été ajouté à partir d'un projet **Django** prêt à l'emploi situé dans le dossier `backend/`.
 
+Une application `election` gère désormais les modèles de vote et les vues associées. Elle est connectée au projet Django via les URLs `elections/`.
+
 ### Lancer le backend localement
 
 ```bash

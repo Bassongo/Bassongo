@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Results for {{ election.name }}</h2>
+<ul>
+  {% for candidate in results %}
+    <li>{{ candidate.name }} - {{ candidate.vote_count }} vote{{ candidate.vote_count|pluralize }}</li>
+  {% endfor %}
+</ul>
+<a href="{% url 'election:detail' election.pk %}">Back to election</a>
+{% endblock %}
