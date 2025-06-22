@@ -11,3 +11,17 @@ Desktop.ini
 
 # Ignore Word documents
 *.docx
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual environments
+.venv/
+venv/
+
+# Django
+*.sqlite3
+*.log
+
+# Environment variables
+.env
