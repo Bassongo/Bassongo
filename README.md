@@ -66,3 +66,17 @@ Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une foi
 ## 📂 Structure du projet
 
 
+
+La partie frontend se trouve dans le dossier `E-election`. Le backend a été ajouté à partir d'un projet **Django** prêt à l'emploi situé dans le dossier `backend/`.
+
+### Lancer le backend localement
+
+```bash
+# Installer les dépendances (dans un environnement virtuel de préférence)
+pip install -r requirements.txt
+
+# Démarrer le serveur de développement
+python backend/manage.py runserver
+```
+
+Le projet suit maintenant l'organisation classique d'un projet Django avec un module `core` contenant une vue d'exemple.
