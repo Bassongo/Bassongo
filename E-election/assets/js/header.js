@@ -80,81 +80,110 @@ function initHeader() {
   const panelBg = document.getElementById('profilePanelBg');
   const closePanelBtn = document.getElementById('closeProfilePanel');
 
+
   function renderProfile() {
-    const info = document.getElementById('profilePanelInfo');
-    const actions = document.getElementById('panelActions');
-    const dateEl = document.getElementById('panelCreationDate');
-    if (!info || !actions || !dateEl) return;
-
-    const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
-    if (!user) {
-      info.innerHTML = '<p>Aucun utilisateur connecté.</p>';
-      actions.innerHTML = '';
-      dateEl.textContent = '';
-      return;
-    }
-    const inscr = user.inscritDepuis ? new Date(user.inscritDepuis).toLocaleDateString() : '';
-    info.innerHTML = `${user.photo ? `<img src="${user.photo}" class="profile-photo" alt="photo">` : ''}` +
-      `<p><strong>@</strong>${user.username}</p>` +
-      `${user.nom ? `<p>${user.nom} ${user.prenom || ''}</p>` : ''}` +
-      `${user.classe ? `<p>${user.classe}</p>` : ''}`;
-
-    let html = '';
-    if (user.role === 'admin') {
-      html += `<a class="admin-btn" href="../pages/admin_accueil.html">Admin</a>`;
-    }
-    const comites = JSON.parse(localStorage.getItem('comites') || '{}');
-    const cats = Object.keys(comites).filter(c => (comites[c] || []).some(m => m.email === user.email));
-    if (cats.length > 0) {
-      html += `<div class="committee-section" style="text-align:center;margin-top:1rem;">
-        <button class="admin-btn" id="startCandPanel">Ouvrir candidatures</button>
-        <button class="admin-btn danger" id="stopCandPanel">Fermer candidatures</button>
-        <button class="admin-btn" id="startVotePanel">Ouvrir votes</button>
-        <button class="admin-btn danger" id="stopVotePanel">Fermer votes</button>
-      </div>`;
-    }
-    actions.innerHTML = html;
-    dateEl.innerHTML = inscr ? `Inscrit depuis : ${inscr}` : '';
-
-    if (cats.length > 0) {
-      document.getElementById('startCandPanel').onclick = () => {
-        const type = cats.length === 1 ? cats[0] : prompt('Catégorie ?', cats[0]);
-        if (!type) return;
-        const debut = Date.parse(prompt('Début (YYYY-MM-DDTHH:MM)'));
-        const fin = Date.parse(prompt('Fin (YYYY-MM-DDTHH:MM)'));
-        if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-        if (isCandidatureActive(type)) { alert('Une session est déjà ouverte'); return; }
-        startCandidature(type, debut, fin);
-        alert('Candidatures ouvertes pour ' + type.toUpperCase());
+      const info = document.getElementById('profilePanelInfo');
+      const actions = document.getElementById('panelActions');
+      const dateEl = document.getElementById('panelCreationDate');
+      if (!info || !actions || !dateEl) return;
+  
+      const user = JSON.parse(localStorage.getItem('currentUser') || 'null');
+      if (!user) {
+        info.innerHTML = '<p>Aucun utilisateur connecté.</p>';
+        actions.innerHTML = '';
+        dateEl.textContent = '';
+        return;
+      }
+      const inscr = user.inscritDepuis ? new Date(user.inscritDepuis).toLocaleDateString() : '';
+  
+      // Construction du profil dans l'ordre demandé
+      info.innerHTML = `
+        <div class="profile-block">
+          <p class="profile-username"><strong>@</strong>${user.username || ''}</p>
+          ${user.photo ? `<img src="${user.photo}" class="profile-photo" alt="photo">` : ''}
+          <p class="profile-nom">${user.nom || ''}</p>
+          <p class="profile-prenom">${user.prenom || ''}</p>
+        </div>
+      `;
+  
+      let html = '';
+      const comites = JSON.parse(localStorage.getItem('comites') || '{}');
+      const cats = Object.keys(comites).filter(c => (comites[c] || []).some(m => m.email === user.email));
+      if (cats.length > 0) {
+        html += `<div class="committee-section" style="text-align:center;margin:1.5rem 0;">
+          <button class="admin-btn" id="startCandPanel">Ouvrir candidatures</button>
+          <button class="admin-btn danger" id="stopCandPanel">Fermer candidatures</button>
+          <button class="admin-btn" id="startVotePanel">Ouvrir votes</button>
+          <button class="admin-btn danger" id="stopVotePanel">Fermer votes</button>
+        </div>`;
+      }
+      actions.innerHTML = html;
+  
+      // Ajout des boutons en bas de la barre
+      actions.innerHTML += `
+        <div class="profile-actions-bottom">
+          <button class="admin-btn" id="editProfileBtn">Modifier mes infos</button>
+          <button class="admin-btn" id="changePwdBtn">Changer mon mot de passe</button>
+        </div>
+      `;
+  
+      dateEl.innerHTML = inscr ? `Inscrit depuis : ${inscr}` : '';
+      
+      // Gestion des boutons de comité
+      if (cats.length > 0) {
+        document.getElementById('startCandPanel').onclick = () => {
+          if (window.resetCandModal) window.resetCandModal();
+          const candType = document.getElementById('candType');
+          const candStep1 = document.getElementById('candStep1');
+          const candStep2 = document.getElementById('candStep2');
+          if (cats.length === 1 && candType && candStep1 && candStep2) {
+            candType.value = cats[0];
+            candStep1.style.display = 'none';
+            candStep2.style.display = 'block';
+          } else if (candStep1 && candStep2) {
+            candStep1.style.display = 'block';
+            candStep2.style.display = 'none';
+          }
+          const modal = document.getElementById('startCandModal');
+          if (modal) modal.style.display = 'flex';
+        };
+      
+        document.getElementById('stopCandPanel').onclick = () => {
+          if (window.openCloseSession) window.openCloseSession('candidature');
+        };
+      
+        document.getElementById('startVotePanel').onclick = () => {
+          if (window.resetVoteModal) window.resetVoteModal();
+          const voteType = document.getElementById('voteType');
+          const step1 = document.getElementById('step1');
+          const step2 = document.getElementById('step2');
+          if (cats.length === 1 && voteType && step1 && step2) {
+            voteType.value = cats[0];
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+          } else if (step1 && step2) {
+            step1.style.display = 'block';
+            step2.style.display = 'none';
+          }
+          const modal = document.getElementById('startVotesModal');
+          if (modal) modal.style.display = 'flex';
+        };
+      
+        document.getElementById('stopVotePanel').onclick = () => {
+          if (window.openCloseSession) window.openCloseSession('vote');
+        };
+      }
+      
+  
+      // Ajoute ici les gestionnaires pour les boutons "Modifier mes infos" et "Changer mon mot de passe"
+      document.getElementById('editProfileBtn').onclick = () => {
+        // Ouvre le formulaire de modification du profil
+        alert('Fonctionnalité à implémenter : Modifier mes infos');
       };
-      document.getElementById('stopCandPanel').onclick = () => {
-        const type = cats.length === 1 ? cats[0] : prompt('Catégorie ?', cats[0]);
-        if (!type) return;
-        if (!isCandidatureActive(type)) { alert('Pas de session ouverte'); return; }
-        endCandidature(type);
-        alert('Candidatures fermées pour ' + type.toUpperCase());
+      document.getElementById('changePwdBtn').onclick = () => {
+        // Ouvre le formulaire de changement de mot de passe
+        alert('Fonctionnalité à implémenter : Changer mon mot de passe');
       };
-      document.getElementById('startVotePanel').onclick = () => {
-        const type = cats.length === 1 ? cats[0] : prompt('Catégorie ?', cats[0]);
-        if (!type) return;
-        const debut = Date.parse(prompt('Début (YYYY-MM-DDTHH:MM)'));
-        const fin = Date.parse(prompt('Fin (YYYY-MM-DDTHH:MM)'));
-        if (isNaN(debut) || isNaN(fin) || debut >= fin) { alert('Dates invalides'); return; }
-        if (isVoteActive(type)) { alert('Une session est déjà ouverte'); return; }
-        const cands = JSON.parse(localStorage.getItem('candidatures') || '[]').filter(c => c.type && c.type.toLowerCase() === type);
-        if (cands.length === 0) { alert('Aucun candidat pour cette catégorie'); return; }
-        if (isCandidatureActive(type)) { alert('La candidature est encore ouverte'); return; }
-        startVote(type, debut, fin);
-        alert('Votes ouverts pour ' + type.toUpperCase());
-      };
-      document.getElementById('stopVotePanel').onclick = () => {
-        const type = cats.length === 1 ? cats[0] : prompt('Catégorie ?', cats[0]);
-        if (!type) return;
-        if (!isVoteActive(type)) { alert('Pas de vote en cours'); return; }
-        endVote(type);
-        alert('Votes fermés pour ' + type.toUpperCase());
-      };
-    }
   }
 
   function openPanel() {
