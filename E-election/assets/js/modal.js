@@ -2,11 +2,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const actionsContainer = document.getElementById('committeeActions');
 
-
+  const userData = JSON.parse(localStorage.getItem('currentUser') || 'null');
   const comites = JSON.parse(localStorage.getItem('comites') || '{}');
-  const categories = Object.keys(comites).filter(cat =>
+  const categories = userData ? Object.keys(comites).filter(cat =>
     (comites[cat] || []).some(m => m.email === userData.email)
-  );
+  ) : [];
 
   if (categories.length > 0) {
     showCommitteeActions(actionsContainer, categories);
