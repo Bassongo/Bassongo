@@ -1,84 +1,73 @@
+# Hi, I'm Marc MARE 👋
 
-# 🗳️ E-Vote ENSAE | Application de Gestion Numérique des Élections
-
-Bienvenue dans le dépôt GitHub de notre projet réalisé dans le cadre du **Hackathon 2025** organisé par le **Club Informatique de l’ENSAE**.
-
-![Hackathon ENSAE](https://img.shields.io/badge/Hackathon-ENSAE%202025-blue)  
-![Statut](https://img.shields.io/badge/Statut-En%20développement-yellow)  
-![Licence](https://img.shields.io/badge/Licence-MIT-green)
+**Statistics & Machine Learning Engineer | AI Safety Enthusiast**  
+📍 Dakar, Senegal → Reims, France (MSc SEP 2026)  
+🎯 Building toward AI Safety & NLP research at scale
 
 ---
 
-## 🧠 Contexte du Hackathon
+## About Me
 
-Le Club Informatique de l’ENSAE a lancé son premier Hackathon pour stimuler l'**innovation technologique** dans la gestion académique.  
-Notre équipe a choisi de relever le défi du **Thème 3 : Application de gestion numérique des élections**.
+I'm a Statistics student at **ENSAE Dakar**, specializing in Machine Learning, NLP, and AI Safety. My background in rigorous statistical methods combined with hands-on ML engineering gives me a unique perspective on building reliable and safe AI systems.
 
----
+I'm currently preparing for my MSc in Statistics (SEP) at the University of Reims, France, while deepening my expertise in large language models, alignment research, and ML systems.
 
-## 🎯 Objectif du Projet
-
-Créer une **application sécurisée, simple et intuitive** permettant d'organiser des élections électroniques pour l’amicale, les clubs ou les délégués de classe.
+**Long-term goal** : Contribute to AI Safety research — making powerful AI systems more reliable, interpretable, and aligned with human values.
 
 ---
 
-## ✨ Fonctionnalités principales
+## 🔭 Featured Projects
 
-✅ Authentification sécurisée des votants (ID ENSAE)  
-✅ Interface de vote claire et intuitive  
-✅ Calcul automatique des résultats  
-✅ Génération de rapports détaillés de participation et de résultats  
-✅ 🛡️ Prévention du double vote et respect de l’anonymat
-
----
-
-## 💻 Technologies utilisées
-
-- ⚙️ **Frontend** : a préciser
-- 🛠️ **Backend** : a préciser
-- 🗃️ **Base de données** : a préciser
-- 🔐 **Authentification** : Jeton sécurisé ou OTP (a préciser)
-- 📊 **Reporting** : PDF/Excel, graphiques avec Chart.js (a préciser)
-- **Autres**
+| Project | Description | Stack | Topics |
+|---------|-------------|-------|--------|
+| [toxic-comment-classification](https://github.com/Bassongo/toxic-comment-classification) | Multi-label toxicity detection with RoBERTa & XLM-RoBERTa. Deployed on AWS. | Python · HuggingFace · AWS | NLP · AI Safety · Transformers |
+| [malware_classification](https://github.com/Bassongo/malware_classification) | Multi-format malware detection (PE, PDF, Word). 99.82% accuracy. Deployed on AWS Lambda. | Python · XGBoost · AWS Lambda | ML Engineering · Cybersecurity |
+| [spark-energy-weather-analysis](https://github.com/Bassongo/big-data) | Large-scale energy & weather data analysis with PySpark. | PySpark · Jupyter | Big Data · Data Engineering |
 
 ---
 
-## 🧑‍🤝‍🧑 Équipe du Projet
+## 🧠 Current Focus
 
-👩‍💻 **Josée Clémence JEAZE NGUEMEZI**  
-📚 *Etudiante en deuxième année en Analyse Statistique (AS)*
-
-👨‍💻 **Marc MARE**  
-🎨 *Etudiant en deuxième année en Analyse Statistique (AS)*
-
-👨‍💻 **Gandwende Judicaël Oscar KAFANDO**  
-📊 *Etudiant en première année d'ingéniorat en statistique économie (ISE)*
+- 📖 Reading : *Constitutional AI* (Anthropic, 2022) · *Attention Is All You Need*
+- 🔬 Building : `constitutional-ai-experiments` — reproducing Anthropic alignment research
+- 🌍 Exploring : NLP for African languages (Wolof, Bambara) with multilingual transformers
+- 📝 Writing : Technical articles on ML & AI Safety (coming soon)
 
 ---
 
-## 🚀 Déploiement
+## 🛠️ Tech Stack
 
-Vous pouvez tester l'application en ligne via ce lien (⚠️ à ajouter une fois déployé) :  
-🔗 [Lien de l'application en ligne](#)
+**Languages** : Python · R · SQL · PySpark  
+**ML / NLP** : Scikit-learn · XGBoost · LightGBM · HuggingFace Transformers · PyTorch  
+**MLOps** : AWS (Lambda, S3, SageMaker) · Docker · Git  
+**Data** : Pandas · NumPy · Plotly · Dash  
 
 ---
 
-## 📂 Structure du projet
+## 📊 GitHub Stats
 
+![Marc's GitHub Stats](https://github-readme-stats.vercel.app/api?username=Bassongo&show_icons=true&theme=dark&hide_border=true&count_private=true)
+![Top Languages](https://github-readme-stats.vercel.app/api/top-langs/?username=Bassongo&layout=compact&theme=dark&hide_border=true)
 
+---
 
-La partie frontend se trouve dans le dossier `E-election`. Le backend a été ajouté à partir d'un projet **Django** prêt à l'emploi situé dans le dossier `backend/`.
+## 🗺️ Roadmap
 
-Une application `election` gère désormais les modèles de vote et les vues associées. Elle est connectée au projet Django via les URLs `elections/`.
-
-### Lancer le backend localement
-
-```bash
-# Installer les dépendances (dans un environnement virtuel de préférence)
-pip install -r requirements.txt
-
-# Démarrer le serveur de développement
-python backend/manage.py runserver
+```
+2025 ──── ENSAE Dakar (AS) + GitHub cleanup + AI Safety fundamentals
+2026 ──── MSc SEP, University of Reims · First technical publication
+2027 ──── M2 ML (MVA / Paris-Saclay) or PhD application
+2031 ──── PhD in NLP / AI Safety · Conference publications
+2035 ──── Research Engineer / Scientist @ Anthropic
 ```
 
-Le projet suit maintenant l'organisation classique d'un projet Django avec un module `core` contenant une vue d'exemple.
+---
+
+## 📫 Let's Connect
+
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Marc_MARE-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/marc-mare-4875a6277)
+[![GitHub](https://img.shields.io/badge/GitHub-Bassongo-181717?style=flat&logo=github)](https://github.com/Bassongo)
+
+---
+
+*"The goal of AI Safety is not to slow down AI — it's to make sure that when we get there, it's worth arriving."*
