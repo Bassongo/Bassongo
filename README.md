@@ -1,18 +1,20 @@
 # Hi, I'm Marc MARE 👋
 
-**Statistics & Machine Learning Engineer | AI Safety Enthusiast**  
-📍 Dakar, Senegal → Reims, France (MSc SEP 2026)  
-🎯 Building toward AI Safety & NLP research at scale
+**Data Scientist | Statistics, Machine Learning & Risk**  
+📍 Reims, France (MSc SEP, University of Reims)  
+🎯 Turning rigorous statistics into models that run in production
 
 ---
 
 ## About Me
 
-I'm a Statistics student at **ENSAE Dakar**, specializing in Machine Learning, NLP, and AI Safety. My background in rigorous statistical methods combined with hands-on ML engineering gives me a unique perspective on building reliable and safe AI systems.
+I hold a statistician-analyst degree from **ENSAE Pierre Ndiaye (Dakar)** and I am now an MSc student in **Statistics for Evaluation and Forecasting (SEP)** at the **University of Reims**, France.
 
-I'm currently preparing for my MSc in Statistics (SEP) at the University of Reims, France, while deepening my expertise in large language models, alignment research, and ML systems.
+My work sits at the intersection of rigorous statistical methods and applied machine learning: anomaly detection, multi-label classification, large-scale data processing, and shipping models to production instead of leaving them in notebooks. Before that, I spent three years designing surveys, running data collection and supervising field teams, which taught me that a model is only as good as the data pipeline behind it.
 
-**Long-term goal** : Contribute to AI Safety research — making powerful AI systems more reliable, interpretable, and aligned with human values.
+**Short-term goal** : an apprenticeship in data science within the banking sector for the 2027 intake, on risk modelling, fraud detection or credit scoring.
+
+**Long-term goal** : contribute to AI safety research, making powerful AI systems more reliable, interpretable and aligned with human values.
 
 ---
 
@@ -20,27 +22,28 @@ I'm currently preparing for my MSc in Statistics (SEP) at the University of Reim
 
 | Project | Description | Stack | Topics |
 |---------|-------------|-------|--------|
-| [toxic-comment-classification](https://github.com/Bassongo/toxic-comment-classification) | Multi-label toxicity detection with RoBERTa & XLM-RoBERTa. Deployed on AWS. | Python · HuggingFace · AWS | NLP · AI Safety · Transformers |
-| [malware_classification](https://github.com/Bassongo/malware_classification) | Multi-format malware detection (PE, PDF, Word). 99.82% accuracy. Deployed on AWS Lambda. | Python · XGBoost · AWS Lambda | ML Engineering · Cybersecurity |
-| [spark-energy-weather-analysis](https://github.com/Bassongo/big-data) | Large-scale energy & weather data analysis with PySpark. | PySpark · Jupyter | Big Data · Data Engineering |
+| [malware_classification](https://github.com/Bassongo/malware_classification) | Multi-format threat detection (Windows PE, PDF, URL, Office/VBA), up to 99.82% accuracy, four independent serverless microservices. | Python · LightGBM · XGBoost · Optuna · AWS Lambda | Anomaly Detection · ML Engineering · Cybersecurity |
+| [toxic-comment-classification](https://github.com/Bassongo/toxic-comment-classification) | Multi-label toxicity detection with RoBERTa and XLM-RoBERTa, deployed on AWS with a live dashboard. | Python · HuggingFace · AWS | NLP · Transformers · Content Moderation |
+| [spark-energy-weather-analysis](https://github.com/Bassongo/spark-energy-weather-analysis) | 590K observations across 32 European countries: how weather extremes drive electricity consumption. | PySpark · SciPy · Jupyter | Big Data · Data Engineering |
+| [yolov8-detection-studio](https://github.com/Bassongo/yolov8-detection-studio) | Interactive object detection studio for images, webcam and video, with a live demo on Hugging Face. | PyTorch · Ultralytics · Gradio | Computer Vision · Deep Learning |
 
 ---
 
 ## 🧠 Current Focus
 
-- 📖 Reading : *Constitutional AI* (Anthropic, 2022) · *Attention Is All You Need*
-- 🔬 Building : `constitutional-ai-experiments` — reproducing Anthropic alignment research
-- 🌍 Exploring : NLP for African languages (Wolof, Bambara) with multilingual transformers
-- 📝 Writing : Technical articles on ML & AI Safety (coming soon)
+- 🎓 Studying : statistical inference, stochastic processes, neural networks, SAS and SQL (MSc SEP, M1)
+- 🏦 Preparing : an apprenticeship in banking data science for September 2027
+- 📖 Reading : *Constitutional AI* (Anthropic, 2022) and *Attention Is All You Need*
+- 🌍 Interested in : NLP for African languages (Wolof, Bambara) with multilingual transformers
 
 ---
 
 ## 🛠️ Tech Stack
 
-**Languages** : Python · R · SQL · PySpark  
-**ML / NLP** : Scikit-learn · XGBoost · LightGBM · HuggingFace Transformers · PyTorch  
+**Languages** : Python · R · SQL · SAS · PySpark  
+**ML / NLP** : Scikit-learn · XGBoost · LightGBM · Optuna · HuggingFace Transformers · PyTorch  
 **MLOps** : AWS (Lambda, S3, SageMaker) · Docker · Git  
-**Data** : Pandas · NumPy · Plotly · Dash  
+**Data** : Pandas · NumPy · Plotly · Dash · Stata · ODK  
 
 ---
 
@@ -54,11 +57,11 @@ I'm currently preparing for my MSc in Statistics (SEP) at the University of Reim
 ## 🗺️ Roadmap
 
 ```
-2025 ──── ENSAE Dakar (AS) + GitHub cleanup + AI Safety fundamentals
-2026 ──── MSc SEP, University of Reims · First technical publication
-2027 ──── M2 ML (MVA / Paris-Saclay) or PhD application
-2031 ──── PhD in NLP / AI Safety · Conference publications
-2035 ──── Research Engineer / Scientist @ Anthropic
+2026 ──── MSc SEP (M1), University of Reims · Portfolio consolidation
+2027 ──── M2 SEP as an apprentice · Data science in banking
+2028 ──── First data scientist role · Risk, fraud or scoring
+2032 ──── Senior data scientist, or research through an industrial PhD
+2035 ──── Research engineering in AI safety, the long-range target
 ```
 
 ---
@@ -70,4 +73,4 @@ I'm currently preparing for my MSc in Statistics (SEP) at the University of Reim
 
 ---
 
-*"The goal of AI Safety is not to slow down AI — it's to make sure that when we get there, it's worth arriving."*
+*"The goal of AI safety is not to slow AI down: it is to make sure that when we get there, it was worth arriving."*
