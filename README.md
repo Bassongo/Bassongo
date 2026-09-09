@@ -68,7 +68,7 @@ My work sits at the intersection of rigorous statistical methods and applied mac
 
 ## 📫 Let's Connect
 
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Marc_MARE-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/marc-mare-4875a6277)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Marc_MARE-0077B5?style=flat&logo=linkedin)](https://www.linkedin.com/in/marc-mare-data)
 [![GitHub](https://img.shields.io/badge/GitHub-Bassongo-181717?style=flat&logo=github)](https://github.com/Bassongo)
 
 ---
